@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --sb-bg: #070b14;
+  --sb-surface: #0e1525;
+  --sb-surface-alt: #131c31;
+  --sb-border: #1e293b;
+  --sb-text: #f1f5f9;
+  --sb-muted: #94a3b8;
+}
+
+html,
+body {
+  background-color: var(--sb-bg);
+  color: var(--sb-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+code,
+pre,
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+@keyframes dashFlow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes dangerPulse {
+  0%,
+  100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.edge-flow-red {
+  stroke-dasharray: 7 5;
+  animation: dashFlow 0.95s linear infinite;
+}
+
+.node-pulse-red {
+  animation: dangerPulse 1.8s ease-in-out infinite;
+}
