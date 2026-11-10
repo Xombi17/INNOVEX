@@ -1,0 +1,9 @@
+{
+  "name": "@scopebomb/engine",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": "./index.ts",
+  "engines": { "node": ">=24" },
+  "scripts": { "test": "node --test ../../tests/engine/*.test.ts" }
+}
