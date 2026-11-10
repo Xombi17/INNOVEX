@@ -2,16 +2,16 @@
 gsd_state_version: '1.0'
 milestone: v1.1
 milestone_name: New-User UX, AI Triage & Sandbox
-current_phase: '5'
-current_phase_name: Live Public GitHub Repo Scanner & Plain-English AI Threat Triage
+current_phase: '6'
+current_phase_name: Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox
 status: planning
 last_activity: 2026-11-10
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 25
+  completed_phases: 2
+  total_plans: 2
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-11-10)
 
 **Core value:** First-time users and judges grasp ScopeBomb in 5 seconds, inspect any OAuth link/config/repo cleanly across 3 focused steps, and walk away with runnable containment scripts + a working Chrome blocker.
-**Current focus:** Phase 5 — Live Public GitHub Repo Scanner & Plain-English AI Threat Triage (`v1.1`).
+**Current focus:** Phase 6 — Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox (`v1.1`).
 
 ## Current Position
 
-Phase: 5 of 7 (Live Public GitHub Repo Scanner & Plain-English AI Threat Triage)
-Plan: 0 of 0 in current phase (context captured; ready for `/gsd-plan-phase 5`)
-Status: Ready to plan Phase 5
-Last activity: 2026-11-10 — Shipped Phase 4 (`f291605`), 3-step guided stepper and always-visible scanner bar verified
+Phase: 6 of 7 (Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox)
+Plan: 0 of 0 in current phase (context captured; ready for `/gsd-plan-phase 6`)
+Status: Ready to plan Phase 6
+Last activity: 2026-11-10 — Shipped Phase 5 (`5cde632`), live GitHub repo scanner and AI threat triage verified
 
-Progress: [██░░░░░░░░] 25% (Phase 4 complete; Phases 5-7 remaining)
+Progress: [████░░░░░░] 50% (Phases 4-5 complete; Phases 6-7 remaining)
 
 ## Performance Metrics
 
@@ -40,7 +40,7 @@ Progress: [██░░░░░░░░] 25% (Phase 4 complete; Phases 5-7 rem
 - Verified tests: `30/30` engine tests (`node --test`), `verify_contracts.py` OK, Chrome CDP E2E passing
 
 **Milestone v1.1:**
-- Completed phases: 1/4 (Phase 4: 3-step guided stepper, always-visible scanner, preset strip, How-it-Works modal)
+- Completed phases: 2/4 (Phase 4: 3-step guided stepper; Phase 5: repo scanner & AI threat triage)
 - Total phases planned: 4 (`4–7`)
 - Requirements mapped: `19/19` (`UX`, `SCAN`, `AI`, `REM`, `EXT`, `REL`)
 
