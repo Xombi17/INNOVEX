@@ -14,7 +14,7 @@ covered_files:
   - apps/web/src/components/Step2AttackPath.tsx
   - apps/web/src/components/Step3FixBlocker.tsx
   - apps/web/src/components/StepStepper.tsx
-covered_digest: "v3:sha256:92bc0361981d664750fccd003b5ebb3eecc339341019133a31a1f64422d21021"
+covered_digest: "v3:sha256:bee7073dda198e326e9d81a5bdb15a16b23fda173e8c3ec58eec6aa8ba59047c"
 behavior_unverified: 0
 ---
 
