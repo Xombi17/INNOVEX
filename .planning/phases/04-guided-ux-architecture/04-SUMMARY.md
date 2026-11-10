@@ -41,3 +41,4 @@ All frozen engine contracts (`packages/engine/**`, `tests/engine/**`, `contracts
 - **Contract Verification**: `python3 contracts/verify_contracts.py` passed (schema, 11 scope entries, 5 presets, fixture verified).
 - **Engine Tests**: `node --test tests/engine/*.test.ts` (30/30 passed on Node v24).
 - **Frozen Lane Invariant**: `git diff -- packages/engine tests/engine contracts data/scope_catalog.json` produced zero changes.
+

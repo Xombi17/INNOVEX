@@ -38,3 +38,4 @@ Phase 5 equips ScopeBomb with live serverless intelligence without violating zer
 - [ ] `AC-04`: If no API key is set, deterministic fallback returns accurate, non-hallucinatory explanations with `fallback_used: true`.
 - [ ] `AC-05`: Model attribution badge clearly differentiates between live model and offline synthesizer.
 - [ ] `AC-06`: Step 1 displays the 3-section AI Threat Brief (`What an attacker could do`, `Why 1-click Revoke fails`, `Your first 60 seconds move`).
+

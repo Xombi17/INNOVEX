@@ -16,3 +16,4 @@ reviewed: 2026-11-10T20:28:00Z
 - TypeScript: Type check clean across `apps/web`.
 
 Verdict: Clean.
+

@@ -38,3 +38,4 @@ Command: `graphify update .` and sync `.planning/graphs/`
 
 ### Task 4: Release Verification & Branch Push
 Fast-forward merge `feat/ui-extension` into `main` and push to origin.
+

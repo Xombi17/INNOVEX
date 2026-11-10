@@ -162,3 +162,4 @@ export function AITriageCard({ report }: AITriageCardProps) {
     </div>
   );
 }
+

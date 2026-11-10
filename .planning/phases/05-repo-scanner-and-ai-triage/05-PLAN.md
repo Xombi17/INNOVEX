@@ -52,3 +52,4 @@ Show live triage card in Step 1 and threat summary pill in Step 2.
 
 ### Task 7: Verification & Frozen Lane Check
 Commands: `npm run typecheck`, frozen lane diff.
+

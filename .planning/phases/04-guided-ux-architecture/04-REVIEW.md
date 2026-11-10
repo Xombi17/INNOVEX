@@ -15,3 +15,4 @@ reviewed: 2026-11-10T20:16:00Z
 - Functional: Deep-linking `?oauth_url=` hook preserved, state preserved across step tabs.
 
 Verdict: Clean.
+

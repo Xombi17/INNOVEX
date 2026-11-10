@@ -31,3 +31,4 @@ Implemented two stateless serverless API endpoints in Next.js App Router (`apps/
 - `contracts/verify_contracts.py`: Schema, scopes, presets, and fixtures verified.
 - `tests/engine/*.test.ts`: 30/30 passed.
 - Frozen lane check: Clean (0 diff).
+

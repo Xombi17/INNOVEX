@@ -40,3 +40,4 @@ print("Zip package complete")
 
 execSync(`python3 -c '${pyScript}'`, { stdio: "inherit" });
 console.log("Chrome MV3 extension zip ready.");
+

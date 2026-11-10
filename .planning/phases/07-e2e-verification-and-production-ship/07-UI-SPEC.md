@@ -35,3 +35,4 @@ Phase 7 is the release and verification gate for Milestone v1.1. It validates ev
 - [ ] `AC-05`: `scopebomb-mv3-extension.zip` verified via `unzip -t`.
 - [ ] `AC-06`: Graphify knowledge graph updated (`graphify update .`).
 - [ ] `AC-07`: `PRODUCT.md`, `DESIGN.md`, `README.md`, `STATE.md`, and `ROADMAP.md` synced.
+

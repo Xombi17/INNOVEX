@@ -34,3 +34,4 @@ Phase 6 upgrades Step 3 (`Fix Plan & Blocker`) into an executable containment co
 - [ ] `AC-04`: Clicking "Apply Clean Scopes" in sandbox recalculates audit with reduced scopes.
 - [ ] `AC-05`: Step 3 provides a working download link to `/downloads/scopebomb-mv3-extension.zip` and a concise 3-step setup guide for `chrome://extensions`.
 - [ ] `AC-06`: The extension zip is valid and unzips cleanly with `unzip -t`.
+

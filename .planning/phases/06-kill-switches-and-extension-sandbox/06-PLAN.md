@@ -46,3 +46,4 @@ Add "Simulate Fake AI App Consent" trigger and download card for `scopebomb-mv3-
 
 ### Task 6: TypeScript & Invariant Verification
 Commands: `npm run typecheck`, frozen lane diff.
+

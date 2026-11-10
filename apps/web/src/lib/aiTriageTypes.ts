@@ -23,3 +23,4 @@ export interface AITriageResponse {
   fallbackUsed: boolean;
   timestamp: string;
 }
+
