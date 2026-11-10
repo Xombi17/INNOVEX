@@ -1,24 +1,72 @@
 ---
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: ScopeBomb Phase 3 Vercel Deploy + UI Polish
-status: phase_3_complete
-stopped_at: Redesigned Web Arena and Chrome MV3 extension in framed-sheet porcelain UI using Design-Taste-Frontend and Impeccable, generated DESIGN.md + sidecar, updated Graphify, pushed main/feat/ui-extension, and redeployed to https://scopebomb.vercel.app
-last_updated: "2026-11-10T17:12:00+05:30"
+gsd_state_version: '1.0'
+milestone: v1.1
+milestone_name: New-User UX, AI Triage & Sandbox
+current_phase: '4'
+current_phase_name: Guided 3-Step Information Architecture & Always-Visible Scanner
+status: planning
+last_activity: 2026-11-10
 progress:
   total_phases: 4
-  completed_phases: 4
-  current_phase: 3
-  percent: 100
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
-- **Current Phase:** Phase 3 COMPLETE (+ Impeccable / Design-Taste UI & Extension Overhaul verified and deployed).
-- **Main Worktree (`feat/ui-extension` & `main`):** `/home/varad/Documents/hackathons/INNOVEX`
-- **Worker Worktree (`feat/core-engine`):** `/home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine` (Codex — merged at `136b0b8` & `4a92051`)
-- **Latest UI & System Deliverables:**
-  - Refined `apps/web` onto a high-craft `framed-sheet` porcelain devtools workbench (`#f9fbfc` chrome, `#ffffff` sheet, `IBM Plex Sans`/`Mono`, Phosphor icons, hairline section/stage transit columns, mobile stacked remediation steps, `How it works` 3-surface explainer).
-  - Updated `apps/extension` (`popup`, `guard`, `styles.css`, `content.js`) to the unified light porcelain design language without breaking MV3 contracts or `packages/engine/**`.
-  - Documented system tokens & components in `PRODUCT.md`, `DESIGN.md`, `.impeccable/surfaces/apps-web.md`, and `.impeccable/design.json`.
-  - **Verification Passed:** `verify_contracts.py`, `node --test tests/engine/*.test.ts` (30/30), `lint.mjs --app` (0 FAIL, 0 WARN), `inspect.mjs --app` across 1440/768/390px (0 FAIL, 0 WARN), `impeccable detect --json` desktop & mobile (`[]`, exit 0), full Chrome CDP E2E walkthrough + extension UI captures (`ALL_E2E_PASSED`), `apps/extension` `npm run build`, and `apps/web` `npm run typecheck && npm run build`.
+## Project Reference
+
+See: `.planning/PROJECT.md` (updated 2026-11-10)
+
+**Core value:** First-time users and judges grasp ScopeBomb in 5 seconds, inspect any OAuth link/config/repo cleanly across 3 focused steps, and walk away with runnable containment scripts + a working Chrome blocker.
+**Current focus:** Phase 4 — Guided 3-Step Information Architecture & Always-Visible Scanner (`v1.1`).
+
+## Current Position
+
+Phase: 4 of 7 (Guided 3-Step Information Architecture & Always-Visible Scanner)
+Plan: 0 of 0 in current phase (context captured; ready for `/gsd-plan-phase 4`)
+Status: Ready to plan Phase 4
+Last activity: 2026-11-10 — Shipped v1.0 (`ea28931`) and initialized Milestone v1.1 roadmap + phase contexts
+
+Progress: [░░░░░░░░░░] 0% (v1.1 active; v1.0 archived in `.planning/MILESTONES.md`)
+
+## Performance Metrics
+
+**Milestone v1.0:**
+- Phases completed: 4 (`0–3`)
+- Live URL: `https://scopebomb.vercel.app` (`ea28931`)
+- Verified tests: `30/30` engine tests (`node --test`), `verify_contracts.py` OK, Chrome CDP E2E passing
+
+**Milestone v1.1:**
+- Total phases planned: 4 (`4–7`)
+- Requirements mapped: `19/19` (`UX`, `SCAN`, `AI`, `REM`, `EXT`, `REL`)
+
+## Accumulated Context
+
+### Decisions
+
+- Keep `packages/engine/**`, `tests/engine/**`, `contracts/**`, and `data/scope_catalog.json` completely frozen/read-only (Codex lane contract).
+- Maintain light `framed-sheet` porcelain design tokens (`DESIGN.md`: `#f9fbfc`, `#ffffff`, `IBM Plex Sans`/`Mono`, zero nested cards, `13px+` text floor).
+- Capture all `v1.1` phase contexts upfront (`04-CONTEXT.md` .. `07-CONTEXT.md`) so `/gsd-plan-phase` or `/gsd-autonomous` can run directly with zero redundant discovery loops.
+
+### Roadmap Evolution
+
+- Milestone `v1.0` shipped (`ea28931`), archived into `.planning/MILESTONES.md` & `.planning/milestones/v1.0-mvp.md`.
+- Milestone `v1.1` added: Phases 4 (`UX`), 5 (`SCAN` + `AI`), 6 (`REM` + `EXT`), 7 (`REL`).
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+- Local `.env.local` contains `VERCEL_OIDC_TOKEN` only (no `GEMINI_API_KEY` or `OPENAI_API_KEY` set locally yet); Phase 5 `/api/ai-triage` must guarantee clean deterministic fallback when unconfigured and live inference when env keys exist on Vercel/local.
+
+## Session Continuity
+
+Last session: 2026-11-10T17:20:00+05:30
+Stopped at: Initialized Milestone v1.1 across PROJECT, REQUIREMENTS, ROADMAP, STATE, MILESTONES, and 04..07 CONTEXT docs for GSD execution.
+Resume file: None
+Next step: Run `/gsd-progress` or `/gsd-plan-phase 4` or `/gsd-autonomous --from 4`
