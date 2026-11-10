@@ -2,16 +2,16 @@
 gsd_state_version: '1.0'
 milestone: v1.1
 milestone_name: New-User UX, AI Triage & Sandbox
-current_phase: '4'
-current_phase_name: Guided 3-Step Information Architecture & Always-Visible Scanner
+current_phase: '5'
+current_phase_name: Live Public GitHub Repo Scanner & Plain-English AI Threat Triage
 status: planning
 last_activity: 2026-11-10
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 25
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-11-10)
 
 **Core value:** First-time users and judges grasp ScopeBomb in 5 seconds, inspect any OAuth link/config/repo cleanly across 3 focused steps, and walk away with runnable containment scripts + a working Chrome blocker.
-**Current focus:** Phase 4 — Guided 3-Step Information Architecture & Always-Visible Scanner (`v1.1`).
+**Current focus:** Phase 5 — Live Public GitHub Repo Scanner & Plain-English AI Threat Triage (`v1.1`).
 
 ## Current Position
 
-Phase: 4 of 7 (Guided 3-Step Information Architecture & Always-Visible Scanner)
-Plan: 0 of 0 in current phase (context captured; ready for `/gsd-plan-phase 4`)
-Status: Ready to plan Phase 4
-Last activity: 2026-11-10 — Shipped v1.0 (`ea28931`) and initialized Milestone v1.1 roadmap + phase contexts
+Phase: 5 of 7 (Live Public GitHub Repo Scanner & Plain-English AI Threat Triage)
+Plan: 0 of 0 in current phase (context captured; ready for `/gsd-plan-phase 5`)
+Status: Ready to plan Phase 5
+Last activity: 2026-11-10 — Shipped Phase 4 (`f291605`), 3-step guided stepper and always-visible scanner bar verified
 
-Progress: [░░░░░░░░░░] 0% (v1.1 active; v1.0 archived in `.planning/MILESTONES.md`)
+Progress: [██░░░░░░░░] 25% (Phase 4 complete; Phases 5-7 remaining)
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ Progress: [░░░░░░░░░░] 0% (v1.1 active; v1.0 archived in `.p
 - Verified tests: `30/30` engine tests (`node --test`), `verify_contracts.py` OK, Chrome CDP E2E passing
 
 **Milestone v1.1:**
+- Completed phases: 1/4 (Phase 4: 3-step guided stepper, always-visible scanner, preset strip, How-it-Works modal)
 - Total phases planned: 4 (`4–7`)
 - Requirements mapped: `19/19` (`UX`, `SCAN`, `AI`, `REM`, `EXT`, `REL`)
 
