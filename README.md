@@ -43,9 +43,9 @@ flowchart LR
 
 ## `<90s` Judge Demo Flow (Zero Sign-In Required)
 
-1. **Trigger 4-Hop Domino Graph (`0:00–0:25`):** Open https://scopebomb.vercel.app (loads `rohan_mcp_oauth_trap` cleanly with SSR, zero login wall) or switch between the 5 incident presets, paste an OAuth URL, drop `.mcp.json`/`.env`, or paste Google Takeout JSON.
-2. **Expose the HTTP 200 Trap (`0:25–0:55`):** Keep **Simulate Naive Containment (RFC 7009)** active — observe Google's `HTTP 200 OK` status alongside pulsing **RED** surviving nodes across `personal`, `developer_local`, `ci_cd`, and `vendor` trust boundaries.
-3. **Verify Full Multi-Issuer Containment & PKCE Guard (`0:55–1:25`):** Click **Full Multi-Issuer Containment Plan** to turn downstream edges **GREEN** with priority-ordered issuer steps and verification probes, then trigger **Pre-Consent Guard** on the PKCE Trap URL (`code_challenge` integrity explanation + least-privilege `drive.file` / `gmail.readonly` downgrade template).
+1. **Step 1: Scan & Verdict (`0:00–0:25`):** Open https://scopebomb.vercel.app (loads immediately with always-visible scanner and 5 incident preset pills). Paste any OAuth URL, inspect a public GitHub repository (`POST /api/scan-repo`), or drop `.mcp.json`/`.env`. Read the 4-cell verdict strip and plain-English AI Threat Triage brief.
+2. **Step 2: Attack Path (`0:25–0:55`):** Click **Continue to Attack Path**. Toggle between **After 1-Click Revoke (Fails)** (showing persisting red attack paths across SaaS/cloud boundaries despite Google's HTTP 200 response) and **After Full Multi-Issuer Plan (Fixed)**. Expand the collapsible Technical Forensics disclosure for RFC 7009 citations.
+3. **Step 3: Fix Plan & Blocker (`0:55–1:25`):** Click **View Fix Plan & Blocker**. Review concrete copy-ready provider kill-switch commands and `401` verification probes. Click **Simulate Fake AI App Consent** to test pre-consent interception in-browser and watch least-privilege scope downgrades (`mail.google.com` -> `gmail.readonly`) drop the risk. Download the ready-to-load Chrome MV3 extension (`scopebomb-mv3-extension.zip`).
 
 ### Grounded Incident Presets (`data/scope_catalog.json`)
 
