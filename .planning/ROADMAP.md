@@ -2,11 +2,11 @@
 
 - **Phase 0: Foundation & Governance (COMPLETE — Nov 10)**
   - Frozen `SPEC.md`, `DEMO_SCRIPT.md`, `contracts/`, `data/scope_catalog.json`, `AGENTS.md`, `GEMINI.md`, GSD + Graphify config, `feat/ui-extension` & `.worktrees/core-engine` (`feat/core-engine`) worktree split.
-- **Phase 1: Parallel MVP Vertical Slice (`feat/core-engine` + `feat/ui-extension`) — Nov 10–11**
+- **Phase 1: Parallel MVP Vertical Slice (COMPLETE — Nov 10)**
   - **Mode:** mvp
-  - Codex builds `packages/engine` (`parseAuditInput`, `buildBlastGraph`, `simulateContainment`, `evaluatePreConsent`) + Node tests.
-  - Antigravity builds `apps/web` shell consuming `contracts/sample_report.fixture.json` -> switches cleanly to live engine import on merge.
-- **Phase 2: Chrome MV3 Guard + Multi-Issuer Presets Integration — Nov 12–13**
-  - Integrate `apps/extension` (MV3 `webNavigation`/UI banner with PKCE-safe pre-consent blocking) + wire all 5 grounded incident presets + live OAuth URL & `.mcp.json`/`.env` scanner.
+  - Codex built `packages/engine` (`parseAuditInput`, `buildBlastGraph`, `simulateContainment`, `evaluatePreConsent`) + 25 Node tests (`136b0b8`).
+  - Antigravity built `apps/web` Web Arena shell verified in headless Chrome (`3ad5b4c`).
+- **Phase 2: Chrome MV3 Guard + Live Engine + CLI Integration (COMPLETE — Nov 10)**
+  - Merged Codex `feat/core-engine` (`4a92051` CLI + 30/30 tests), swapped `apps/web` onto live `@scopebomb/engine`, built `apps/extension` (Chrome MV3 PKCE-safe Pre-Consent Guard + popup + `?oauth_url=` deep link), and passed full Chrome CDP E2E (`e4a0566`).
 - **Phase 3: End-to-End Verification, Vercel Deploy & Demo Polish — Nov 14–15**
   - Run Graphify diff/update, `verify_contracts.py`, Node test suite, Playwright/Chrome live DOM verification against `DEMO_SCRIPT.md`, deploy live link to Vercel, capture README architecture diagram/video before Nov 15 23:55 IST.

@@ -16,9 +16,9 @@ progress:
 
 - **Current Phase:** Phase 2 complete (`feat/core-engine` merged into `main` and `feat/ui-extension`; `apps/web` wired to live `analyzeAudit`; `apps/extension` Chrome MV3 Pre-Consent Guard built and verified end-to-end). Ready for Phase 3 (Vercel Deploy & Demo Polish).
 - **Main Worktree (`feat/ui-extension`):** `/home/varad/Documents/hackathons/INNOVEX` (Antigravity)
-- **Worker Worktree (`feat/core-engine`):** `/home/varad/Documents/hackathons/INNOVEX-engine` (Codex — merged at `136b0b8`)
-- **Phase 2 Deliverables (`apps/web/` + `apps/extension/`):**
-  - Merged `feat/core-engine` (`packages/engine/**`, `tests/engine/**`) cleanly into `main` and `feat/ui-extension`.
+- **Worker Worktree (`feat/core-engine`):** `/home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine` (Codex — merged at `136b0b8` & `4a92051`)
+- **Phase 2 Deliverables (`packages/engine/`, `apps/web/`, `apps/extension/`):**
+  - Merged `feat/core-engine` (`packages/engine/**`, `tests/engine/**`, including `packages/engine/cli.ts` redacted directory audit CLI) cleanly into `main` and `feat/ui-extension`.
   - Replaced `presetFixtures.ts` fallback in [`apps/web/src/lib/auditAdapter.ts`](file:///home/varad/Documents/hackathons/INNOVEX/apps/web/src/lib/auditAdapter.ts) with live `analyzeAudit` from `@scopebomb/engine` (`packages/engine/index.ts`), removed dead Phase 1 fixtures, added inline sanitized error handling (`role="alert"`) for malformed URLs/`.mcp.json`/`.env`/Takeout inputs, added `?oauth_url=` deep-link intake, and fixed `NON-RFC 7009` (`status: 0`) & long SVG node label formatting.
   - Built zero-dependency Chrome MV3 Pre-Consent Guard in [`apps/extension/`](file:///home/varad/Documents/hackathons/INNOVEX/apps/extension/manifest.json) with [`apps/extension/scripts/build.mjs`](file:///home/varad/Documents/hackathons/INNOVEX/apps/extension/scripts/build.mjs) reusing `evaluatePreConsent` + `parseOAuthUrl` directly from `packages/engine` + `data/scope_catalog.json`.
   - Intercepts `accounts.google.com/o/oauth2/v2/auth*`, `github.com/login/oauth/authorize*`, and `login.microsoftonline.com/*/oauth2/v2.0/authorize*` before consent (`guard.html` + `content.js` Shadow DOM banner), explains why mid-flight rewriting breaks PKCE `code_challenge`, displays least-privilege downgrades + fresh initiation templates, includes toolbar `popup.html` URL tester, and links directly to ScopeBomb Web Arena (`/?oauth_url=...`).
