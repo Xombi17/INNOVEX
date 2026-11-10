@@ -43,7 +43,7 @@ export function ContainmentComparison({
     >
       {/* LEFT: NAIVE RFC 7009 TRAP */}
       <div
-        className={`flex flex-col justify-between rounded-xl border p-4 shadow-lg transition ${
+        className={`flex min-w-0 flex-col justify-between rounded-xl border p-4 shadow-lg transition ${
           simulationMode === "naive_single_revoke"
             ? "border-rose-500/70 bg-[#140d18]"
             : "border-slate-800 bg-[#0d1424]"
@@ -54,16 +54,18 @@ export function ContainmentComparison({
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-rose-200">
-                  3A. Naive Single RFC 7009 Revoke
+                  3A. Naive Single Revoke
                 </h3>
                 <span className="rounded border border-amber-500/50 bg-amber-500/15 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-300">
-                  HTTP {naive.rfc7009_http_status_returned} OK (TRAP)
+                  {naive.rfc7009_http_status_returned > 0
+                    ? `HTTP ${naive.rfc7009_http_status_returned} OK (TRAP)`
+                    : "NON-RFC 7009 (N/A · 0)"}
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-slate-400">
-                Illusion of safety: revoking one token returns HTTP{" "}
-                {naive.rfc7009_http_status_returned}, yet attackers stay inside
-                downstream boundaries.
+                {naive.rfc7009_http_status_returned > 0
+                  ? `Illusion of safety: revoking one token returns HTTP ${naive.rfc7009_http_status_returned}, yet attackers stay inside downstream boundaries.`
+                  : "Single-issuer action does not touch separate GitHub/Vercel/OpenAI credentials or residual access tokens."}
               </p>
             </div>
 
@@ -113,8 +115,9 @@ export function ContainmentComparison({
           {/* RFC 7009 Trap Warning */}
           <div className="mb-3 rounded-lg border border-rose-500/40 bg-rose-950/30 p-3">
             <div className="text-[11px] font-bold uppercase tracking-wide text-rose-300">
-              Why HTTP {naive.rfc7009_http_status_returned} Does Not Equal
-              Containment
+              {naive.rfc7009_http_status_returned > 0
+                ? `Why HTTP ${naive.rfc7009_http_status_returned} Does Not Equal Containment`
+                : "Why Single-Grant Revocation Leaves Attackers Active"}
             </div>
             <p className="mt-1 text-xs leading-relaxed text-rose-100/90">
               {naive.rfc7009_trap_warning}
@@ -168,7 +171,7 @@ export function ContainmentComparison({
             <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
               Single Action Executed in Naive Response
             </div>
-            <div className="mt-1 font-mono text-xs text-slate-200">
+            <div className="mt-1 break-all font-mono text-xs text-slate-200">
               {naive.ordered_steps[0].command_or_endpoint}
             </div>
             <div className="mt-1 text-[11px] text-amber-300/90">
@@ -180,7 +183,7 @@ export function ContainmentComparison({
 
       {/* RIGHT: FULL MULTI-ISSUER CONTAINMENT PLAN */}
       <div
-        className={`flex flex-col justify-between rounded-xl border p-4 shadow-lg transition ${
+        className={`flex min-w-0 flex-col justify-between rounded-xl border p-4 shadow-lg transition ${
           simulationMode === "full_multi_issuer"
             ? "border-emerald-500/70 bg-[#0b1815]"
             : "border-slate-800 bg-[#0d1424]"
@@ -293,12 +296,13 @@ export function ContainmentComparison({
 
                   <div className="text-[11px] text-slate-400">
                     Target:{" "}
-                    <span className="text-slate-200">
-                      {step.target_resource}
+                    <span className="break-all text-slate-200">
+                      {nodeMap.get(step.target_resource)?.label ??
+                        step.target_resource}
                     </span>
                   </div>
 
-                  <div className="mt-1.5 overflow-x-auto rounded border border-slate-800 bg-[#070b14] px-2.5 py-1.5 font-mono text-[11px] text-emerald-300">
+                  <div className="mt-1.5 overflow-x-auto rounded border border-slate-800 bg-[#070b14] px-2.5 py-1.5 font-mono text-[11px] break-words text-emerald-300">
                     {step.command_or_endpoint}
                   </div>
 
@@ -306,7 +310,7 @@ export function ContainmentComparison({
                     <span className="font-semibold text-emerald-300">
                       Verification probe:
                     </span>{" "}
-                    <span className="font-mono text-slate-200">
+                    <span className="break-words font-mono text-slate-200">
                       {step.verification_probe}
                     </span>
                   </div>

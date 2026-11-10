@@ -1,21 +1,50 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import type { AuditReport } from "@contracts/index";
 import { DEMO_PKCE_TRAP_URL } from "./InputAndPresetBar";
 import { PROVIDER_LABELS, SEVERITY_META } from "./uiTokens";
 
 interface PreConsentPreviewProps {
   report: AuditReport;
+  activeOAuthUrl: string | null;
   onInspectUrl: (url: string) => void;
+}
+
+function buildFreshInitiationPreview(
+  rawUrl: string | null,
+  recommendedScopes: string[],
+): string | null {
+  if (!rawUrl || recommendedScopes.length === 0) return null;
+  try {
+    const clean = new URL(rawUrl);
+    clean.searchParams.set("scope", recommendedScopes.join(" "));
+    // Strip stale PKCE & state: only the initiating client can mint a fresh verifier/challenge + state.
+    clean.searchParams.delete("code_challenge");
+    clean.searchParams.delete("code_challenge_method");
+    clean.searchParams.delete("state");
+    return clean.toString();
+  } catch {
+    return null;
+  }
 }
 
 export function PreConsentPreview({
   report,
+  activeOAuthUrl,
   onInspectUrl,
 }: PreConsentPreviewProps) {
-  const [copiedUrl, setCopiedUrl] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const guard = report.pre_consent_guard;
+
+  const initiationTemplate = useMemo(
+    () =>
+      guard.safe_replacement_url ??
+      (report.parsed_oauth
+        ? buildFreshInitiationPreview(activeOAuthUrl, guard.recommended_scopes)
+        : null),
+    [guard.safe_replacement_url, guard.recommended_scopes, report.parsed_oauth, activeOAuthUrl],
+  );
 
   const actionStyles =
     guard.action === "BLOCK_PRE_CONSENT"
@@ -24,11 +53,11 @@ export function PreConsentPreview({
         ? "border-amber-500/60 bg-amber-500/15 text-amber-300"
         : "border-emerald-500/60 bg-emerald-500/15 text-emerald-300";
 
-  const handleCopySafeUrl = async (url: string) => {
+  const handleCopy = async (key: string, text: string) => {
     try {
-      await navigator.clipboard.writeText(url);
-      setCopiedUrl(true);
-      setTimeout(() => setCopiedUrl(false), 1500);
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey((prev) => (prev === key ? null : prev)), 1500);
     } catch {
       // Clipboard optional in headless browsers
     }
@@ -58,7 +87,7 @@ export function PreConsentPreview({
               }`}
             >
               {guard.pkce_protected
-                ? "PKCE S256 Protected"
+                ? "PKCE Parameters Detected"
                 : "No PKCE code_challenge"}
             </span>
           </div>
@@ -152,48 +181,86 @@ export function PreConsentPreview({
         </div>
       ) : (
         <div className="mb-3 rounded-lg border border-emerald-500/35 bg-emerald-950/20 p-3 text-xs text-emerald-200">
-          All requested scopes match least-privilege baselines (no high/critical
-          scope downgrades required).
+          {report.parsed_oauth
+            ? "All requested scopes match least-privilege baselines (no high/critical scope downgrades required)."
+            : "Static configuration scan active — paste or trigger an OAuth authorization URL to inspect pre-consent scope downgrades."}
         </div>
       )}
 
-      {/* Clean Replacement Initiation URL */}
+      {/* Recommended Scope Set & Fresh Client Initiation Preview */}
       <div className="rounded-lg border border-slate-800 bg-slate-950/80 p-3">
         <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-            Clean Replacement Initiation URL (Fresh Handshake Safe)
+            Least-Privilege Scope Set & Fresh Client Initiation Preview
           </span>
-          {guard.safe_replacement_url && (
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {guard.recommended_scopes.length > 0 && (
               <button
                 type="button"
-                onClick={() => handleCopySafeUrl(guard.safe_replacement_url!)}
+                onClick={() =>
+                  handleCopy("scopes", guard.recommended_scopes.join(" "))
+                }
                 className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-[10px] text-slate-300 hover:border-slate-500 hover:text-white"
               >
-                {copiedUrl ? "Copied!" : "Copy Safe URL"}
+                {copiedKey === "scopes" ? "Copied Scopes!" : "Copy Scopes"}
               </button>
-              <button
-                type="button"
-                onClick={() => onInspectUrl(guard.safe_replacement_url!)}
-                className="rounded border border-emerald-500/50 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/25"
-              >
-                Re-Audit Clean URL →
-              </button>
-            </div>
-          )}
+            )}
+            {initiationTemplate && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleCopy("url", initiationTemplate)}
+                  className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-[10px] text-slate-300 hover:border-slate-500 hover:text-white"
+                >
+                  {copiedKey === "url" ? "Copied!" : "Copy Clean Template"}
+                </button>
+                {guard.flagged_scopes.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => onInspectUrl(initiationTemplate)}
+                    className="rounded border border-emerald-500/50 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/25"
+                  >
+                    Re-Audit Downgraded Scopes →
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
-        {guard.safe_replacement_url ? (
-          <div className="overflow-x-auto rounded border border-slate-800 bg-[#070b14] px-2.5 py-2 font-mono text-[11px] text-emerald-300">
-            {guard.safe_replacement_url}
+        {guard.recommended_scopes.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {guard.recommended_scopes.map((sc) => (
+              <span
+                key={sc}
+                className="rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] text-emerald-300"
+              >
+                {sc}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {initiationTemplate ? (
+          <div className="space-y-1.5">
+            <div className="overflow-x-auto break-all rounded border border-slate-800 bg-[#070b14] px-2.5 py-2 font-mono text-[11px] text-emerald-300">
+              {initiationTemplate}
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Engine keeps{" "}
+              <code className="text-slate-300">safe_replacement_url: null</code>{" "}
+              to prevent replaying stale{" "}
+              <code className="text-slate-300">code_challenge</code> or{" "}
+              <code className="text-slate-300">state</code>. This template
+              strips those parameters so the initiating client can mint a fresh
+              PKCE verifier/challenge pair.
+            </p>
           </div>
         ) : (
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
-            <span>
-              Preset summary loaded without raw URL parameters. Trigger the MV3
-              Guard against the PKCE Trap URL to inspect the live replacement
-              handshake URL.
-            </span>
+          <div className="text-xs text-slate-400">
+            No OAuth authorization URL loaded. Trigger the MV3 Guard against the
+            PKCE Trap URL to preview downgraded scopes and fresh initiation
+            parameters.
           </div>
         )}
       </div>

@@ -25,11 +25,34 @@ interface PositionedNode {
   h: number;
 }
 
-function wrapLabel(text: string, maxCharsPerLine = 26): string[] {
-  const words = text.split(/\s+/);
+function formatDisplayLabel(text: string): string {
+  if (text.startsWith("https://www.googleapis.com/auth/")) {
+    return `google:${text.slice("https://www.googleapis.com/auth/".length)}`;
+  }
+  if (text === "https://mail.google.com/") {
+    return "google:mail.google.com";
+  }
+  return text;
+}
+
+function wrapLabel(text: string, maxCharsPerLine = 25): string[] {
+  const formatted = formatDisplayLabel(text);
+  const words = formatted.split(/\s+/);
   const lines: string[] = [];
   let current = "";
   for (const word of words) {
+    if (word.length > maxCharsPerLine && !current && lines.length === 0) {
+      lines.push(word.slice(0, maxCharsPerLine));
+      const rest = word.slice(maxCharsPerLine);
+      if (rest) {
+        lines.push(
+          rest.length > maxCharsPerLine
+            ? `${rest.slice(0, maxCharsPerLine - 3)}...`
+            : rest,
+        );
+      }
+      return lines;
+    }
     if (!current) {
       current = word;
     } else if (current.length + 1 + word.length <= maxCharsPerLine) {
@@ -41,7 +64,11 @@ function wrapLabel(text: string, maxCharsPerLine = 26): string[] {
     }
   }
   if (current && lines.length < 2) {
-    lines.push(current);
+    lines.push(
+      current.length > maxCharsPerLine
+        ? `${current.slice(0, maxCharsPerLine - 3)}...`
+        : current,
+    );
   }
   if (lines.length === 2 && words.join(" ").length > lines.join(" ").length) {
     lines[1] = `${lines[1].slice(0, Math.max(0, maxCharsPerLine - 3))}...`;
@@ -204,7 +231,7 @@ export function DominoGraph({
               }`}
             >
               {isNaive
-                ? `NAIVE REVOKE: HTTP ${outcome.rfc7009_http_status_returned} · ${persistingCount} NODE(S) PERSISTING`
+                ? `NAIVE REVOKE: ${outcome.rfc7009_http_status_returned > 0 ? `HTTP ${outcome.rfc7009_http_status_returned}` : "NON-RFC 7009"} · ${persistingCount} NODE(S) PERSISTING`
                 : `FULL MULTI-ISSUER PLAN: ${containedCount}/${containedCount + persistingCount} CONTAINED`}
             </span>
           </div>
@@ -618,7 +645,7 @@ export function DominoGraph({
                 {activeEdge.mechanism}
               </div>
             </div>
-            <div className="font-mono text-[11px] text-slate-400">
+            <div className="break-all font-mono text-[11px] text-slate-400">
               {activeEdge.source} → {activeEdge.target}
             </div>
           </div>

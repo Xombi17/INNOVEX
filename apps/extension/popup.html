@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ScopeBomb Pre-Consent Guard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="popup-body">
+    <header class="card" style="padding: 10px 12px">
+      <div class="row-between">
+        <div class="row-gap">
+          <span class="brand-pill mono">SCOPEBOMB</span>
+          <span style="font-size: 12px; font-weight: 700">MV3 Pre-Consent Guard</span>
+        </div>
+        <button id="toggle-settings-btn" type="button" class="btn btn-sm">
+          Arena URL
+        </button>
+      </div>
+      <div id="arena-settings" class="hidden" style="margin-top: 8px">
+        <label for="arena-url-input" class="title-sm">ScopeBomb Web Arena Base URL</label>
+        <div class="row-gap">
+          <input
+            id="arena-url-input"
+            type="url"
+            class="input mono"
+            placeholder="http://localhost:3000"
+            style="flex: 1"
+          />
+          <button id="save-arena-btn" type="button" class="btn btn-primary btn-sm">
+            Save
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Paste & Test Any OAuth URL -->
+    <section class="card" style="padding: 10px 12px">
+      <div class="row-between" style="margin-bottom: 6px">
+        <label for="popup-url-input" class="title-sm" style="margin-bottom: 0">
+          Paste &amp; Test Any OAuth Authorization URL
+        </label>
+        <button id="use-active-tab-btn" type="button" class="btn btn-sm">
+          Use Active Tab
+        </button>
+      </div>
+
+      <textarea
+        id="popup-url-input"
+        rows="3"
+        class="input mono"
+        placeholder="https://accounts.google.com/o/oauth2/v2/auth?client_id=...&scope=..."
+      ></textarea>
+
+      <div class="row-between" style="margin-top: 7px">
+        <div class="row-gap">
+          <button type="button" class="btn btn-sm sample-btn" data-sample="google_pkce_trap">
+            Google PKCE
+          </button>
+          <button type="button" class="btn btn-sm sample-btn" data-sample="github_ci_trap">
+            GitHub CI
+          </button>
+          <button type="button" class="btn btn-sm sample-btn" data-sample="entra_app_admin">
+            Entra App
+          </button>
+          <button type="button" class="btn btn-sm sample-btn" data-sample="google_safe_min">
+            Safe Min
+          </button>
+        </div>
+        <button id="analyze-url-btn" type="button" class="btn btn-primary btn-sm">
+          Analyze URL
+        </button>
+      </div>
+
+      <div id="popup-error" class="error-box hidden" role="alert"></div>
+    </section>
+
+    <!-- Live Evaluation Output -->
+    <section id="popup-result" class="card hidden" style="padding: 10px 12px">
+      <div class="row-between" style="margin-bottom: 8px">
+        <div class="row-gap">
+          <span id="res-action-pill" class="pill badge-block mono">BLOCK</span>
+          <span id="res-pkce-pill" class="pill badge-sky mono">PKCE</span>
+        </div>
+        <span id="res-score" class="mono" style="font-size: 13px; font-weight: 800; color: #fda4af">
+          95 / 100
+        </span>
+      </div>
+
+      <div id="res-provider-line" class="subtext mono" style="margin-bottom: 8px"></div>
+
+      <div class="pkce-callout" style="margin-bottom: 8px; padding: 8px 10px">
+        <div class="pkce-callout-title">Why Mid-Flight Rewrite Breaks PKCE</div>
+        <div id="res-pkce-note" style="font-size: 11px; color: #e2e8f0"></div>
+      </div>
+
+      <div class="title-sm">Least-Privilege Scope Downgrades</div>
+      <div id="res-flagged-list" style="margin-bottom: 8px"></div>
+
+      <div class="row-between" style="margin-top: 8px">
+        <button id="open-guard-btn" type="button" class="btn btn-sm">
+          Full Guard Interstitial
+        </button>
+        <a id="popup-arena-link" class="btn-link btn-primary btn-sm" href="#" target="_blank" rel="noopener noreferrer">
+          Open in ScopeBomb Arena ↗
+        </a>
+      </div>
+    </section>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
+

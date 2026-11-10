@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { AuditInput, AuditReport, SimulationMode } from "@contracts/index";
 import {
   getIncidentPresets,
-  runScopeBombAudit,
+  tryRunScopeBombAudit,
 } from "@/lib/auditAdapter";
 import { ContainmentComparison } from "./ContainmentComparison";
 import { DominoGraph } from "./DominoGraph";
@@ -22,14 +22,37 @@ export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
   const [simulationMode, setSimulationMode] = useState<SimulationMode>(
     "naive_single_revoke",
   );
+  const [inputError, setInputError] = useState<string | null>(null);
+  const [externalOAuthUrl, setExternalOAuthUrl] = useState<string | null>(null);
+  const [activeOAuthUrl, setActiveOAuthUrl] = useState<string | null>(
+    presets[0]?.sample_oauth_url ?? null,
+  );
 
   const handleRunAudit = (input: AuditInput) => {
-    const next = runScopeBombAudit(input);
-    setReport(next);
+    const result = tryRunScopeBombAudit(input);
+    if (!result.ok) {
+      setInputError(result.error);
+      return;
+    }
+
+    setInputError(null);
+    setReport(result.report);
     setSimulationMode(input.simulation_mode);
+
+    if (input.mode === "oauth_url") {
+      setActiveOAuthUrl(input.raw_payload);
+    } else if (input.mode === "incident_preset") {
+      const preset = presets.find(
+        (p) => p.preset_id === (input.preset_id ?? result.report.preset_id),
+      );
+      setActiveOAuthUrl(preset?.sample_oauth_url ?? null);
+    } else {
+      setActiveOAuthUrl(null);
+    }
   };
 
   const handleInspectUrl = (url: string) => {
+    setExternalOAuthUrl(url);
     handleRunAudit({
       mode: "oauth_url",
       raw_payload: url,
@@ -37,6 +60,27 @@ export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
       simulation_mode: simulationMode,
     });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paramUrl = params.get("oauth_url");
+    if (paramUrl && paramUrl.trim()) {
+      setExternalOAuthUrl(paramUrl);
+      const result = tryRunScopeBombAudit({
+        mode: "oauth_url",
+        raw_payload: paramUrl,
+        preset_id: null,
+        simulation_mode: "naive_single_revoke",
+      });
+      if (result.ok) {
+        setInputError(null);
+        setReport(result.report);
+        setActiveOAuthUrl(paramUrl);
+      } else {
+        setInputError(result.error);
+      }
+    }
+  }, []);
 
   const activeOutcome =
     simulationMode === "naive_single_revoke"
@@ -93,7 +137,7 @@ export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
                 0:00–0:25
               </div>
               <div className="font-semibold text-slate-200">
-                1. Trigger 4-Hop Blast
+                1. Trigger Blast Graph
               </div>
             </button>
 
@@ -118,7 +162,7 @@ export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
               type="button"
               onClick={() => {
                 setSimulationMode("full_multi_issuer");
-                if (!report.pre_consent_guard.safe_replacement_url) {
+                if (!report.parsed_oauth) {
                   handleRunAudit({
                     mode: "oauth_url",
                     raw_payload: DEMO_PKCE_TRAP_URL,
@@ -197,6 +241,9 @@ export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
         activePresetId={report.preset_id ?? null}
         activeInputMode={report.input_mode}
         report={report}
+        inputError={inputError}
+        externalOAuthUrl={externalOAuthUrl}
+        onClearError={() => setInputError(null)}
         onRunAudit={handleRunAudit}
       />
 
@@ -217,6 +264,7 @@ export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
       {/* 4. PKCE-Safe Pre-Consent Guard Preview */}
       <PreConsentPreview
         report={report}
+        activeOAuthUrl={activeOAuthUrl}
         onInspectUrl={handleInspectUrl}
       />
     </div>

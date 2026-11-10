@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
@@ -17,7 +18,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@contracts/*": ["../../contracts/*"],
-      "@data/*": ["../../data/*"]
+      "@data/*": ["../../data/*"],
+      "@scopebomb/engine": ["../../packages/engine/index.ts"]
     }
   },
   "include": [
@@ -26,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "../../contracts/index.d.ts"
+    "../../contracts/index.d.ts",
+    "../../packages/engine/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
