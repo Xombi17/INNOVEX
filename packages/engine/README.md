@@ -1,6 +1,6 @@
 # ScopeBomb engine
 
-Zero npm dependencies; pure TypeScript ESM. Import `index.ts` directly on Node 24 or through a Next.js / MV3 TypeScript bundler. Runtime code uses no Node-specific APIs, filesystem access, network calls, clocks, or randomness. The frozen JSON catalog is imported with `with { type: "json" }`.
+Zero npm dependencies; pure TypeScript ESM. Import `index.ts` directly on Node 24 or through a Next.js / MV3 TypeScript bundler. The core uses no Node-specific APIs, filesystem access, network calls, clocks, or randomness. The standalone `cli.ts` owns all Node filesystem/path imports and is never exported by the core. The frozen JSON catalog is imported with `with { type: "json" }`.
 
 ```ts
 import { analyzeAudit } from "./packages/engine/index.ts";
@@ -14,6 +14,17 @@ const report = analyzeAudit({
 ```
 
 `analyzeAudit(AuditInput)` returns the frozen `AuditReport`, always including both containment outcomes. `simulation_mode` is validated; consumers select which outcome to display. No raw config credential values leave the parser, including in errors. Reports redact complete values rather than displaying secret fragments.
+
+`analyzeAudit` also accepts trusted `ParsedAuditInput` produced by the parsers, allowing scanners to merge already-redacted findings before graph/containment analysis. This normalized form is not an untrusted JSON input format. Its arrays are copied so a report cannot mutate the supplied findings.
+
+Scan a local directory on Node 24:
+
+```sh
+node packages/engine/cli.ts /path/to/project
+node packages/engine/cli.ts /path/to/project --json > audit-report.json
+```
+
+The directory defaults to the working directory. The CLI reads `.mcp.json`, `mcp.json` (including `.cursor/mcp.json`), and `.env*` files at the root and through three nested directory levels. It skips `node_modules`, `.git`, `.next`, symlinks, special files, and empty files. Findings retain relative source paths; credential values are completely masked by the parser before analysis. `--json` writes one contract-conforming `AuditReport` to stdout for Web Arena import; the default prints a concise risk summary. Errors go to stderr with exit status 1 and no partial report. Scans fail on unreadable/malformed configuration, files larger than 1 MB, or more than 256 credentials across all files. Environment references remain unresolved; no live actions are performed.
 
 Inputs are bounded to 1,000,000 characters, 64 JSON levels, 10,000 JSON containers, 256 unique scopes per grant, 128 Takeout grants, and 256 detected credentials per config. Malformed input throws a sanitized `Error`.
 

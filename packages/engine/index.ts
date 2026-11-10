@@ -1,6 +1,7 @@
 import type { AuditInput, AuditReport, PreConsentDecision, TrustBoundary } from "../../contracts/index.d.ts";
 import { sortedUnique } from "./catalog.ts";
 import { parseAuditInput } from "./parsers.ts";
+import type { ParsedAuditInput } from "./parsers.ts";
 import { buildBlastGraph } from "./graph.ts";
 import { simulateContainment } from "./containment.ts";
 import { evaluatePreConsent } from "./pre-consent.ts";
@@ -12,8 +13,9 @@ export { simulateContainment } from "./containment.ts";
 export { evaluatePreConsent } from "./pre-consent.ts";
 export type * from "../../contracts/index.d.ts";
 
-export function analyzeAudit(input: AuditInput): AuditReport {
-  const parsed = parseAuditInput(input);
+export function analyzeAudit(input: AuditInput | ParsedAuditInput): AuditReport {
+  // Normalized input lets local scanners merge already-redacted parser findings.
+  const parsed = "raw_payload" in input ? parseAuditInput(input) : structuredClone(input);
   const graph = buildBlastGraph(parsed);
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   const crossings: TrustBoundary[] = [];
@@ -38,7 +40,7 @@ export function analyzeAudit(input: AuditInput): AuditReport {
   };
   const maxHops = Math.max(0, ...graph.edges.map(edge => edge.hop));
   return {
-    schema_version: "1.0.0", input_mode: input.mode, preset_id: parsed.preset_id,
+    schema_version: "1.0.0", input_mode: parsed.input_mode, preset_id: parsed.preset_id,
     summary: {
       headline: `${maxHops}-hop potential blast radius across ${sortedUnique(crossings).length} trust boundaries`,
       max_risk_score: Math.max(0, guard.risk_score, ...graph.nodes.map(node => node.risk_score)), max_hops: maxHops,
