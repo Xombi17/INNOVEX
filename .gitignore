@@ -23,7 +23,10 @@ graphify-out/
 .planning/graphs/
 .worktrees/
 .superpowers/
+.vercel/
 
 # OS / Editor
 .DS_Store
 *.log
+.vercel
+.env*

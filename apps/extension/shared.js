@@ -1,4 +1,4 @@
-export const DEFAULT_ARENA_URL = "http://localhost:3000";
+export const DEFAULT_ARENA_URL = "https://scopebomb.vercel.app";
 
 export const PROVIDER_LABELS = {
   google: "Google",

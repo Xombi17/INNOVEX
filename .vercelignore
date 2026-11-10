@@ -1,0 +1,19 @@
+# Dependencies & local build artifacts
+node_modules/
+apps/web/node_modules/
+apps/web/.next/
+.vercel/
+.env
+.env.*
+
+# Multi-agent orchestration, worktrees, tests & extension bundle
+.git/
+.agents/
+.codex/
+.planning/
+.worktrees/
+.superpowers/
+graphify-out/
+tests/
+apps/extension/
+*.log

@@ -1,6 +1,7 @@
 import { evaluatePreConsent, parseOAuthUrl } from "./engine/index.js";
 import {
   ACTION_META,
+  DEFAULT_ARENA_URL,
   PROVIDER_LABELS,
   SAMPLE_OAUTH_URLS,
   buildArenaDeepLink,
@@ -29,7 +30,7 @@ const settingsPanel = document.getElementById("arena-settings");
 const arenaUrlInput = document.getElementById("arena-url-input");
 const saveArenaBtn = document.getElementById("save-arena-btn");
 
-let currentArenaBaseUrl = "http://localhost:3000";
+let currentArenaBaseUrl = DEFAULT_ARENA_URL;
 let currentEvaluatedUrl = SAMPLE_OAUTH_URLS.google_pkce_trap;
 
 function renderError(message) {

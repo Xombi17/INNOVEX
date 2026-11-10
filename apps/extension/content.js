@@ -174,7 +174,7 @@
       const base =
         typeof stored?.arenaBaseUrl === "string" && stored.arenaBaseUrl.trim()
           ? stored.arenaBaseUrl.trim()
-          : "http://localhost:3000";
+          : "https://scopebomb.vercel.app";
       renderBanner(res, currentUrl, base);
     });
   });

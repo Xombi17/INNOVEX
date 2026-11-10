@@ -4,6 +4,7 @@
 .planning/
 .worktrees/
 graphify-out/
+.vercel/
 node_modules/
 .next/
 dist/
