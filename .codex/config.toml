@@ -1,0 +1,12 @@
+# Project-scoped Codex overrides for ScopeBomb (disables heavy unused global MCP schemas)
+# Also pass via CLI if untrusted:
+#   codex -c mcp_servers.rea.enabled=false -c mcp_servers.aws-mcp.enabled=false -c mcp_servers.firecrawl.enabled=false
+
+[mcp_servers.rea]
+enabled = false
+
+[mcp_servers.aws-mcp]
+enabled = false
+
+[mcp_servers.firecrawl]
+enabled = false

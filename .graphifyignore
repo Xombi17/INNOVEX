@@ -1,0 +1,11 @@
+# Exclude vendor/agent skill scaffolding and generated build outputs from Graphify AST extraction
+.agents/
+.codex/
+.planning/
+graphify-out/
+node_modules/
+.next/
+dist/
+build/
+.venv/
+__pycache__/

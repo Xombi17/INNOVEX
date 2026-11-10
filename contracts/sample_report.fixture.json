@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0.0",
+  "input_mode": "incident_preset",
+  "preset_id": "rohan_mcp_oauth_trap",
+  "summary": {
+    "headline": "4-hop cross-issuer blast path: Google OAuth + .mcp.json keys survive single RFC 7009 revocation",
+    "max_risk_score": 96,
+    "max_hops": 4,
+    "trust_boundary_crossings": ["personal", "developer_local", "vendor", "ci_cd"],
+    "exposed_asset_count": 6,
+    "incident_framing_note": "Combines over-scoped third-party AI OAuth consent with unrevoked local MCP static tokens across separate issuers."
+  },
+  "parsed_oauth": {
+    "provider": "google",
+    "client_id": "9481203-shadowai.apps.googleusercontent.com",
+    "redirect_uri": "https://ai-helper.example.com/callback",
+    "requested_scopes": [
+      "https://www.googleapis.com/auth/gmail.modify",
+      "https://www.googleapis.com/auth/drive"
+    ],
+    "response_type": "code",
+    "access_type": "offline",
+    "has_pkce": true,
+    "code_challenge_method": "S256",
+    "state_present": true
+  },
+  "shadow_secrets": [
+    {
+      "source_file": ".mcp.json",
+      "provider": "github",
+      "key_name": "GITHUB_TOKEN",
+      "masked_preview": "ghp_****999",
+      "grant_type": "static_pat",
+      "rotation_issuer": "GitHub",
+      "severity": "critical",
+      "blast_targets": ["private_source_code", "ci_cd_secrets", "release_artifact_poisoning"]
+    },
+    {
+      "source_file": ".mcp.json",
+      "provider": "vercel",
+      "key_name": "VERCEL_TOKEN",
+      "masked_preview": "vcp_****812x",
+      "grant_type": "api_key",
+      "rotation_issuer": "Vercel",
+      "severity": "critical",
+      "blast_targets": ["prod_env_vars", "deployment_rollback_bypass"]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "n_user",
+        "label": "Developer Identity (rohan@dev.local)",
+        "kind": "human_identity",
+        "provider": "google",
+        "severity": "medium",
+        "risk_score": 30,
+        "trust_boundary": "personal",
+        "survives_naive_revoke": false,
+        "notes": "Initial OAuth consent and local dev workstation owner."
+      },
+      {
+        "id": "n_shadow_app",
+        "label": "Unvetted AI Assistant (OAuth Client)",
+        "kind": "shadow_ai_tool",
+        "provider": "google",
+        "severity": "high",
+        "risk_score": 82,
+        "trust_boundary": "vendor",
+        "survives_naive_revoke": false,
+        "notes": "Holds offline refresh grant until Google revocation completes."
+      },
+      {
+        "id": "n_gmail_otp",
+        "label": "Gmail OTP & Reset Hijack",
+        "kind": "data_store",
+        "provider": "google",
+        "severity": "critical",
+        "risk_score": 92,
+        "trust_boundary": "personal",
+        "survives_naive_revoke": true,
+        "notes": "Self-contained session/JWT TTL window and already-intercepted reset links persist past HTTP 200 revoke."
+      },
+      {
+        "id": "n_mcp_github",
+        "label": "Local .mcp.json GITHUB_TOKEN (repo, workflow)",
+        "kind": "secret_credential",
+        "provider": "github",
+        "severity": "critical",
+        "risk_score": 96,
+        "trust_boundary": "developer_local",
+        "survives_naive_revoke": true,
+        "notes": "Separate issuer (GitHub); Google RFC 7009 revoke has zero effect."
+      },
+      {
+        "id": "n_ci_workflow",
+        "label": "GitHub Actions Workflow Backdoor -> Vercel",
+        "kind": "attacker_persistence",
+        "provider": "vercel",
+        "severity": "critical",
+        "risk_score": 96,
+        "trust_boundary": "ci_cd",
+        "survives_naive_revoke": true,
+        "notes": "Workflow YAML commit + VERCEL_TOKEN remain live independently."
+      }
+    ],
+    "edges": [
+      {
+        "id": "e_1",
+        "source": "n_user",
+        "target": "n_shadow_app",
+        "relation": "authorizes",
+        "mechanism": "OAuth2 consent (access_type=offline)",
+        "hop": 1,
+        "survives_naive_revoke": false
+      },
+      {
+        "id": "e_2",
+        "source": "n_shadow_app",
+        "target": "n_gmail_otp",
+        "relation": "grants_scope",
+        "mechanism": "gmail.modify + drive enumerate .env backups",
+        "hop": 2,
+        "survives_naive_revoke": true
+      },
+      {
+        "id": "e_3",
+        "source": "n_gmail_otp",
+        "target": "n_mcp_github",
+        "relation": "exposes_secret",
+        "mechanism": "OTP + Drive secret copy reaches local PAT",
+        "hop": 3,
+        "survives_naive_revoke": true
+      },
+      {
+        "id": "e_4",
+        "source": "n_mcp_github",
+        "target": "n_ci_workflow",
+        "relation": "crosses_boundary",
+        "mechanism": "workflow scope rewrites .github/workflows/deploy.yml",
+        "hop": 4,
+        "survives_naive_revoke": true
+      }
+    ]
+  },
+  "naive_containment": {
+    "simulation_mode": "naive_single_revoke",
+    "rfc7009_http_status_returned": 200,
+    "rfc7009_trap_warning": "RFC 7009 POST /revoke returned HTTP 200 OK, which only confirms Google processed the request (even invalid tokens return 200; access-token cascading is only SHOULD). Downstream GitHub/Vercel tokens and attacker CI persistence remain live.",
+    "jwt_residual_ttl_seconds": 3600,
+    "contained_node_ids": ["n_shadow_app"],
+    "persisting_node_ids": ["n_gmail_otp", "n_mcp_github", "n_ci_workflow"],
+    "persisting_edge_ids": ["e_2", "e_3", "e_4"],
+    "containment_ratio": 0.25,
+    "ordered_steps": [
+      {
+        "priority": 1,
+        "issuer": "Google",
+        "target_resource": "9481203-shadowai.apps.googleusercontent.com",
+        "action_type": "rfc7009_revoke",
+        "command_or_endpoint": "POST https://oauth2.googleapis.com/revoke",
+        "why_naive_fails": "Only terminates Google refresh family; misses cross-issuer GitHub/Vercel tokens and minted workflows.",
+        "verification_probe": "Call gmail.users.getProfile -> wait for 401/invalid_token after residual access token expiry",
+        "console_url": "https://myaccount.google.com/permissions"
+      }
+    ]
+  },
+  "full_containment": {
+    "simulation_mode": "full_multi_issuer",
+    "rfc7009_http_status_returned": 200,
+    "rfc7009_trap_warning": "Full containment pairs RFC 7009 refresh revocation with API-level rejection probes and per-issuer downstream rotation.",
+    "jwt_residual_ttl_seconds": 0,
+    "contained_node_ids": ["n_shadow_app", "n_gmail_otp", "n_mcp_github", "n_ci_workflow"],
+    "persisting_node_ids": [],
+    "persisting_edge_ids": [],
+    "containment_ratio": 1.0,
+    "ordered_steps": [
+      {
+        "priority": 1,
+        "issuer": "Google",
+        "target_resource": "Google OAuth refresh grant",
+        "action_type": "rfc7009_revoke",
+        "command_or_endpoint": "POST https://oauth2.googleapis.com/revoke (token=<redacted>)",
+        "why_naive_fails": "HTTP 200 does not guarantee access token invalidation or Gmail filter cleanup.",
+        "verification_probe": "Verify Gmail/Drive API returns 401 + inspect Gmail forwarding filters",
+        "console_url": "https://myaccount.google.com/permissions"
+      },
+      {
+        "priority": 2,
+        "issuer": "GitHub",
+        "target_resource": "GITHUB_TOKEN + OAuth grant",
+        "action_type": "github_grant_delete",
+        "command_or_endpoint": "DELETE https://api.github.com/applications/{client_id}/grant",
+        "why_naive_fails": "Google revocation never touches GitHub tokens or workflow edits.",
+        "verification_probe": "GET /user returns 401 Bad credentials + diff .github/workflows/*.yml",
+        "console_url": "https://github.com/settings/connections/applications"
+      },
+      {
+        "priority": 3,
+        "issuer": "Vercel",
+        "target_resource": "VERCEL_TOKEN (prod env vars)",
+        "action_type": "rotate_downstream_key",
+        "command_or_endpoint": "Revoke VERCEL_TOKEN & re-issue scoped deployment token",
+        "why_naive_fails": "Exfiltrated static API key lives outside both Google and GitHub.",
+        "verification_probe": "GET /v2/user with old token returns 403 invalidToken",
+        "console_url": "https://vercel.com/account/tokens"
+      }
+    ]
+  },
+  "pre_consent_guard": {
+    "action": "BLOCK_PRE_CONSENT",
+    "provider": "google",
+    "risk_score": 92,
+    "pkce_protected": true,
+    "pkce_rewrite_warning": "Request carries PKCE (S256 code_challenge). Rewriting scope= mid-flight would trigger invalid_scope/state mismatch; blocked BEFORE user consent and issued clean least-privilege re-auth scopes.",
+    "flagged_scopes": [
+      {
+        "scope_id": "https://www.googleapis.com/auth/gmail.modify",
+        "severity": "critical",
+        "reason": "Allows reading OTP resets and deleting security alerts",
+        "recommended_scope_id": "https://www.googleapis.com/auth/gmail.readonly"
+      },
+      {
+        "scope_id": "https://www.googleapis.com/auth/drive",
+        "severity": "critical",
+        "reason": "Exposes all Drive folders, exported .env backups, and shared company docs",
+        "recommended_scope_id": "https://www.googleapis.com/auth/drive.file"
+      }
+    ],
+    "recommended_scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/drive.file"
+    ],
+    "safe_replacement_url": null
+  },
+  "ai_explainer_used": false
+}
