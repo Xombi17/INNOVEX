@@ -6,6 +6,7 @@ import type { IncidentPresetSummary } from "@/lib/auditAdapter";
 import { PROVIDER_LABELS } from "./uiTokens";
 import { InputAndPresetBar } from "./InputAndPresetBar";
 import { PresetStrip } from "./PresetStrip";
+import { AITriageCard } from "./AITriageCard";
 
 interface Step1Props {
   report: AuditReport;
@@ -132,13 +133,8 @@ export function Step1ScanVerdict({
         </div>
       </div>
 
-      {/* AI Triage Slot (Phase 5 placeholder) */}
-      <div className="mx-5 my-4 rounded-[8px] border border-dashed border-[#e8eaec] p-4">
-        <div className="text-[13px] font-medium text-[#5d5f60]">AI Threat Brief</div>
-        <p className="mt-1 text-[13px] text-[#5d5f60]">
-          Plain-English attacker story and first-60-seconds action will appear here after scanning a URL or repo. Live AI triage wired in Phase 5.
-        </p>
-      </div>
+      {/* AI Threat Triage */}
+      <AITriageCard report={report} />
 
       {/* Step Continue */}
       <div className="flex justify-end px-5 pb-5">

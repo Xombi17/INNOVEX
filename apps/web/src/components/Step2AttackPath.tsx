@@ -43,6 +43,14 @@ export function Step2AttackPath({
         </p>
       </div>
 
+      {persistingCount > 0 && (
+        <div className="mx-5 mb-4 rounded-[6px] border border-[#f5e6c8] bg-[#fbf5e8] px-3.5 py-2 text-[13px] text-[#855306]">
+          <strong>AI Threat Note:</strong> Lateral escalation pivots across{" "}
+          {report.summary.trust_boundary_crossings.join(", ") || "external SaaS"}{" "}
+          ({report.summary.max_hops} hops). Standard 1-click revoke leaves downstream access tokens alive.
+        </div>
+      )}
+
       {/* Simulation Segmented Toggle */}
       <div className="px-5 pb-4">
         <div className="inline-flex overflow-hidden rounded-[8px] border border-[#e8eaec]">

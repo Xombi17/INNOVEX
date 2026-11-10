@@ -61,6 +61,8 @@ export function InputAndPresetBar({
   const [takeoutInput, setTakeoutInput] = useState<string>(SAMPLE_TAKEOUT_JSON);
   const [repoInput, setRepoInput] = useState<string>("Xombi17/INNOVEX");
   const [repoMsg, setRepoMsg] = useState<string | null>(null);
+  const [repoLoading, setRepoLoading] = useState(false);
+  const [scannedFilesList, setScannedFilesList] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
@@ -120,12 +122,44 @@ export function InputAndPresetBar({
     });
   };
 
-  const handleInspectRepo = (repoName?: string) => {
+  const handleInspectRepo = async (repoName?: string) => {
     const target = (repoName ?? repoInput).trim();
+    if (!target) return;
     setRepoInput(target);
-    setRepoMsg(
-      `Live GitHub repo scanner is wired in Phase 5 via POST /api/scan-repo. Inspecting "${target}" will pull root .mcp.json, .env, and GitHub Actions workflows safely.`,
-    );
+    setRepoLoading(true);
+    setRepoMsg(null);
+    setScannedFilesList([]);
+
+    try {
+      const res = await fetch("/api/scan-repo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo: target }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setRepoMsg(`Scan error: ${data.error ?? "Failed to scan repository"}`);
+        return;
+      }
+
+      setScannedFilesList(data.scannedFiles ?? []);
+      setRepoMsg(data.message ?? `Scanned ${target}`);
+
+      if (data.syntheticMcpPayload) {
+        onRunAudit({
+          mode: "mcp_config",
+          raw_payload: data.syntheticMcpPayload,
+          preset_id: null,
+          simulation_mode: "naive_single_revoke",
+        });
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Network error";
+      setRepoMsg(`Scan request failed: ${msg}`);
+    } finally {
+      setRepoLoading(false);
+    }
   };
 
   const handleFileDrop = async (e: React.DragEvent<HTMLDivElement>) => {
@@ -391,15 +425,28 @@ export function InputAndPresetBar({
               />
               <button
                 type="button"
+                disabled={repoLoading}
                 onClick={() => handleInspectRepo()}
-                className="h-9 shrink-0 rounded-[6px] bg-[#131416] px-4 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
+                className="h-9 shrink-0 rounded-[6px] bg-[#131416] px-4 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30] disabled:opacity-60"
               >
-                Scan repository
+                {repoLoading ? "Scanning..." : "Scan repository"}
               </button>
             </div>
             {repoMsg && (
               <div className="mt-2.5 rounded-[6px] bg-[#f4f6f8] px-3 py-2 text-[13px] text-[#5d5f60]">
-                {repoMsg}
+                <div>{repoMsg}</div>
+                {scannedFilesList.length > 0 && (
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {scannedFilesList.map((file) => (
+                      <span
+                        key={file}
+                        className="rounded-[4px] bg-[#ffffff] border border-[#e8eaec] px-2 py-0.5 font-mono text-[11px] text-[#131416]"
+                      >
+                        {file}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
