@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { UploadSimple } from "@phosphor-icons/react";
+import { GitBranch, UploadSimple } from "@phosphor-icons/react";
 import type { AuditInput, AuditReport, InputMode } from "@contracts/index";
 import type { IncidentPresetSummary } from "@/lib/auditAdapter";
 import { PROVIDER_LABELS, SEVERITY_META, formatScopeShort } from "./uiTokens";
@@ -24,6 +24,8 @@ const SAMPLE_TAKEOUT_JSON = JSON.stringify(
   2,
 );
 
+type ActiveTab = InputMode | "github_repo";
+
 interface InputAndPresetBarProps {
   presets: IncidentPresetSummary[];
   activePresetId: string | null;
@@ -31,8 +33,8 @@ interface InputAndPresetBarProps {
   report: AuditReport;
   inputError: string | null;
   externalOAuthUrl: string | null;
-  scannerOpen: boolean;
-  onToggleScanner: (open: boolean) => void;
+  scannerOpen?: boolean;
+  onToggleScanner?: (open: boolean) => void;
   onClearError: () => void;
   onRunAudit: (input: AuditInput) => void;
 }
@@ -44,12 +46,10 @@ export function InputAndPresetBar({
   report,
   inputError,
   externalOAuthUrl,
-  scannerOpen,
-  onToggleScanner,
   onClearError,
   onRunAudit,
 }: InputAndPresetBarProps) {
-  const [selectedTab, setSelectedTab] = useState<InputMode>(
+  const [selectedTab, setSelectedTab] = useState<ActiveTab>(
     activeInputMode === "incident_preset" ? "oauth_url" : activeInputMode,
   );
   const [oauthUrlInput, setOauthUrlInput] = useState<string>(
@@ -59,6 +59,8 @@ export function InputAndPresetBar({
     presets[0]?.sample_mcp_config ?? "",
   );
   const [takeoutInput, setTakeoutInput] = useState<string>(SAMPLE_TAKEOUT_JSON);
+  const [repoInput, setRepoInput] = useState<string>("Xombi17/INNOVEX");
+  const [repoMsg, setRepoMsg] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
@@ -118,6 +120,14 @@ export function InputAndPresetBar({
     });
   };
 
+  const handleInspectRepo = (repoName?: string) => {
+    const target = (repoName ?? repoInput).trim();
+    setRepoInput(target);
+    setRepoMsg(
+      `Live GitHub repo scanner is wired in Phase 5 via POST /api/scan-repo. Inspecting "${target}" will pull root .mcp.json, .env, and GitHub Actions workflows safely.`,
+    );
+  };
+
   const handleFileDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
@@ -132,7 +142,7 @@ export function InputAndPresetBar({
       aria-label="Incident framing and local input scanner"
       className="space-y-4"
     >
-      {/* Mobile / Narrow Preset Quick Strip (hidden on lg+ where sidebar holds presets) */}
+      {/* Mobile Preset Selector */}
       <div className="lg:hidden">
         <label
           htmlFor="mobile-preset-select"
@@ -164,222 +174,260 @@ export function InputAndPresetBar({
         </select>
       </div>
 
-      {/* Expandable Custom Input Panel (hairline rule band, no boxed container or side tab) */}
-      {(scannerOpen || Boolean(inputError)) && (
-        <div className="border-y border-[#e8eaec] py-4">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-[#e8eaec] pb-2.5">
-            <div
-              className="flex flex-wrap gap-4"
-              role="tablist"
-              aria-label="Custom scan input type"
-            >
-              {(
-                [
-                  { id: "oauth_url", label: "OAuth consent URL" },
-                  { id: "mcp_config", label: ".mcp.json / .env dropzone" },
-                  { id: "takeout_grant", label: "Google Takeout JSON" },
-                ] as const
-              ).map((tab) => {
-                const active = selectedTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    onClick={() => {
-                      setSelectedTab(tab.id);
-                      onClearError();
-                    }}
-                    className={`relative pb-1.5 text-[14px] font-medium transition ${
-                      active
-                        ? "text-[#131416]"
-                        : "text-[#5d5f60] hover:text-[#131416]"
-                    }`}
-                  >
-                    {tab.label}
-                    {active && (
-                      <span
-                        aria-hidden="true"
-                        className="absolute inset-x-0 -bottom-[11px] h-[2px] bg-[#1b6c80]"
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => onToggleScanner(false)}
-              className="text-[13px] font-medium text-[#5d5f60] hover:text-[#131416]"
-            >
-              Hide input scanner
-            </button>
-          </div>
-
-          {selectedTab === "oauth_url" && (
-            <div>
-              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                <label
-                  htmlFor="oauth-url-input"
-                  className="text-[14px] font-medium leading-[1.45] text-[#131416]"
-                >
-                  Paste Google, GitHub, Microsoft Entra, Slack, or Salesforce
-                  authorize URL
-                </label>
+      {/* Always-Visible Custom Input Panel */}
+      <div className="border-y border-[#e8eaec] py-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-[#e8eaec] pb-2.5">
+          <div
+            className="flex flex-wrap gap-4"
+            role="tablist"
+            aria-label="Custom scan input type"
+          >
+            {(
+              [
+                { id: "oauth_url", label: "OAuth consent URL" },
+                { id: "mcp_config", label: ".mcp.json / .env dropzone" },
+                { id: "takeout_grant", label: "Google Takeout JSON" },
+                { id: "github_repo", label: "GitHub Repo URL" },
+              ] as const
+            ).map((tab) => {
+              const active = selectedTab === tab.id;
+              return (
                 <button
+                  key={tab.id}
                   type="button"
-                  onClick={() => handleInspectOAuthUrl(DEMO_PKCE_TRAP_URL)}
-                  className="text-[13px] font-medium text-[#1b6c80] hover:underline"
-                >
-                  Load PKCE trap sample
-                </button>
-              </div>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <input
-                  id="oauth-url-input"
-                  type="url"
-                  value={oauthUrlInput}
-                  onChange={(e) => {
-                    setOauthUrlInput(e.target.value);
-                    if (inputError) onClearError();
-                  }}
-                  placeholder="https://accounts.google.com/o/oauth2/v2/auth?client_id=..."
-                  className="h-9 w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[14px] text-[#131416] placeholder:text-[#5d5f60]"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleInspectOAuthUrl()}
-                  className="h-9 shrink-0 rounded-[6px] bg-[#131416] px-4 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
-                >
-                  Inspect URL
-                </button>
-              </div>
-            </div>
-          )}
-
-          {selectedTab === "mcp_config" && (
-            <div
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={handleFileDrop}
-              className={`rounded-[6px] p-3 transition ${
-                isDragging ? "bg-[#e6f2f5]" : "bg-[#ffffff]"
-              }`}
-            >
-              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                <label
-                  htmlFor="mcp-config-input"
-                  className="inline-flex items-center gap-1.5 text-[14px] font-medium leading-[1.45] text-[#131416]"
-                >
-                  <UploadSimple size={15} className="text-[#1b6c80]" />
-                  Drop or paste <code>.mcp.json</code> / <code>.env</code> (raw
-                  secrets masked locally)
-                </label>
-                <button
-                  type="button"
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => {
-                    const sample = presets[0]?.sample_mcp_config ?? "";
-                    if (sample) handleInspectMcp(sample);
+                    setSelectedTab(tab.id);
+                    onClearError();
+                    setRepoMsg(null);
                   }}
-                  className="text-[13px] font-medium text-[#1b6c80] hover:underline"
+                  className={`relative pb-1.5 text-[14px] font-medium transition ${
+                    active
+                      ? "text-[#131416]"
+                      : "text-[#5d5f60] hover:text-[#131416]"
+                  }`}
                 >
-                  Load Rohan sample config
+                  {tab.label}
+                  {active && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-0 -bottom-[11px] h-[2px] bg-[#1b6c80]"
+                    />
+                  )}
                 </button>
-              </div>
-              <textarea
-                id="mcp-config-input"
-                rows={4}
-                value={mcpInput}
-                onChange={(e) => {
-                  setMcpInput(e.target.value);
-                  if (inputError) onClearError();
-                }}
-                placeholder='{"mcpServers": {"github": {"env": {"GITHUB_TOKEN": "ghp_..."}}}}'
-                className="w-full rounded-[6px] border border-[#cdced1] bg-[#f9fbfc] p-2.5 text-[13px] leading-[1.45] text-[#131416]"
-              />
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                <span className="text-[13px] text-[#1e7b4f]">
-                  Parsed 100% locally in your browser with zero network calls.
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleInspectMcp()}
-                  className="h-8 rounded-[6px] bg-[#131416] px-3.5 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
-                >
-                  Scan config locally
-                </button>
-              </div>
-            </div>
-          )}
+              );
+            })}
+          </div>
+        </div>
 
-          {selectedTab === "takeout_grant" && (
-            <div>
-              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                <label
-                  htmlFor="takeout-grant-input"
-                  className="text-[14px] font-medium leading-[1.45] text-[#131416]"
-                >
-                  Paste Google Takeout OAuth grant export JSON
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleInspectTakeout(SAMPLE_TAKEOUT_JSON)}
-                  className="text-[13px] font-medium text-[#1b6c80] hover:underline"
-                >
-                  Load sample Takeout export
-                </button>
-              </div>
-              <textarea
-                id="takeout-grant-input"
-                rows={4}
-                value={takeoutInput}
-                onChange={(e) => {
-                  setTakeoutInput(e.target.value);
-                  if (inputError) onClearError();
-                }}
-                className="w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] p-2.5 text-[13px] leading-[1.45] text-[#131416]"
-              />
-              <div className="mt-2 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => handleInspectTakeout()}
-                  className="h-8 rounded-[6px] bg-[#131416] px-3.5 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
-                >
-                  Analyze Takeout grants
-                </button>
-              </div>
-            </div>
-          )}
-
-          {inputError && (
-            <div
-              role="alert"
-              className="mt-3 flex flex-wrap items-start justify-between gap-3 border-t border-[#f0c8ca] pt-3 text-[14px] leading-[1.45] text-[#831c1e]"
-            >
-              <div>
-                <div className="font-semibold">
-                  Input rejected (previous valid audit kept)
-                </div>
-                <p className="mt-0.5 text-[13px] leading-[1.45]">{inputError}</p>
-              </div>
+        {selectedTab === "oauth_url" && (
+          <div>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <label
+                htmlFor="oauth-url-input"
+                className="text-[14px] font-medium leading-[1.45] text-[#131416]"
+              >
+                Paste Google, GitHub, Microsoft Entra, Slack, or Salesforce
+                authorize URL
+              </label>
               <button
                 type="button"
-                onClick={onClearError}
-                className="text-[13px] font-medium underline"
+                onClick={() => handleInspectOAuthUrl(DEMO_PKCE_TRAP_URL)}
+                className="text-[13px] font-medium text-[#1b6c80] hover:underline"
               >
-                Dismiss
+                Load PKCE trap sample
               </button>
             </div>
-          )}
-        </div>
-      )}
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                id="oauth-url-input"
+                type="url"
+                value={oauthUrlInput}
+                onChange={(e) => {
+                  setOauthUrlInput(e.target.value);
+                  if (inputError) onClearError();
+                }}
+                placeholder="https://accounts.google.com/o/oauth2/v2/auth?client_id=..."
+                className="h-9 w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[14px] text-[#131416] placeholder:text-[#5d5f60]"
+              />
+              <button
+                type="button"
+                onClick={() => handleInspectOAuthUrl()}
+                className="h-9 shrink-0 rounded-[6px] bg-[#131416] px-4 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
+              >
+                Inspect URL
+              </button>
+            </div>
+          </div>
+        )}
 
-      {/* Unboxed Forensic Summary Band (borderless columns separated by hairline padding) */}
+        {selectedTab === "mcp_config" && (
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleFileDrop}
+            className={`rounded-[6px] p-3 transition ${
+              isDragging ? "bg-[#e6f2f5]" : "bg-[#ffffff]"
+            }`}
+          >
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <label
+                htmlFor="mcp-config-input"
+                className="inline-flex items-center gap-1.5 text-[14px] font-medium leading-[1.45] text-[#131416]"
+              >
+                <UploadSimple size={15} className="text-[#1b6c80]" />
+                Drop or paste <code>.mcp.json</code> / <code>.env</code> (raw
+                secrets masked locally)
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  const sample = presets[0]?.sample_mcp_config ?? "";
+                  if (sample) handleInspectMcp(sample);
+                }}
+                className="text-[13px] font-medium text-[#1b6c80] hover:underline"
+              >
+                Load Rohan sample config
+              </button>
+            </div>
+            <textarea
+              id="mcp-config-input"
+              rows={4}
+              value={mcpInput}
+              onChange={(e) => {
+                setMcpInput(e.target.value);
+                if (inputError) onClearError();
+              }}
+              placeholder='{"mcpServers": {"github": {"env": {"GITHUB_TOKEN": "ghp_..."}}}}'
+              className="w-full rounded-[6px] border border-[#cdced1] bg-[#f9fbfc] p-2.5 text-[13px] leading-[1.45] text-[#131416]"
+            />
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[13px] text-[#1e7b4f]">
+                Parsed 100% locally in your browser with zero network calls.
+              </span>
+              <button
+                type="button"
+                onClick={() => handleInspectMcp()}
+                className="h-8 rounded-[6px] bg-[#131416] px-3.5 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
+              >
+                Scan config locally
+              </button>
+            </div>
+          </div>
+        )}
+
+        {selectedTab === "takeout_grant" && (
+          <div>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <label
+                htmlFor="takeout-grant-input"
+                className="text-[14px] font-medium leading-[1.45] text-[#131416]"
+              >
+                Paste Google Takeout OAuth grant export JSON
+              </label>
+              <button
+                type="button"
+                onClick={() => handleInspectTakeout(SAMPLE_TAKEOUT_JSON)}
+                className="text-[13px] font-medium text-[#1b6c80] hover:underline"
+              >
+                Load sample Takeout export
+              </button>
+            </div>
+            <textarea
+              id="takeout-grant-input"
+              rows={4}
+              value={takeoutInput}
+              onChange={(e) => {
+                setTakeoutInput(e.target.value);
+                if (inputError) onClearError();
+              }}
+              className="w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] p-2.5 text-[13px] leading-[1.45] text-[#131416]"
+            />
+            <div className="mt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => handleInspectTakeout()}
+                className="h-8 rounded-[6px] bg-[#131416] px-3.5 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
+              >
+                Analyze Takeout grants
+              </button>
+            </div>
+          </div>
+        )}
+
+        {selectedTab === "github_repo" && (
+          <div>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <label
+                htmlFor="github-repo-input"
+                className="inline-flex items-center gap-1.5 text-[14px] font-medium leading-[1.45] text-[#131416]"
+              >
+                <GitBranch size={15} className="text-[#1b6c80]" />
+                Public GitHub repository (<code className="font-mono">owner/repo</code> or URL)
+              </label>
+              <button
+                type="button"
+                onClick={() => handleInspectRepo("Xombi17/INNOVEX")}
+                className="text-[13px] font-medium text-[#1b6c80] hover:underline"
+              >
+                Try Xombi17/INNOVEX
+              </button>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                id="github-repo-input"
+                type="text"
+                value={repoInput}
+                onChange={(e) => {
+                  setRepoInput(e.target.value);
+                  setRepoMsg(null);
+                }}
+                placeholder="owner/repo or https://github.com/owner/repo"
+                className="h-9 w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[14px] text-[#131416] placeholder:text-[#5d5f60]"
+              />
+              <button
+                type="button"
+                onClick={() => handleInspectRepo()}
+                className="h-9 shrink-0 rounded-[6px] bg-[#131416] px-4 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
+              >
+                Scan repository
+              </button>
+            </div>
+            {repoMsg && (
+              <div className="mt-2.5 rounded-[6px] bg-[#f4f6f8] px-3 py-2 text-[13px] text-[#5d5f60]">
+                {repoMsg}
+              </div>
+            )}
+          </div>
+        )}
+
+        {inputError && (
+          <div
+            role="alert"
+            className="mt-3 flex flex-wrap items-start justify-between gap-3 border-t border-[#f0c8ca] pt-3 text-[14px] leading-[1.45] text-[#831c1e]"
+          >
+            <div>
+              <div className="font-semibold">
+                Input rejected (previous valid audit kept)
+              </div>
+              <p className="mt-0.5 text-[13px] leading-[1.45]">{inputError}</p>
+            </div>
+            <button
+              type="button"
+              onClick={onClearError}
+              className="text-[13px] font-medium underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Unboxed Forensic Summary Band */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-6">
           <div className="text-[13px] font-medium text-[#5d5f60]">
