@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react";
 import type { AuditReport, BlastNode, SimulationMode } from "@contracts/index";
 import { PROVIDER_LABELS, humanizeNodeLabel } from "./uiTokens";
+import { enrichContainmentStep } from "@/lib/remediationTemplates";
 
 interface ContainmentComparisonProps {
   report: AuditReport;
@@ -346,6 +347,8 @@ export function ContainmentComparison({
             const readableTarget = targetNode
               ? humanizeNodeLabel(targetNode)
               : step.target_resource;
+            const enriched = enrichContainmentStep(step as any, report);
+            const consoleTarget = step.console_url || enriched.consoleUrl;
 
             return (
               <div key={`m-${copyKey}`} className="space-y-2.5 py-4">
@@ -367,16 +370,16 @@ export function ContainmentComparison({
                     <button
                       type="button"
                       onClick={() =>
-                        handleCopy(copyKey, step.command_or_endpoint)
+                        handleCopy(copyKey, enriched.copyableCommand)
                       }
                       className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
                     >
                       {copied ? <Check size={14} /> : <Copy size={14} />}
                       {copied ? "Copied" : "Copy"}
                     </button>
-                    {step.console_url && (
+                    {consoleTarget && (
                       <a
-                        href={step.console_url}
+                        href={consoleTarget}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#1b6c80] transition hover:bg-[#f4f6f8]"
@@ -393,8 +396,13 @@ export function ContainmentComparison({
                     Endpoint or rotation command
                   </div>
                   <code className="block break-words [overflow-wrap:anywhere] rounded-[6px] bg-[#f4f6f8] px-2.5 py-2 text-[13px] leading-[1.45] text-[#131416]">
-                    {step.command_or_endpoint}
+                    {enriched.copyableCommand}
                   </code>
+                  {enriched.rfcNote && (
+                    <div className="mt-1 text-[11px] text-[#855306]">
+                      {enriched.rfcNote}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -402,8 +410,11 @@ export function ContainmentComparison({
                     Post-revoke check
                   </div>
                   <code className="block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#1e7b4f]">
-                    {step.verification_probe}
+                    {enriched.verificationProbe}
                   </code>
+                  <div className="mt-0.5 text-[11px] text-[#5d5f60]">
+                    Expected: {enriched.expectedStatus}
+                  </div>
                 </div>
               </div>
             );
@@ -431,6 +442,9 @@ export function ContainmentComparison({
                   ? humanizeNodeLabel(targetNode)
                   : step.target_resource;
 
+                const enriched = enrichContainmentStep(step as any, report);
+                const consoleTarget = step.console_url || enriched.consoleUrl;
+
                 return (
                   <tr key={copyKey} className="align-top">
                     <td className="py-3.5 pr-3 text-[14px] font-semibold text-[#131416] tabular-nums whitespace-nowrap">
@@ -451,29 +465,37 @@ export function ContainmentComparison({
                     </td>
                     <td className="min-w-[230px] max-w-[360px] px-3 py-3.5">
                       <code className="block break-words [overflow-wrap:anywhere] rounded-[6px] bg-[#f4f6f8] px-2.5 py-2 text-[13px] leading-[1.45] text-[#131416]">
-                        {step.command_or_endpoint}
+                        {enriched.copyableCommand}
                       </code>
+                      {enriched.rfcNote && (
+                        <div className="mt-1 text-[11px] text-[#855306]">
+                          {enriched.rfcNote}
+                        </div>
+                      )}
                     </td>
                     <td className="min-w-[200px] max-w-[300px] px-3 py-3.5">
                       <code className="block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#1e7b4f]">
-                        {step.verification_probe}
+                        {enriched.verificationProbe}
                       </code>
+                      <div className="mt-0.5 text-[11px] text-[#5d5f60]">
+                        Expected: {enriched.expectedStatus}
+                      </div>
                     </td>
                     <td className="py-3.5 pl-3 text-right whitespace-nowrap">
                       <div className="inline-flex items-center gap-1.5">
                         <button
                           type="button"
                           onClick={() =>
-                            handleCopy(copyKey, step.command_or_endpoint)
+                            handleCopy(copyKey, enriched.copyableCommand)
                           }
                           className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
                         >
                           {copied ? <Check size={14} /> : <Copy size={14} />}
                           {copied ? "Copied" : "Copy"}
                         </button>
-                        {step.console_url && (
+                        {consoleTarget && (
                           <a
-                            href={step.console_url}
+                            href={consoleTarget}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#1b6c80] transition hover:bg-[#f4f6f8]"
