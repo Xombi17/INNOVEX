@@ -1,6 +1,13 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import {
+  ArrowRight,
+  CaretDown,
+  CaretRight,
+  CheckCircle,
+  WarningCircle,
+} from "@phosphor-icons/react";
 import type {
   AuditReport,
   BlastEdge,
@@ -8,7 +15,12 @@ import type {
   SimulationMode,
   TrustBoundary,
 } from "@contracts/index";
-import { PROVIDER_LABELS, SEVERITY_META, TRUST_BOUNDARY_META } from "./uiTokens";
+import {
+  PROVIDER_LABELS,
+  SEVERITY_META,
+  TRUST_BOUNDARY_META,
+  humanizeNodeLabel,
+} from "./uiTokens";
 
 interface DominoGraphProps {
   report: AuditReport;
@@ -16,64 +28,55 @@ interface DominoGraphProps {
   onChangeSimulationMode: (mode: SimulationMode) => void;
 }
 
-interface PositionedNode {
-  node: BlastNode;
-  col: number;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+const STAGE_TITLES = [
+  { stage: 0, title: "1. Entry grant", hint: "Initial app or local config" },
+  {
+    stage: 1,
+    title: "2. Permissions & keys",
+    hint: "Scopes approved or tokens leaked",
+  },
+  {
+    stage: 2,
+    title: "3. Direct blast",
+    hint: "Exposed mailboxes, repos & persistence",
+  },
+  {
+    stage: 3,
+    title: "4. Downstream chain",
+    hint: "Cross-issuer takeovers & APIs",
+  },
+] as const;
 
-function formatDisplayLabel(text: string): string {
-  if (text.startsWith("https://www.googleapis.com/auth/")) {
-    return `google:${text.slice("https://www.googleapis.com/auth/".length)}`;
+function computeStageIndex(
+  node: BlastNode,
+  edges: BlastEdge[],
+): 0 | 1 | 2 | 3 {
+  if (
+    node.kind === "human_identity" ||
+    node.kind === "oauth_app" ||
+    node.kind === "shadow_ai_tool" ||
+    node.kind === "mcp_server"
+  ) {
+    return 0;
   }
-  if (text === "https://mail.google.com/") {
-    return "google:mail.google.com";
+  if (
+    node.kind === "scope" ||
+    (node.id.startsWith("secret:") && !node.id.includes("resource"))
+  ) {
+    return 1;
   }
-  return text;
-}
-
-function wrapLabel(text: string, maxCharsPerLine = 25): string[] {
-  const formatted = formatDisplayLabel(text);
-  const words = formatted.split(/\s+/);
-  const lines: string[] = [];
-  let current = "";
-  for (const word of words) {
-    if (word.length > maxCharsPerLine && !current && lines.length === 0) {
-      lines.push(word.slice(0, maxCharsPerLine));
-      const rest = word.slice(maxCharsPerLine);
-      if (rest) {
-        lines.push(
-          rest.length > maxCharsPerLine
-            ? `${rest.slice(0, maxCharsPerLine - 3)}...`
-            : rest,
-        );
-      }
-      return lines;
-    }
-    if (!current) {
-      current = word;
-    } else if (current.length + 1 + word.length <= maxCharsPerLine) {
-      current = `${current} ${word}`;
-    } else {
-      lines.push(current);
-      current = word;
-      if (lines.length === 2) break;
-    }
+  const incoming = edges.filter((e) => e.target === node.id);
+  const maxHop = incoming.reduce((acc, e) => Math.max(acc, e.hop), 0);
+  if (
+    maxHop >= 4 ||
+    node.id.includes(":platform") ||
+    node.id.includes(":session") ||
+    node.id.includes(":copied_credential") ||
+    node.id.includes(":secondary_secret")
+  ) {
+    return 3;
   }
-  if (current && lines.length < 2) {
-    lines.push(
-      current.length > maxCharsPerLine
-        ? `${current.slice(0, maxCharsPerLine - 3)}...`
-        : current,
-    );
-  }
-  if (lines.length === 2 && words.join(" ").length > lines.join(" ").length) {
-    lines[1] = `${lines[1].slice(0, Math.max(0, maxCharsPerLine - 3))}...`;
-  }
-  return lines;
+  return 2;
 }
 
 export function DominoGraph({
@@ -82,9 +85,9 @@ export function DominoGraph({
   onChangeSimulationMode,
 }: DominoGraphProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [highlightedBoundary, setHighlightedBoundary] =
     useState<TrustBoundary | null>(null);
+  const [showAllNodes, setShowAllNodes] = useState(false);
 
   const outcome =
     simulationMode === "naive_single_revoke"
@@ -99,93 +102,27 @@ export function DominoGraph({
     () => new Set(outcome.contained_node_ids),
     [outcome.contained_node_ids],
   );
-  const persistingEdgeSet = useMemo(
-    () => new Set(outcome.persisting_edge_ids),
-    [outcome.persisting_edge_ids],
-  );
 
-  // Compute deterministic collision-free topological layout by Hop depth
-  const layout = useMemo(() => {
-    const nodes = report.graph.nodes;
-    const edges = report.graph.edges;
-    const depthMap = new Map<string, number>();
-    const inDegree = new Map<string, number>();
+  const isNaive = simulationMode === "naive_single_revoke";
+  const persistingCount = outcome.persisting_node_ids.length;
+  const containedCount = outcome.contained_node_ids.length;
 
-    for (const n of nodes) {
-      depthMap.set(n.id, 0);
-      inDegree.set(n.id, 0);
+  const stageBuckets = useMemo(() => {
+    const buckets: BlastNode[][] = [[], [], [], []];
+    for (const node of report.graph.nodes) {
+      const idx = computeStageIndex(node, report.graph.edges);
+      buckets[idx].push(node);
     }
-    for (const e of edges) {
-      inDegree.set(e.target, (inDegree.get(e.target) ?? 0) + 1);
-    }
-
-    // Relax edges up to nodes.length times (safe for arbitrary DAGs)
-    for (let pass = 0; pass < nodes.length; pass++) {
-      let changed = false;
-      for (const e of edges) {
-        const srcD = depthMap.get(e.source) ?? 0;
-        const dstD = depthMap.get(e.target) ?? 0;
-        const nextD = Math.max(srcD + 1, e.hop);
-        if (nextD > dstD) {
-          depthMap.set(e.target, Math.min(nextD, nodes.length + 1));
-          changed = true;
-        }
-      }
-      if (!changed) break;
-    }
-
-    const columns = new Map<number, BlastNode[]>();
-    let maxCol = 0;
-    for (const n of nodes) {
-      const col = depthMap.get(n.id) ?? 0;
-      maxCol = Math.max(maxCol, col);
-      const list = columns.get(col) ?? [];
-      list.push(n);
-      columns.set(col, list);
-    }
-
-    const nodeW = 216;
-    const nodeH = 96;
-    const colGap = 68;
-    const rowGap = 36;
-    const padX = 28;
-    const padY = 28;
-
-    const maxRows = Math.max(
-      1,
-      ...Array.from(columns.values()).map((list) => list.length),
-    );
-    const totalCols = Math.max(1, maxCol + 1);
-    const svgWidth = Math.max(
-      980,
-      padX * 2 + totalCols * nodeW + Math.max(0, totalCols - 1) * colGap,
-    );
-    const svgHeight = Math.max(
-      270,
-      padY * 2 + maxRows * nodeH + Math.max(0, maxRows - 1) * rowGap,
-    );
-
-    const positioned = new Map<string, PositionedNode>();
-    const colSpan =
-      totalCols > 1
-        ? (svgWidth - padX * 2 - nodeW) / (totalCols - 1)
-        : 0;
-
-    for (const [col, list] of columns.entries()) {
-      const colHeight =
-        list.length * nodeH + Math.max(0, list.length - 1) * rowGap;
-      const startY = (svgHeight - colHeight) / 2;
-      const x =
-        totalCols === 1 ? (svgWidth - nodeW) / 2 : padX + col * colSpan;
-
-      list.forEach((node, idx) => {
-        const y = startY + idx * (nodeH + rowGap);
-        positioned.set(node.id, { node, col, x, y, w: nodeW, h: nodeH });
+    for (const list of buckets) {
+      list.sort((a, b) => {
+        const aPersist = persistingNodeSet.has(a.id) ? 1 : 0;
+        const bPersist = persistingNodeSet.has(b.id) ? 1 : 0;
+        if (aPersist !== bPersist) return bPersist - aPersist;
+        return b.risk_score - a.risk_score;
       });
     }
-
-    return { positioned, svgWidth, svgHeight };
-  }, [report.graph.nodes, report.graph.edges]);
+    return buckets;
+  }, [report.graph.nodes, report.graph.edges, persistingNodeSet]);
 
   const activeNode: BlastNode | null = useMemo(() => {
     if (selectedNodeId) {
@@ -197,86 +134,108 @@ export function DominoGraph({
     }
     return (
       report.graph.nodes.find((n) => persistingNodeSet.has(n.id)) ??
-      report.graph.nodes[report.graph.nodes.length - 1] ??
+      report.graph.nodes[0] ??
       null
     );
   }, [selectedNodeId, report.graph.nodes, persistingNodeSet]);
 
-  const activeEdge: BlastEdge | null = useMemo(() => {
-    if (!selectedEdgeId) return null;
-    return report.graph.edges.find((e) => e.id === selectedEdgeId) ?? null;
-  }, [selectedEdgeId, report.graph.edges]);
+  const activeNodeIncoming = useMemo(() => {
+    if (!activeNode) return [];
+    return report.graph.edges.filter((e) => e.target === activeNode.id);
+  }, [activeNode, report.graph.edges]);
 
-  const isNaive = simulationMode === "naive_single_revoke";
-  const persistingCount = outcome.persisting_node_ids.length;
-  const containedCount = outcome.contained_node_ids.length;
+  const VISIBLE_PER_STAGE = 5;
 
   return (
     <section
-      aria-label="Interactive Blast-Radius Domino Graph"
-      className="rounded-xl border border-slate-800 bg-[#0d1424] p-4 shadow-lg"
+      aria-label="Blast-radius domino escalation map"
+      className="border-t border-[#e8eaec] pt-6"
     >
-      {/* Header & Simulation Toggle */}
-      <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      {/* Header row */}
+      <div className="flex flex-col justify-between gap-3 pb-4 lg:flex-row lg:items-center">
         <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200">
-              2. Interactive Blast-Radius Domino Graph
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h2 className="text-[16px] font-semibold leading-[1.4] text-[#131416]">
+              Cross-issuer escalation domino map
             </h2>
             <span
-              className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold ${
-                isNaive && persistingCount > 0
-                  ? "border-rose-500/60 bg-rose-500/15 text-rose-300"
-                  : "border-emerald-500/60 bg-emerald-500/15 text-emerald-300"
-              }`}
+              className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium tabular-nums"
+              style={{
+                backgroundColor:
+                  isNaive && persistingCount > 0 ? "#ffedea" : "#dcfae5",
+                color:
+                  isNaive && persistingCount > 0 ? "#831c1e" : "#04250e",
+              }}
             >
               {isNaive
-                ? `NAIVE REVOKE: ${outcome.rfc7009_http_status_returned > 0 ? `HTTP ${outcome.rfc7009_http_status_returned}` : "NON-RFC 7009"} · ${persistingCount} NODE(S) PERSISTING`
-                : `FULL MULTI-ISSUER PLAN: ${containedCount}/${containedCount + persistingCount} CONTAINED`}
+                ? persistingCount > 0
+                  ? `${persistingCount} path${persistingCount === 1 ? "" : "s"} persist after HTTP ${outcome.rfc7009_http_status_returned || "0"}`
+                  : "No persisting paths"
+                : `${containedCount} of ${containedCount + persistingCount} paths contained`}
             </span>
           </div>
-          <p className="mt-0.5 text-xs text-slate-400">
-            Click any node or transition arrow to inspect trust boundaries,
-            mechanism, and why single-endpoint RFC 7009 revocation fails across
-            issuers.
+          <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
+            Follow left to right how a single login or secret propagates across
+            trust boundaries. Select any node to inspect why single revoke misses it.
           </p>
         </div>
 
-        {/* Toggle */}
-        <div
-          className="inline-flex max-w-full flex-wrap rounded-xl border border-slate-800 bg-slate-950 p-1 lg:shrink-0"
-          role="group"
-          aria-label="Containment Simulation Mode"
-        >
-          <button
-            type="button"
-            onClick={() => onChangeSimulationMode("naive_single_revoke")}
-            className={`sm:whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              isNaive
-                ? "bg-rose-600 text-white shadow-sm shadow-rose-900/50"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
+        <div className="flex flex-wrap items-center gap-2">
+          <div
+            className="inline-flex items-center gap-1.5"
+            role="group"
+            aria-label="Containment simulation toggle"
           >
-            Simulate Naive Containment (RFC 7009)
-          </button>
-          <button
-            type="button"
-            onClick={() => onChangeSimulationMode("full_multi_issuer")}
-            className={`sm:whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              !isNaive
-                ? "bg-emerald-600 text-white shadow-sm shadow-emerald-900/50"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            Full Multi-Issuer Containment Plan
-          </button>
+            <button
+              type="button"
+              onClick={() => onChangeSimulationMode("naive_single_revoke")}
+              className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
+                isNaive
+                  ? "border-[#131416] bg-[#131416] text-[#ffffff]"
+                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+              }`}
+            >
+              Naive single revoke
+            </button>
+            <button
+              type="button"
+              onClick={() => onChangeSimulationMode("full_multi_issuer")}
+              className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
+                !isNaive
+                  ? "border-[#1e7b4f] bg-[#1e7b4f] text-[#ffffff]"
+                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+              }`}
+            >
+              Full multi-issuer plan
+            </button>
+          </div>
+
+          {report.graph.nodes.length > 14 && (
+            <button
+              type="button"
+              onClick={() => setShowAllNodes((v) => !v)}
+              className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
+            >
+              {showAllNodes ? (
+                <>
+                  <CaretDown size={14} />
+                  Compact view
+                </>
+              ) : (
+                <>
+                  <CaretRight size={14} />
+                  Show all {report.graph.nodes.length} nodes
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Trust Boundary Legend & Filter */}
-      <div className="mb-3 flex flex-wrap items-center gap-1.5">
-        <span className="mr-1 text-[11px] font-medium text-slate-400">
-          Trust Boundaries Crossed:
+      {/* Boundary Filter Strip (unboxed horizontal rule band) */}
+      <div className="flex flex-wrap items-center gap-2 border-y border-[#f0f1f2] py-2.5">
+        <span className="text-[13px] font-medium text-[#5d5f60]">
+          Trust boundaries crossed:
         </span>
         {report.summary.trust_boundary_crossings.map((tb) => {
           const meta = TRUST_BOUNDARY_META[tb];
@@ -285,14 +244,20 @@ export function DominoGraph({
             <button
               key={tb}
               type="button"
-              onClick={() =>
-                setHighlightedBoundary(active ? null : tb)
-              }
-              className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition ${
-                meta.badgeClass
-              } ${active ? "ring-2 ring-white/50" : "opacity-85 hover:opacity-100"}`}
+              onClick={() => setHighlightedBoundary(active ? null : tb)}
+              className="inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium transition"
+              style={{
+                backgroundColor: active ? "#131416" : meta.tagBg,
+                color: active ? "#ffffff" : meta.tagInk,
+              }}
             >
-              {meta.label} ({meta.short})
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{
+                  backgroundColor: active ? "#ffffff" : meta.colorHex,
+                }}
+              />
+              {meta.label}
             </button>
           );
         })}
@@ -300,386 +265,221 @@ export function DominoGraph({
           <button
             type="button"
             onClick={() => setHighlightedBoundary(null)}
-            className="ml-1 text-[11px] text-slate-400 underline hover:text-slate-200"
+            className="ml-1 text-[13px] font-medium text-[#1b6c80] hover:underline"
           >
-            Clear filter
+            Reset filter
           </button>
         )}
       </div>
 
-      {/* Responsive SVG Domino Canvas */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800/90 bg-[#070b14]">
-        {report.graph.nodes.length === 0 ? (
-          <div className="flex h-52 items-center justify-center text-xs text-slate-500">
-            No blast graph nodes for this input. Try an Incident Preset or valid
-            OAuth URL.
-          </div>
-        ) : (
-          <svg
-            viewBox={`0 0 ${layout.svgWidth} ${layout.svgHeight}`}
-            className="h-auto min-w-[760px] w-full select-none"
-            role="img"
-            aria-label="Blast-Radius Domino Graph"
-          >
-            <defs>
-              <marker
-                id="arrow-red"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 1 L 10 5 L 0 9 z" fill="#f43f5e" />
-              </marker>
-              <marker
-                id="arrow-green"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981" />
-              </marker>
-              <marker
-                id="arrow-slate"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
-              </marker>
-            </defs>
-
-            {/* Subtle dot-grid background */}
-            <pattern
-              id="sb-grid"
-              width="24"
-              height="24"
-              patternUnits="userSpaceOnUse"
-            >
-              <circle cx="1" cy="1" r="1" fill="#1e293b" opacity="0.65" />
-            </pattern>
-            <rect
-              width={layout.svgWidth}
-              height={layout.svgHeight}
-              fill="url(#sb-grid)"
-            />
-
-            {/* Edges */}
-            {report.graph.edges.map((edge) => {
-              const src = layout.positioned.get(edge.source);
-              const dst = layout.positioned.get(edge.target);
-              if (!src || !dst) return null;
-
-              const x1 = src.x + src.w;
-              const y1 = src.y + src.h / 2;
-              const x2 = dst.x;
-              const y2 = dst.y + dst.h / 2;
-              const dx = Math.max(40, Math.abs(x2 - x1) * 0.48);
-              const pathD = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
-
-              const edgePersists =
-                isNaive &&
-                (persistingEdgeSet.has(edge.id) || edge.survives_naive_revoke);
-              const stroke = !isNaive
-                ? "#10b981"
-                : edgePersists
-                  ? "#f43f5e"
-                  : "#64748b";
-              const marker = !isNaive
-                ? "url(#arrow-green)"
-                : edgePersists
-                  ? "url(#arrow-red)"
-                  : "url(#arrow-slate)";
-              const isSelected = selectedEdgeId === edge.id;
-
-              const midX = (x1 + x2) / 2;
-              const midY = (y1 + y2) / 2 - 8;
+      {/* 4-Stage Escalation Transit Columns (unboxed horizontal flow with vertical stage dividers) */}
+      {report.graph.nodes.length === 0 ? (
+        <div className="py-12 text-center text-[14px] leading-[1.5] text-[#5d5f60]">
+          No escalation chain built for this input. Choose an incident on the
+          left or paste an OAuth authorize URL.
+        </div>
+      ) : (
+        <div className="pt-5">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 xl:gap-5">
+            {STAGE_TITLES.map(({ stage, title, hint }, colIdx) => {
+              const allStageNodes = stageBuckets[stage] ?? [];
+              const visibleNodes = showAllNodes
+                ? allStageNodes
+                : allStageNodes.slice(0, VISIBLE_PER_STAGE);
+              const hiddenCount = Math.max(
+                0,
+                allStageNodes.length - visibleNodes.length,
+              );
+              const stagePersisting = allStageNodes.filter(
+                (n) =>
+                  isNaive &&
+                  (persistingNodeSet.has(n.id) || n.survives_naive_revoke),
+              ).length;
 
               return (
-                <g
-                  key={edge.id}
-                  onClick={() => {
-                    setSelectedEdgeId(edge.id);
-                    setSelectedNodeId(null);
-                  }}
-                  className="cursor-pointer"
+                <div
+                  key={stage}
+                  className="relative flex min-w-0 flex-col xl:border-l xl:border-[#f0f1f2] xl:pl-4 xl:first:border-l-0 xl:first:pl-0"
                 >
-                  <path
-                    d={pathD}
-                    fill="none"
-                    stroke="transparent"
-                    strokeWidth={14}
-                  />
-                  <path
-                    d={pathD}
-                    fill="none"
-                    stroke={stroke}
-                    strokeWidth={isSelected ? 3.5 : edgePersists ? 2.5 : 2}
-                    markerEnd={marker}
-                    className={edgePersists ? "edge-flow-red" : undefined}
-                  />
-                  <rect
-                    x={midX - 28}
-                    y={midY - 9}
-                    width={56}
-                    height={16}
-                    rx={8}
-                    fill="#0f172a"
-                    stroke={stroke}
-                    strokeWidth={1}
-                  />
-                  <text
-                    x={midX}
-                    y={midY + 2}
-                    textAnchor="middle"
-                    fontSize="9"
-                    fontWeight="700"
-                    fill={edgePersists ? "#fda4af" : !isNaive ? "#6ee7b7" : "#cbd5e1"}
-                  >
-                    HOP {edge.hop}
-                  </text>
-                </g>
+                  {/* Stage Column Header */}
+                  <div className="mb-2.5 flex items-baseline justify-between gap-2 border-b border-[#e8eaec] pb-2">
+                    <div>
+                      <div className="text-[14px] font-semibold leading-[1.4] text-[#131416]">
+                        {title}
+                      </div>
+                      <div className="text-[13px] leading-[1.4] text-[#5d5f60]">
+                        {hint}
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-[13px] font-medium text-[#5d5f60] tabular-nums">
+                      {stagePersisting > 0 && isNaive
+                        ? `${stagePersisting} live`
+                        : `${allStageNodes.length}`}
+                    </span>
+                  </div>
+
+                  {/* Connector arrow between column headers on desktop */}
+                  {colIdx < 3 && (
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-4 top-2.5 hidden text-[#9ca3af] xl:block"
+                    >
+                      <ArrowRight size={14} weight="bold" />
+                    </div>
+                  )}
+
+                  {/* Stage Node Rows (clean hairline rows with inline semantic status) */}
+                  {allStageNodes.length === 0 ? (
+                    <div className="py-3 text-[13px] leading-[1.45] text-[#5d5f60]">
+                      {report.summary.max_hops <= 3 && stage === 3
+                        ? "Chain stays inside 3 hops."
+                        : "Chain terminates before this hop."}
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-[#f0f1f2]">
+                      {visibleNodes.map((node) => {
+                        const isPersisting =
+                          isNaive &&
+                          (persistingNodeSet.has(node.id) ||
+                            node.survives_naive_revoke);
+                        const isContained =
+                          !isNaive || containedNodeSet.has(node.id);
+                        const isSelected = activeNode?.id === node.id;
+                        const dimmed =
+                          highlightedBoundary !== null &&
+                          node.trust_boundary !== highlightedBoundary;
+                        const tbMeta = TRUST_BOUNDARY_META[node.trust_boundary];
+
+                        return (
+                          <button
+                            key={node.id}
+                            type="button"
+                            onClick={() => setSelectedNodeId(node.id)}
+                            className={`w-full py-2.5 px-2 text-left transition hover:bg-[#f9fbfc] ${
+                              isSelected ? "bg-[#f4f6f8]" : ""
+                            } ${dimmed ? "opacity-35" : "opacity-100"}`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <span
+                                className={`text-[14px] leading-[1.4] ${
+                                  isSelected
+                                    ? "font-semibold text-[#1b6c80]"
+                                    : "font-medium text-[#131416]"
+                                }`}
+                              >
+                                {humanizeNodeLabel(node)}
+                              </span>
+                              <span className="mt-0.5 shrink-0">
+                                {isPersisting ? (
+                                  <WarningCircle
+                                    size={16}
+                                    weight="fill"
+                                    className="text-[#c4242a]"
+                                  />
+                                ) : isContained ? (
+                                  <CheckCircle
+                                    size={16}
+                                    weight="fill"
+                                    className="text-[#1e7b4f]"
+                                  />
+                                ) : null}
+                              </span>
+                            </div>
+
+                            <div className="mt-1 flex flex-wrap items-center justify-between gap-2 text-[13px] leading-[1.4]">
+                              <span className="text-[#5d5f60]">
+                                {PROVIDER_LABELS[node.provider]} · {tbMeta.short}
+                              </span>
+                              <span
+                                className="font-medium tabular-nums"
+                                style={{
+                                  color: isPersisting
+                                    ? "#831c1e"
+                                    : !isNaive
+                                      ? "#04250e"
+                                      : "#5d5f60",
+                                }}
+                              >
+                                {isPersisting
+                                  ? "Persists"
+                                  : !isNaive
+                                    ? "Contained"
+                                    : node.kind === "human_identity"
+                                      ? "Origin"
+                                      : "Revoked"}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+
+                      {hiddenCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setShowAllNodes(true)}
+                          className="w-full py-2.5 text-left text-[13px] font-medium text-[#1b6c80] hover:underline"
+                        >
+                          Show {hiddenCount} additional target
+                          {hiddenCount === 1 ? "" : "s"} in stage {stage + 1}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               );
             })}
-
-            {/* Nodes */}
-            {Array.from(layout.positioned.values()).map(
-              ({ node, x, y, w, h }) => {
-                const tbMeta = TRUST_BOUNDARY_META[node.trust_boundary];
-                const isPersisting =
-                  isNaive &&
-                  (persistingNodeSet.has(node.id) ||
-                    node.survives_naive_revoke);
-                const isContained = containedNodeSet.has(node.id);
-                const isSelected =
-                  selectedNodeId === node.id ||
-                  (!selectedNodeId && !selectedEdgeId && activeNode?.id === node.id);
-
-                const dimmed =
-                  highlightedBoundary !== null &&
-                  node.trust_boundary !== highlightedBoundary;
-
-                const borderColor = !isNaive
-                  ? "#10b981"
-                  : isPersisting
-                    ? "#f43f5e"
-                    : isContained
-                      ? "#f59e0b"
-                      : "#334155";
-
-                const statusText = !isNaive
-                  ? node.kind === "human_identity"
-                    ? "ORIGIN"
-                    : "CONTAINED"
-                  : isPersisting
-                    ? "PERSISTS"
-                    : isContained
-                      ? "REVOKED"
-                      : "ORIGIN";
-
-                const statusBg = !isNaive
-                  ? node.kind === "human_identity"
-                    ? "#1e293b"
-                    : "#064e3b"
-                  : isPersisting
-                    ? "#881337"
-                    : isContained
-                      ? "#78350f"
-                      : "#1e293b";
-
-                const statusFg = !isNaive
-                  ? node.kind === "human_identity"
-                    ? "#cbd5e1"
-                    : "#6ee7b7"
-                  : isPersisting
-                    ? "#fecdd3"
-                    : isContained
-                      ? "#fde68a"
-                      : "#cbd5e1";
-
-                const lines = wrapLabel(node.label, 25);
-
-                return (
-                  <g
-                    key={node.id}
-                    onClick={() => {
-                      setSelectedNodeId(node.id);
-                      setSelectedEdgeId(null);
-                    }}
-                    opacity={dimmed ? 0.3 : 1}
-                    className="cursor-pointer transition-opacity"
-                  >
-                    {isPersisting && (
-                      <rect
-                        x={x - 3}
-                        y={y - 3}
-                        width={w + 6}
-                        height={h + 6}
-                        rx={12}
-                        fill="none"
-                        stroke="#f43f5e"
-                        strokeWidth={1.5}
-                        className="node-pulse-red"
-                      />
-                    )}
-                    <rect
-                      x={x}
-                      y={y}
-                      width={w}
-                      height={h}
-                      rx={10}
-                      fill={isSelected ? "#162036" : "#0e1525"}
-                      stroke={isSelected ? "#f8fafc" : borderColor}
-                      strokeWidth={isSelected ? 2 : 1.5}
-                    />
-                    {/* Top Trust Boundary Accent Bar */}
-                    <rect
-                      x={x}
-                      y={y}
-                      width={w}
-                      height={4}
-                      rx={2}
-                      fill={tbMeta.colorHex}
-                    />
-                    {/* Boundary pill */}
-                    <text
-                      x={x + 10}
-                      y={y + 20}
-                      fontSize="9.5"
-                      fontWeight="700"
-                      fill={tbMeta.colorHex}
-                    >
-                      {tbMeta.short.toUpperCase()}
-                    </text>
-                    {/* Containment state pill */}
-                    <rect
-                      x={x + w - 74}
-                      y={y + 10}
-                      width={64}
-                      height={15}
-                      rx={7.5}
-                      fill={statusBg}
-                    />
-                    <text
-                      x={x + w - 42}
-                      y={y + 20.5}
-                      textAnchor="middle"
-                      fontSize="8.5"
-                      fontWeight="700"
-                      fill={statusFg}
-                    >
-                      {statusText}
-                    </text>
-
-                    {/* Label lines */}
-                    {lines.map((line, i) => (
-                      <text
-                        key={i}
-                        x={x + 10}
-                        y={y + 42 + i * 16}
-                        fontSize="11.5"
-                        fontWeight="600"
-                        fill="#f1f5f9"
-                      >
-                        {line}
-                      </text>
-                    ))}
-
-                    {/* Footer provider + risk */}
-                    <text
-                      x={x + 10}
-                      y={y + h - 11}
-                      fontSize="9.5"
-                      fill="#94a3b8"
-                    >
-                      {PROVIDER_LABELS[node.provider]}
-                    </text>
-                    <text
-                      x={x + w - 10}
-                      y={y + h - 11}
-                      textAnchor="end"
-                      fontSize="10"
-                      fontWeight="700"
-                      fill={node.risk_score >= 85 ? "#fda4af" : "#94a3b8"}
-                    >
-                      Risk {node.risk_score}
-                    </text>
-                  </g>
-                );
-              },
-            )}
-          </svg>
-        )}
-      </div>
-
-      {/* Forensic Node / Edge Inspector */}
-      <div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-        {activeEdge ? (
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="rounded bg-slate-800 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-200">
-                  HOP {activeEdge.hop} · {activeEdge.relation}
-                </span>
-                <span
-                  className={`rounded px-2 py-0.5 font-mono text-[11px] font-semibold ${
-                    isNaive && activeEdge.survives_naive_revoke
-                      ? "bg-rose-500/20 text-rose-300"
-                      : "bg-emerald-500/20 text-emerald-300"
-                  }`}
-                >
-                  {isNaive && activeEdge.survives_naive_revoke
-                    ? "SURVIVES SINGLE RFC 7009 REVOKE"
-                    : "CONTAINED"}
-                </span>
-              </div>
-              <div className="mt-1.5 text-sm font-medium text-slate-100">
-                {activeEdge.mechanism}
-              </div>
-            </div>
-            <div className="break-all font-mono text-[11px] text-slate-400">
-              {activeEdge.source} → {activeEdge.target}
-            </div>
           </div>
-        ) : activeNode ? (
-          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between">
-            <div>
+        </div>
+      )}
+
+      {/* Selected Step Forensic Inspector (clean top hairline, zero side tab or boxed card) */}
+      {activeNode && (
+        <div className="mt-5 border-t border-[#e8eaec] pt-4">
+          <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
+            <div className="max-w-[74ch]">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-slate-100">
-                  {activeNode.label}
+                <span className="text-[14px] font-semibold leading-[1.4] text-[#131416]">
+                  Selected node: {humanizeNodeLabel(activeNode)}
                 </span>
                 <span
-                  className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
-                    TRUST_BOUNDARY_META[activeNode.trust_boundary].badgeClass
-                  }`}
+                  className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium"
+                  style={{
+                    backgroundColor: SEVERITY_META[activeNode.severity].bg,
+                    color: SEVERITY_META[activeNode.severity].ink,
+                  }}
+                >
+                  {SEVERITY_META[activeNode.severity].label} ({activeNode.risk_score}/100)
+                </span>
+                <span
+                  className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium"
+                  style={{
+                    backgroundColor:
+                      TRUST_BOUNDARY_META[activeNode.trust_boundary].tagBg,
+                    color: TRUST_BOUNDARY_META[activeNode.trust_boundary].tagInk,
+                  }}
                 >
                   {TRUST_BOUNDARY_META[activeNode.trust_boundary].label}
                 </span>
-                <span
-                  className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
-                    SEVERITY_META[activeNode.severity].badgeClass
-                  }`}
-                >
-                  {SEVERITY_META[activeNode.severity].label} ({activeNode.risk_score}
-                  /100)
-                </span>
               </div>
-              <p className="mt-1 text-xs text-slate-300">{activeNode.notes}</p>
+              <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
+                {activeNode.notes}
+              </p>
+              {activeNodeIncoming.length > 0 && (
+                <div className="mt-1.5 text-[13px] leading-[1.45] text-[#5d5f60]">
+                  Escalation trigger:{" "}
+                  <span className="font-medium text-[#131416]">
+                    {activeNodeIncoming[0].mechanism}
+                  </span>
+                </div>
+              )}
             </div>
-            <div className="shrink-0 font-mono text-[11px] text-slate-400">
-              kind: {activeNode.kind}
+
+            <div className="shrink-0 text-[13px] text-[#5d5f60]">
+              Raw key: <code>{activeNode.label}</code>
             </div>
           </div>
-        ) : null}
-      </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -91,6 +91,12 @@ async function init() {
         : `${PROVIDER_LABELS[decision.provider]} Request Matches Least-Privilege Baseline`;
 
   scoreEl.textContent = `${decision.risk_score} / 100`;
+  scoreEl.style.color =
+    decision.risk_score >= 80
+      ? "#c4242a"
+      : decision.risk_score >= 45
+        ? "#92400e"
+        : "#1e7b4f";
   providerEl.textContent = PROVIDER_LABELS[decision.provider];
   clientEl.textContent = parsed.client_id ?? "unknown";
   redirectEl.textContent = `${parsed.redirect_uri ?? "unknown"}${parsed.access_type ? ` (${parsed.access_type})` : ""}`;

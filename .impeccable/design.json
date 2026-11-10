@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T17:10:00+05:30",
+  "title": "Design System: ScopeBomb",
+  "extensions": {
+    "colorMeta": {
+      "slate-ice-ground": {
+        "role": "neutral",
+        "displayName": "Slate-Ice Ground",
+        "canonical": "#f9fbfc",
+        "tonalRamp": ["#131416", "#2a2c30", "#45484b", "#5d5f60", "#8e9296", "#c4c8cc", "#ebedee", "#f9fbfc"]
+      },
+      "porcelain-sheet": {
+        "role": "neutral",
+        "displayName": "Porcelain Work Sheet",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#131416", "#2e3033", "#4a4d50", "#696d70", "#9aa0a6", "#d0d4d8", "#f4f6f8", "#ffffff"]
+      },
+      "deep-teal-accent": {
+        "role": "primary",
+        "displayName": "Deep Teal Accent",
+        "canonical": "#1b6c80",
+        "tonalRamp": ["#0a2c35", "#114452", "#165869", "#1b6c80", "#2f859b", "#5ea4b6", "#a8d2dc", "#e6f2f5"]
+      },
+      "emerald-contained": {
+        "role": "semantic",
+        "displayName": "Emerald Contained",
+        "canonical": "#1e7b4f",
+        "tonalRamp": ["#04250e", "#0c4123", "#155d38", "#1e7b4f", "#339967", "#61b98b", "#a3dfc0", "#dcfae5"]
+      },
+      "crimson-persisting": {
+        "role": "semantic",
+        "displayName": "Crimson Persisting",
+        "canonical": "#c4242a",
+        "tonalRamp": ["#4b0d10", "#6b1518", "#831c1e", "#c4242a", "#dc484e", "#ec7b7f", "#f7babd", "#ffedea"]
+      },
+      "amber-warning": {
+        "role": "semantic",
+        "displayName": "Amber Warning",
+        "canonical": "#92400e",
+        "tonalRamp": ["#451a03", "#692a06", "#7d340a", "#92400e", "#b45309", "#d97706", "#fcd34d", "#fffbeb"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display KPI", "purpose": "Calm weight-400 tabular metric figures across the 4-cell strip." },
+      "headline": { "displayName": "Sheet Headline", "purpose": "Primary 1-2 line containment and risk summary heading." },
+      "title": { "displayName": "Section Title", "purpose": "Top-level workbench section and modal headers." },
+      "body": { "displayName": "Body Copy", "purpose": "Prose explanations, forensic node descriptions, and educational copy." },
+      "label": { "displayName": "Mono & Control Label", "purpose": "OAuth scopes, endpoints, redacted env vars, and compact controls." }
+    },
+    "shadows": [
+      { "name": "none-resting", "value": "none", "purpose": "Flat-by-default sheets use 1px #e8eaec borders instead of drop shadows." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Crisp control hovers and active indicator transitions, disabled cleanly under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "High-contrast carbon action trigger used for running inspections and mode flips.",
+      "html": "<button class=\"ds-btn-primary\">Switch to full plan</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 12px; border-radius: 6px; border: 1px solid #131416; background: #131416; color: #ffffff; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary:hover { background: #2a2c30; } .ds-btn-primary:focus-visible { outline: 2px solid #1b6c80; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Hairline Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined secondary button for custom scans, copy actions, and extension links.",
+      "html": "<button class=\"ds-btn-secondary\">Custom URL / .mcp.json</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 12px; border-radius: 6px; border: 1px solid #cdced1; background: #ffffff; color: #131416; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-secondary:hover { background: #f4f6f8; } .ds-btn-secondary:focus-visible { outline: 2px solid #1b6c80; outline-offset: 2px; }"
+    },
+    {
+      "name": "Deep Teal Verification Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Reserved brand-teal CTA for closing the PKCE clean-scope re-audit loop.",
+      "html": "<button class=\"ds-btn-accent\">Re-audit clean scopes &rarr;</button>",
+      "css": ".ds-btn-accent { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 6px; border: none; background: #1b6c80; color: #ffffff; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-accent:hover { background: #155768; } .ds-btn-accent:focus-visible { outline: 2px solid #1b6c80; outline-offset: 2px; }"
+    },
+    {
+      "name": "URL Scanner Input",
+      "kind": "input",
+      "refersTo": "text-input",
+      "description": "Single-line OAuth authorize URL input paired with primary inspect button.",
+      "html": "<input class=\"ds-input\" type=\"url\" value=\"https://accounts.google.com/o/oauth2/v2/auth?scope=gmail.modify\" />",
+      "css": ".ds-input { width: 100%; height: 36px; padding: 0 12px; border-radius: 6px; border: 1px solid #cdced1; background: #ffffff; color: #131416; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; } .ds-input:focus-visible { outline: 2px solid #1b6c80; outline-offset: 2px; }"
+    },
+    {
+      "name": "Workspace Navigation Row",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Compact left-rail view tab with subtle slate fill and teal icon highlight.",
+      "html": "<button class=\"ds-nav-item is-active\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><circle cx=\"128\" cy=\"128\" r=\"64\"/></svg> Blast simulator</button>",
+      "css": ".ds-nav-item { display: flex; align-items: center; gap: 10px; width: 100%; height: 32px; padding: 0 8px; border-radius: 6px; border: none; background: transparent; color: #5d5f60; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 400; text-align: left; cursor: pointer; } .ds-nav-item:hover { background: #f0f2f4; color: #131416; } .ds-nav-item.is-active { background: #ebedee; color: #131416; font-weight: 500; } .ds-nav-item.is-active svg { color: #1b6c80; }"
+    },
+    {
+      "name": "Semantic Outcome Pills",
+      "kind": "chip",
+      "refersTo": "chip-danger",
+      "description": "Capsule status indicators contrasting surviving compromise vs. verified containment.",
+      "html": "<div style=\"display:flex;gap:8px;flex-wrap:wrap;\"><span class=\"ds-pill ds-pill-danger\">24 paths persist after HTTP 200</span><span class=\"ds-pill ds-pill-safe\">100% contained</span></div>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 9999px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; } .ds-pill-danger { background: #ffedea; color: #831c1e; } .ds-pill-safe { background: #dcfae5; color: #04250e; }"
+    },
+    {
+      "name": "Hairline Transit Domino Row",
+      "kind": "custom",
+      "refersTo": "work-sheet",
+      "description": "Signature hairline list item inside the 4-stage Domino escalation columns.",
+      "html": "<button class=\"ds-domino-row is-selected\"><div class=\"ds-domino-top\"><span>External API takeover (.env files)</span><span class=\"ds-dot-danger\">!</span></div><div class=\"ds-domino-sub\"><span>Cross-issuer · Enterprise</span><span class=\"ds-status-danger\">Persists</span></div></button>",
+      "css": ".ds-domino-row { width: 100%; padding: 10px 8px; border: none; border-bottom: 1px solid #f0f1f2; background: #ffffff; text-align: left; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; } .ds-domino-row:hover { background: #f9fbfc; } .ds-domino-row.is-selected { background: #f4f6f8; } .ds-domino-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; font-size: 14px; font-weight: 600; color: #1b6c80; } .ds-domino-sub { display: flex; justify-content: space-between; margin-top: 4px; font-size: 13px; color: #5d5f60; font-variant-numeric: tabular-nums; } .ds-dot-danger { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 9999px; background: #c4242a; color: #ffffff; font-size: 11px; font-weight: 700; } .ds-status-danger { font-weight: 500; color: #831c1e; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Forensic Transit Sheet",
+    "overview": "ScopeBomb treats OAuth and shadow-AI blast-radius triage with the calm authority of an engineering transit diagram printed on crisp porcelain paper. Rather than dark-mode security theater filled with glowing gauges, nested widgets, and stacked cards, the workspace pairs a single cool slate-ice L-frame (left rail plus compact top bar) with an inset white sheet delimited exclusively by 1px hairlines.\n\nEvery surface decision exists to speed comprehension across all three tools — the interactive Web Arena, the Chrome MV3 Pre-Consent Guard, and the local CLI — so a first-time reviewer can tell in seconds why a nominal `HTTP 200 OK` revoke leaves downstream providers exposed and verify how a multi-issuer plan or PKCE-safe scope downgrade resolves the chain.",
+    "keyCharacteristics": [
+      "Porcelain L-frame chrome (#f9fbfc) enclosing a crisp white inset work sheet (#ffffff) with subtle 1px hairline structure and zero resting shadows.",
+      "Tabular numeric hierarchy (IBM Plex Sans) reserved strictly for prose, headlines, and counts, paired with disciplined IBM Plex Mono inside code and token primitives only.",
+      "Quarantined color grammar where status chroma (#c4242a persisting breach, #1e7b4f contained path, #92400e RFC 7009 caveat) signals execution outcomes while interactive navigation accents stay restrained under deep teal (#1b6c80)."
+    ],
+    "rules": [
+      {
+        "name": "The Quarantined Signal Rule",
+        "body": "Saturated red, amber, and green belong strictly to simulation truth (persisting compromise, HTTP 200 traps, verified containment). Chrome, wrappers, and passive labels remain anchored in #f9fbfc-#131416 neutrals with #1b6c80 for focus and primary exploration links.",
+        "section": "colors"
+      },
+      {
+        "name": "The Zero-Eyebrow, Zero-Sub-13px Rule",
+        "body": "Web UI copy maintains a 13px typographic floor (13 / 14 / 16 / 22 / 28px) with no uppercase category kickers above headings and zero prose rendered in monospace.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Resting containers use zero box-shadow and zero nested card wrappers. Hairline horizontal rules (border-[#e8eaec]) and vertical column dividers establish hierarchy without stacked rectangular boxes.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep all security status semantics consistent across Web Arena, Chrome Extension Popup/Guard, and CLI explanations (Persists/Critical in #c4242a/#831c1e, Contained/Low in #1e7b4f/#04250e, RFC 7009 warning in #92400e).",
+      "Do preserve 1px solid #e8eaec/#f0f1f2 hairline separation directly inside the single inset #ffffff sheet without wrapping sections in secondary bordered cards.",
+      "Do mask secrets locally before display (GITHUB_TOKEN ([REDACTED])), allow URL/command wrapping cleanly without mid-word breaks on normal English prose ([overflow-wrap:anywhere]), and collapse wide checklist tables into stacked hairline items below 768px."
+    ],
+    "donts": [
+      "Don't nest bordered or shaded cards inside .sheet / <main> (verified by keeping automated detector output at zero findings).",
+      "Don't add decorative 3px left border stripes on alerts, uppercase category kickers above headings, drop shadows on resting panels, or dark-mode neon gradients.",
+      "Don't render plain narrative sentences in IBM Plex Mono or drop Web Arena labels below 13px."
+    ]
+  }
+}

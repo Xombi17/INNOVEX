@@ -6,13 +6,15 @@ apps/web/.next/
 .env
 .env.*
 
-# Multi-agent orchestration, worktrees, tests & extension bundle
+# Multi-agent orchestration, worktrees, tests, design artifacts & extension bundle
 .git/
 .agents/
 .codex/
 .planning/
 .worktrees/
 .superpowers/
+.taste-skill/
+.impeccable/
 graphify-out/
 tests/
 apps/extension/

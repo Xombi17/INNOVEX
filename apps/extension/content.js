@@ -24,20 +24,20 @@
     const bar = createEl("div", {
       background:
         decision.action === "BLOCK_PRE_CONSENT"
-          ? "linear-gradient(90deg,#3b0718,#190913)"
-          : "linear-gradient(90deg,#2a1805,#13100a)",
-      color: "#f8fafc",
+          ? "#ffedea"
+          : "#fffbeb",
+      color: "#131416",
       borderBottom:
         decision.action === "BLOCK_PRE_CONSENT"
-          ? "2px solid #f43f5e"
-          : "2px solid #f59e0b",
+          ? "1px solid #c4242a"
+          : "1px solid #92400e",
       padding: "10px 16px",
       display: "flex",
       flexWrap: "wrap",
       alignItems: "center",
       justifyContent: "space-between",
       gap: "10px",
-      boxShadow: "0 8px 24px rgba(0,0,0,0.45)",
+      boxShadow: "0 4px 12px rgba(19,20,22,0.08)",
       fontSize: "12px",
     });
 
@@ -58,22 +58,21 @@
     const badge = createEl(
       "span",
       {
-        background: decision.action === "BLOCK_PRE_CONSENT" ? "#e11d48" : "#d97706",
+        background: decision.action === "BLOCK_PRE_CONSENT" ? "#c4242a" : "#92400e",
         color: "#ffffff",
-        fontWeight: "700",
-        padding: "2px 7px",
+        fontWeight: "600",
+        padding: "2px 8px",
         borderRadius: "4px",
-        fontSize: "10px",
-        letterSpacing: "0.04em",
+        fontSize: "11px",
       },
-      `SCOPEBOMB ${decision.action} · RISK ${decision.risk_score}/100`,
+      `ScopeBomb ${decision.action} · Risk ${decision.risk_score}/100`,
     );
 
     const headline = createEl(
       "strong",
-      { color: "#f8fafc", fontSize: "12px" },
+      { color: "#131416", fontSize: "13px" },
       bypassed
-        ? "Bypassed pre-consent block — review flagged scopes before clicking Allow."
+        ? "Bypassed pre-consent block: review flagged scopes before clicking Allow."
         : "Over-scoped OAuth consent detected before authorization.",
     );
 
@@ -88,7 +87,7 @@
 
     const sub = createEl(
       "div",
-      { color: "#cbd5e1", fontSize: "11px", lineHeight: "1.4" },
+      { color: "#5d5f60", fontSize: "12px", lineHeight: "1.4" },
       `${decision.pkce_protected ? "PKCE detected: mid-flight scope rewriting breaks code_challenge. " : ""}${downgrades}`,
     );
 
@@ -104,13 +103,13 @@
     const guardBtn = createEl(
       "button",
       {
-        background: "#1e293b",
-        color: "#e2e8f0",
-        border: "1px solid #475569",
+        background: "#ffffff",
+        color: "#131416",
+        border: "1px solid #cdced1",
         borderRadius: "6px",
         padding: "6px 10px",
-        fontSize: "11px",
-        fontWeight: "600",
+        fontSize: "12px",
+        fontWeight: "500",
         cursor: "pointer",
       },
       "Open Guard Details",
@@ -123,15 +122,15 @@
     const arenaLink = createEl(
       "a",
       {
-        background: "#0284c7",
+        background: "#131416",
         color: "#ffffff",
         textDecoration: "none",
         borderRadius: "6px",
         padding: "6px 10px",
-        fontSize: "11px",
-        fontWeight: "600",
+        fontSize: "12px",
+        fontWeight: "500",
       },
-      "Open in ScopeBomb Arena ↗",
+      "Open in ScopeBomb Arena",
     );
     arenaLink.href = `${arenaBaseUrl.replace(/\/+$/, "")}/?oauth_url=${encodeURIComponent(currentUrl)}`;
     arenaLink.target = "_blank";
@@ -141,11 +140,11 @@
       "button",
       {
         background: "transparent",
-        color: "#94a3b8",
-        border: "1px solid #334155",
+        color: "#5d5f60",
+        border: "1px solid #cdced1",
         borderRadius: "6px",
-        padding: "5px 8px",
-        fontSize: "11px",
+        padding: "5px 9px",
+        fontSize: "12px",
         cursor: "pointer",
       },
       "Dismiss",

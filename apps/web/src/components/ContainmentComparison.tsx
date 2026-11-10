@@ -1,28 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
-import type { AuditReport, SimulationMode } from "@contracts/index";
-import { PROVIDER_LABELS } from "./uiTokens";
+import React, { useMemo, useState } from "react";
+import {
+  ArrowSquareOut,
+  CaretDown,
+  CaretRight,
+  Check,
+  Copy,
+} from "@phosphor-icons/react";
+import type { AuditReport, BlastNode, SimulationMode } from "@contracts/index";
+import { PROVIDER_LABELS, humanizeNodeLabel } from "./uiTokens";
 
 interface ContainmentComparisonProps {
   report: AuditReport;
   simulationMode: SimulationMode;
   onChangeSimulationMode: (mode: SimulationMode) => void;
+  showFullTableByDefault?: boolean;
 }
 
 export function ContainmentComparison({
   report,
   simulationMode,
   onChangeSimulationMode,
+  showFullTableByDefault = false,
 }: ContainmentComparisonProps) {
   const [copiedCmdKey, setCopiedCmdKey] = useState<string | null>(null);
+  const [showAllSurviving, setShowAllSurviving] = useState(false);
+  const [showAllSteps, setShowAllSteps] = useState(showFullTableByDefault);
 
   const naive = report.naive_containment;
   const full = report.full_containment;
-  const nodeMap = new Map(report.graph.nodes.map((n) => [n.id, n]));
+
+  const nodeMap = useMemo(
+    () => new Map(report.graph.nodes.map((n) => [n.id, n])),
+    [report.graph.nodes],
+  );
 
   const naivePct = Math.round(naive.containment_ratio * 100);
   const fullPct = Math.round(full.containment_ratio * 100);
+  const isNaive = simulationMode === "naive_single_revoke";
+
+  const survivingByProvider = useMemo(() => {
+    const groups = new Map<string, BlastNode[]>();
+    for (const id of naive.persisting_node_ids) {
+      const node = nodeMap.get(id);
+      const label = node ? PROVIDER_LABELS[node.provider] : "Other";
+      const list = groups.get(label) ?? [];
+      if (node) list.push(node);
+      groups.set(label, list);
+    }
+    return Array.from(groups.entries()).sort(
+      (a, b) => b[1].length - a[1].length,
+    );
+  }, [naive.persisting_node_ids, nodeMap]);
 
   const handleCopy = async (key: string, text: string) => {
     try {
@@ -32,293 +62,446 @@ export function ContainmentComparison({
         setCopiedCmdKey((prev) => (prev === key ? null : prev));
       }, 1500);
     } catch {
-      // Clipboard API may be blocked in insecure headless contexts; fail silently.
+      // Clipboard optional in headless sessions
     }
   };
 
+  const visibleSteps = showAllSteps
+    ? full.ordered_steps
+    : full.ordered_steps.slice(0, 6);
+  const hiddenStepsCount = Math.max(
+    0,
+    full.ordered_steps.length - visibleSteps.length,
+  );
+
   return (
     <section
-      aria-label="Side-by-Side Containment Comparison"
-      className="grid grid-cols-1 gap-4 lg:grid-cols-2"
+      aria-label="Naive RFC 7009 revoke vs full multi-issuer containment"
+      className="space-y-6 border-t border-[#e8eaec] pt-6"
     >
-      {/* LEFT: NAIVE RFC 7009 TRAP */}
-      <div
-        className={`flex min-w-0 flex-col justify-between rounded-xl border p-4 shadow-lg transition ${
-          simulationMode === "naive_single_revoke"
-            ? "border-rose-500/70 bg-[#140d18]"
-            : "border-slate-800 bg-[#0d1424]"
-        }`}
-      >
+      {/* Top Unboxed 2-Column Split Separated by Vertical Hairline */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+        {/* LEFT: NAIVE RFC 7009 TRAP */}
         <div>
-          <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-            <div>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="max-w-[54ch]">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-rose-200">
-                  3A. Naive Single Revoke
-                </h3>
-                <span className="rounded border border-amber-500/50 bg-amber-500/15 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-300">
+                <h2 className="text-[16px] font-semibold leading-[1.4] text-[#131416]">
+                  Naive single revoke (RFC 7009 trap)
+                </h2>
+                <span
+                  className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium tabular-nums"
+                  style={{ backgroundColor: "#fffbeb", color: "#92400e" }}
+                >
                   {naive.rfc7009_http_status_returned > 0
-                    ? `HTTP ${naive.rfc7009_http_status_returned} OK (TRAP)`
-                    : "NON-RFC 7009 (N/A · 0)"}
+                    ? `Returns HTTP ${naive.rfc7009_http_status_returned}`
+                    : "Single-issuer only"}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-slate-400">
-                {naive.rfc7009_http_status_returned > 0
-                  ? `Illusion of safety: revoking one token returns HTTP ${naive.rfc7009_http_status_returned}, yet attackers stay inside downstream boundaries.`
-                  : "Single-issuer action does not touch separate GitHub/Vercel/OpenAI credentials or residual access tokens."}
+              <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
+                Revoking one token gives an affirmative confirmation while
+                leaving other providers and credentials open.
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => onChangeSimulationMode("naive_single_revoke")}
-              className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
-                simulationMode === "naive_single_revoke"
-                  ? "border-rose-400 bg-rose-600 text-white"
-                  : "border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20"
+              className={`h-8 shrink-0 rounded-[6px] px-3 text-[13px] font-medium transition ${
+                isNaive
+                  ? "bg-[#131416] text-[#ffffff]"
+                  : "border border-[#cdced1] bg-[#ffffff] text-[#131416] hover:bg-[#f4f6f8]"
               }`}
             >
-              {simulationMode === "naive_single_revoke"
-                ? "Active on Graph"
-                : "Show Red Paths"}
+              {isNaive ? "Active on graph" : "Simulate naive"}
             </button>
           </div>
 
-          {/* Metrics Row */}
-          <div className="mb-3 grid grid-cols-3 gap-2">
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2">
-              <div className="text-[10px] uppercase text-slate-400">
-                Contained
-              </div>
-              <div className="font-mono text-base font-bold text-rose-300">
+          {/* 3 Tabular Numbers (unboxed hairline rule band) */}
+          <div className="mt-4 grid grid-cols-3 border-y border-[#e8eaec] py-3">
+            <div className="pr-3">
+              <div className="text-[13px] text-[#5d5f60]">Stopped</div>
+              <div className="mt-0.5 text-[22px] font-normal leading-[1.35] text-[#831c1e] tabular-nums">
                 {naivePct}%
               </div>
             </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2">
-              <div className="text-[10px] uppercase text-slate-400">
-                Persisting Nodes
-              </div>
-              <div className="font-mono text-base font-bold text-rose-400">
+            <div className="border-l border-[#f0f1f2] px-3">
+              <div className="text-[13px] text-[#5d5f60]">Surviving</div>
+              <div className="mt-0.5 text-[22px] font-normal leading-[1.35] text-[#131416] tabular-nums">
                 {naive.persisting_node_ids.length}
               </div>
             </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2">
-              <div className="text-[10px] uppercase text-slate-400">
-                Residual JWT TTL
-              </div>
-              <div className="font-mono text-base font-bold text-amber-300">
+            <div className="border-l border-[#f0f1f2] pl-3">
+              <div className="text-[13px] text-[#5d5f60]">Residual JWT</div>
+              <div className="mt-0.5 text-[22px] font-normal leading-[1.35] text-[#92400e] tabular-nums">
                 {naive.jwt_residual_ttl_seconds}s
               </div>
             </div>
           </div>
 
-          {/* RFC 7009 Trap Warning */}
-          <div className="mb-3 rounded-lg border border-rose-500/40 bg-rose-950/30 p-3">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-rose-300">
-              {naive.rfc7009_http_status_returned > 0
-                ? `Why HTTP ${naive.rfc7009_http_status_returned} Does Not Equal Containment`
-                : "Why Single-Grant Revocation Leaves Attackers Active"}
-            </div>
-            <p className="mt-1 text-xs leading-relaxed text-rose-100/90">
-              {naive.rfc7009_trap_warning}
-            </p>
-          </div>
+          <p className="mt-4 border-b border-[#f0c8ca] pb-3.5 text-[14px] leading-[1.5] text-[#831c1e]">
+            {naive.rfc7009_trap_warning}
+          </p>
 
-          {/* Persisting Blast Nodes */}
-          <div className="mb-3">
-            <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-              Surviving Attacker Paths ({naive.persisting_node_ids.length})
+          {/* Grouped Surviving Exposure by Provider */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between gap-2 border-b border-[#f0f1f2] pb-2">
+              <span className="text-[14px] font-medium text-[#131416]">
+                Surviving attacker paths by provider (
+                <span className="tabular-nums">
+                  {naive.persisting_node_ids.length}
+                </span>
+                )
+              </span>
+              {naive.persisting_node_ids.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllSurviving((v) => !v)}
+                  className="inline-flex items-center gap-1 text-[13px] font-medium text-[#1b6c80] hover:underline"
+                >
+                  {showAllSurviving ? (
+                    <>
+                      <CaretDown size={14} />
+                      Group summary
+                    </>
+                  ) : (
+                    <>
+                      <CaretRight size={14} />
+                      Expand paths
+                    </>
+                  )}
+                </button>
+              )}
             </div>
+
             {naive.persisting_node_ids.length === 0 ? (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-2.5 text-xs text-emerald-300">
-                No downstream persistence detected for this minimal scope set.
-              </div>
-            ) : (
-              <div className="space-y-1.5">
+              <p className="py-3 text-[14px] leading-[1.5] text-[#1e7b4f]">
+                No surviving paths detected for this minimal grant.
+              </p>
+            ) : showAllSurviving ? (
+              <div className="divide-y divide-[#f0f1f2]">
                 {naive.persisting_node_ids.map((id) => {
                   const node = nodeMap.get(id);
                   return (
                     <div
                       key={id}
-                      className="flex items-start justify-between gap-2 rounded-lg border border-rose-500/30 bg-rose-950/20 px-2.5 py-2"
+                      className="flex items-start justify-between gap-3 py-2.5"
                     >
-                      <div>
-                        <div className="text-xs font-semibold text-rose-200">
-                          {node?.label ?? id}
+                      <div className="min-w-0">
+                        <div className="text-[14px] font-medium leading-[1.45] text-[#131416]">
+                          {node ? humanizeNodeLabel(node) : id}
                         </div>
                         {node?.notes && (
-                          <div className="mt-0.5 text-[11px] text-rose-200/75">
+                          <div className="mt-0.5 text-[13px] leading-[1.45] text-[#5d5f60]">
                             {node.notes}
                           </div>
                         )}
                       </div>
-                      {node && (
-                        <span className="shrink-0 rounded bg-rose-500/20 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-rose-300">
-                          {PROVIDER_LABELS[node.provider]}
-                        </span>
-                      )}
+                      <span className="shrink-0 text-[13px] font-medium text-[#831c1e]">
+                        {node ? PROVIDER_LABELS[node.provider] : "External"}
+                      </span>
                     </div>
                   );
                 })}
+              </div>
+            ) : (
+              <div className="divide-y divide-[#f0f1f2]">
+                {survivingByProvider.map(([providerName, items]) => (
+                  <div
+                    key={providerName}
+                    className="flex items-center justify-between gap-3 py-2.5 text-[14px] leading-[1.45]"
+                  >
+                    <div className="min-w-0">
+                      <span className="font-medium text-[#131416]">
+                        {providerName}
+                      </span>
+                      <span className="ml-2 text-[13px] text-[#5d5f60]">
+                        {items
+                          .slice(0, 2)
+                          .map((item) => humanizeNodeLabel(item))
+                          .join(", ")}
+                        {items.length > 2 ? ` + ${items.length - 2} more` : ""}
+                      </span>
+                    </div>
+                    <span className="shrink-0 font-medium text-[#831c1e] tabular-nums">
+                      {items.length} open
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
         </div>
 
-        {/* Single Naive Step Attempted */}
-        {naive.ordered_steps[0] && (
-          <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2.5">
-            <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              Single Action Executed in Naive Response
-            </div>
-            <div className="mt-1 break-all font-mono text-xs text-slate-200">
-              {naive.ordered_steps[0].command_or_endpoint}
-            </div>
-            <div className="mt-1 text-[11px] text-amber-300/90">
-              Gap: {naive.ordered_steps[0].why_naive_fails}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* RIGHT: FULL MULTI-ISSUER CONTAINMENT PLAN */}
-      <div
-        className={`flex min-w-0 flex-col justify-between rounded-xl border p-4 shadow-lg transition ${
-          simulationMode === "full_multi_issuer"
-            ? "border-emerald-500/70 bg-[#0b1815]"
-            : "border-slate-800 bg-[#0d1424]"
-        }`}
-      >
-        <div>
-          <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-            <div>
+        {/* RIGHT: FULL MULTI-ISSUER PLAN SUMMARY */}
+        <div className="lg:border-l lg:border-[#e8eaec] lg:pl-8">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="max-w-[54ch]">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-emerald-200">
-                  3B. Full Multi-Issuer Containment Plan
-                </h3>
-                <span className="rounded border border-emerald-500/50 bg-emerald-500/15 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-300">
-                  {fullPct}% VERIFIED
+                <h2 className="text-[16px] font-semibold leading-[1.4] text-[#131416]">
+                  Full multi-issuer containment plan
+                </h2>
+                <span
+                  className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium tabular-nums"
+                  style={{ backgroundColor: "#dcfae5", color: "#04250e" }}
+                >
+                  {fullPct}% contained
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Priority-ordered remediation across every issuer with API
-                rejection probes beyond HTTP 200 (zero destructive live calls).
+              <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
+                Priority-ordered revocations and rotations at each real issuer
+                with API rejection verification probes beyond HTTP 200.
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => onChangeSimulationMode("full_multi_issuer")}
-              className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
-                simulationMode === "full_multi_issuer"
-                  ? "border-emerald-400 bg-emerald-600 text-white"
-                  : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+              className={`h-8 shrink-0 rounded-[6px] px-3 text-[13px] font-medium transition ${
+                !isNaive
+                  ? "bg-[#1e7b4f] text-[#ffffff]"
+                  : "border border-[#cdced1] bg-[#ffffff] text-[#131416] hover:bg-[#f4f6f8]"
               }`}
             >
-              {simulationMode === "full_multi_issuer"
-                ? "Active on Graph"
-                : "Apply Full Plan"}
+              {!isNaive ? "Active on graph" : "Apply full plan"}
             </button>
           </div>
 
-          <div className="mb-3 grid grid-cols-3 gap-2">
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2">
-              <div className="text-[10px] uppercase text-slate-400">
-                Contained
-              </div>
-              <div className="font-mono text-base font-bold text-emerald-300">
+          <div className="mt-4 grid grid-cols-3 border-y border-[#e8eaec] py-3">
+            <div className="pr-3">
+              <div className="text-[13px] text-[#5d5f60]">Contained</div>
+              <div className="mt-0.5 text-[22px] font-normal leading-[1.35] text-[#04250e] tabular-nums">
                 {fullPct}%
               </div>
             </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2">
-              <div className="text-[10px] uppercase text-slate-400">
-                Issuer Steps
-              </div>
-              <div className="font-mono text-base font-bold text-emerald-300">
+            <div className="border-l border-[#f0f1f2] px-3">
+              <div className="text-[13px] text-[#5d5f60]">Issuer steps</div>
+              <div className="mt-0.5 text-[22px] font-normal leading-[1.35] text-[#131416] tabular-nums">
                 {full.ordered_steps.length}
               </div>
             </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-2">
-              <div className="text-[10px] uppercase text-slate-400">
-                Persisting Paths
-              </div>
-              <div className="font-mono text-base font-bold text-emerald-400">
+            <div className="border-l border-[#f0f1f2] pl-3">
+              <div className="text-[13px] text-[#5d5f60]">Still open</div>
+              <div className="mt-0.5 text-[22px] font-normal leading-[1.35] text-[#04250e] tabular-nums">
                 {full.persisting_node_ids.length}
               </div>
             </div>
           </div>
 
-          {/* Ordered Multi-Issuer Steps */}
-          <div className="space-y-2.5">
-            {full.ordered_steps.map((step) => {
-              const copyKey = `step-${step.priority}-${step.issuer}`;
-              const copied = copiedCmdKey === copyKey;
-              return (
-                <div
-                  key={copyKey}
-                  className="rounded-lg border border-slate-800 bg-slate-950/80 p-3"
-                >
-                  <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+          {/* Single Action Attempted in Naive Mode */}
+          {naive.ordered_steps[0] && (
+            <div className="mt-4 border-b border-[#f0f1f2] pb-3.5">
+              <div className="text-[13px] font-medium text-[#5d5f60]">
+                What a single revoke alone actually called
+              </div>
+              <code className="mt-1.5 block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#131416]">
+                {naive.ordered_steps[0].command_or_endpoint}
+              </code>
+              <p className="mt-1.5 text-[13px] leading-[1.45] text-[#92400e]">
+                Gap left open: {naive.ordered_steps[0].why_naive_fails}
+              </p>
+            </div>
+          )}
+
+          {/* Safety Assurance Note */}
+          <p className="mt-4 border-t border-[#f0f1f2] pt-3 text-[14px] leading-[1.5] text-[#5d5f60]">
+            Dry-run verification only: all commands below are copy-ready templates
+            that never execute destructive calls against your live accounts.
+          </p>
+        </div>
+      </div>
+
+      {/* Priority-Ordered Multi-Issuer Remediation Checklist Table (flat on white sheet) */}
+      <div className="border-t border-[#e8eaec] pt-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
+          <div>
+            <h3 className="text-[16px] font-semibold leading-[1.4] text-[#131416]">
+              Ordered containment checklist ({full.ordered_steps.length} steps)
+            </h3>
+            <p className="mt-0.5 text-[14px] leading-[1.5] text-[#5d5f60]">
+              Execute steps across every issuing provider, then confirm rejection
+              with each verification probe.
+            </p>
+          </div>
+
+          {full.ordered_steps.length > 6 && (
+            <button
+              type="button"
+              onClick={() => setShowAllSteps((v) => !v)}
+              className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
+            >
+              {showAllSteps
+                ? "Show top 6 priority steps"
+                : `Show all ${full.ordered_steps.length} steps`}
+            </button>
+          )}
+        </div>
+
+        {/* Mobile Stacked Hairline List (< md) so narrow screens never clip table columns */}
+        <div className="divide-y divide-[#f0f1f2] border-t border-[#e8eaec] md:hidden">
+          {visibleSteps.map((step) => {
+            const copyKey = `step-${step.priority}-${step.issuer}`;
+            const copied = copiedCmdKey === copyKey;
+            const targetNode = nodeMap.get(step.target_resource);
+            const readableTarget = targetNode
+              ? humanizeNodeLabel(targetNode)
+              : step.target_resource;
+
+            return (
+              <div key={`m-${copyKey}`} className="space-y-2.5 py-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 text-[14px]">
+                      <span className="font-semibold text-[#131416] tabular-nums">
                         P{step.priority}
                       </span>
-                      <span className="text-xs font-semibold text-slate-100">
+                      <span className="font-medium text-[#131416]">
                         {step.issuer}
                       </span>
-                      <span className="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
-                        {step.action_type}
-                      </span>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleCopy(copyKey, step.command_or_endpoint)
-                        }
-                        className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-[10px] text-slate-300 hover:border-slate-500 hover:text-white"
+                    <div className="mt-0.5 text-[13px] text-[#5d5f60]">
+                      Target: {readableTarget}
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleCopy(copyKey, step.command_or_endpoint)
+                      }
+                      className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
+                    >
+                      {copied ? <Check size={14} /> : <Copy size={14} />}
+                      {copied ? "Copied" : "Copy"}
+                    </button>
+                    {step.console_url && (
+                      <a
+                        href={step.console_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#1b6c80] transition hover:bg-[#f4f6f8]"
                       >
-                        {copied ? "Copied!" : "Copy Payload"}
-                      </button>
-                      {step.console_url && (
-                        <a
-                          href={step.console_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="rounded border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 text-[10px] font-semibold text-sky-300 hover:bg-sky-500/20"
-                        >
-                          Console ↗
-                        </a>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="text-[11px] text-slate-400">
-                    Target:{" "}
-                    <span className="break-all text-slate-200">
-                      {nodeMap.get(step.target_resource)?.label ??
-                        step.target_resource}
-                    </span>
-                  </div>
-
-                  <div className="mt-1.5 overflow-x-auto rounded border border-slate-800 bg-[#070b14] px-2.5 py-1.5 font-mono text-[11px] break-words text-emerald-300">
-                    {step.command_or_endpoint}
-                  </div>
-
-                  <div className="mt-1.5 text-[11px] text-slate-400">
-                    <span className="font-semibold text-emerald-300">
-                      Verification probe:
-                    </span>{" "}
-                    <span className="break-words font-mono text-slate-200">
-                      {step.verification_probe}
-                    </span>
+                        Console
+                        <ArrowSquareOut size={14} />
+                      </a>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+
+                <div>
+                  <div className="mb-1 text-[13px] font-medium text-[#5d5f60]">
+                    Endpoint or rotation command
+                  </div>
+                  <code className="block break-words [overflow-wrap:anywhere] rounded-[6px] bg-[#f4f6f8] px-2.5 py-2 text-[13px] leading-[1.45] text-[#131416]">
+                    {step.command_or_endpoint}
+                  </code>
+                </div>
+
+                <div>
+                  <div className="mb-1 text-[13px] font-medium text-[#5d5f60]">
+                    Post-revoke check
+                  </div>
+                  <code className="block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#1e7b4f]">
+                    {step.verification_probe}
+                  </code>
+                </div>
+              </div>
+            );
+          })}
         </div>
+
+        {/* Desktop & Tablet Table (md+) */}
+        <div className="hidden overflow-x-auto md:block">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-y border-[#e8eaec] text-[13px] font-medium text-[#5d5f60]">
+                <th className="py-2.5 pr-3">Step</th>
+                <th className="px-3 py-2.5">Issuer &amp; target</th>
+                <th className="px-3 py-2.5">Endpoint or rotation command</th>
+                <th className="px-3 py-2.5">Post-revoke check</th>
+                <th className="py-2.5 pl-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#f0f1f2] text-[14px] leading-[1.45]">
+              {visibleSteps.map((step) => {
+                const copyKey = `step-${step.priority}-${step.issuer}`;
+                const copied = copiedCmdKey === copyKey;
+                const targetNode = nodeMap.get(step.target_resource);
+                const readableTarget = targetNode
+                  ? humanizeNodeLabel(targetNode)
+                  : step.target_resource;
+
+                return (
+                  <tr key={copyKey} className="align-top">
+                    <td className="py-3.5 pr-3 text-[14px] font-semibold text-[#131416] tabular-nums whitespace-nowrap">
+                      P{step.priority}
+                    </td>
+                    <td className="min-w-[180px] px-3 py-3.5">
+                      <div className="font-medium text-[#131416]">
+                        {step.issuer}
+                      </div>
+                      <div className="mt-0.5 text-[13px] text-[#5d5f60]">
+                        Target: {readableTarget}
+                      </div>
+                      <div className="mt-1">
+                        <code className="rounded-[4px] bg-[#f4f6f8] px-1.5 py-0.5 text-[13px] text-[#5d5f60]">
+                          {step.action_type}
+                        </code>
+                      </div>
+                    </td>
+                    <td className="min-w-[230px] max-w-[360px] px-3 py-3.5">
+                      <code className="block break-words [overflow-wrap:anywhere] rounded-[6px] bg-[#f4f6f8] px-2.5 py-2 text-[13px] leading-[1.45] text-[#131416]">
+                        {step.command_or_endpoint}
+                      </code>
+                    </td>
+                    <td className="min-w-[200px] max-w-[300px] px-3 py-3.5">
+                      <code className="block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#1e7b4f]">
+                        {step.verification_probe}
+                      </code>
+                    </td>
+                    <td className="py-3.5 pl-3 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCopy(copyKey, step.command_or_endpoint)
+                          }
+                          className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
+                        >
+                          {copied ? <Check size={14} /> : <Copy size={14} />}
+                          {copied ? "Copied" : "Copy"}
+                        </button>
+                        {step.console_url && (
+                          <a
+                            href={step.console_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#1b6c80] transition hover:bg-[#f4f6f8]"
+                          >
+                            Console
+                            <ArrowSquareOut size={14} />
+                          </a>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {hiddenStepsCount > 0 && (
+          <div className="border-t border-[#f0f1f2] pt-3">
+            <button
+              type="button"
+              onClick={() => setShowAllSteps(true)}
+              className="text-[13px] font-medium text-[#1b6c80] hover:underline"
+            >
+              View remaining {hiddenStepsCount} remediation steps
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

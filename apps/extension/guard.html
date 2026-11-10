@@ -7,115 +7,120 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="guard-container">
-      <section class="card">
-        <div class="row-between">
-          <div class="row-gap">
-            <span class="brand-pill mono">SCOPEBOMB MV3 GUARD</span>
-            <span id="guard-action-pill" class="pill badge-block mono">EVALUATING</span>
-            <span id="guard-pkce-pill" class="pill badge-sky mono">PKCE CHECK</span>
-          </div>
-          <div class="row-gap">
-            <a id="open-arena-link" class="btn-link btn-primary" href="#" target="_blank" rel="noopener noreferrer">
-              Open in ScopeBomb Arena ↗
-            </a>
-          </div>
+    <div class="guard-container">
+      <header class="shell-header">
+        <div class="row-gap">
+          <span class="brand-mark">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <rect x="1" y="1" width="18" height="18" rx="4" fill="#131416" />
+              <circle cx="7" cy="7" r="2" fill="#ffffff" />
+              <circle cx="13" cy="13" r="2.2" fill="#1b6c80" />
+              <path d="M8.5 8.5L11.5 11.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            ScopeBomb Guard
+          </span>
+          <span id="guard-action-pill" class="pill badge-block">Evaluating</span>
+          <span id="guard-pkce-pill" class="pill badge-sky">PKCE Check</span>
         </div>
-        <h1 class="title-lg" id="guard-headline">
-          OAuth Authorization Intercepted Before Consent
-        </h1>
-        <p class="subtext" style="margin-top: 4px">
-          Evaluated locally using ScopeBomb's deterministic policy catalog — no credentials or PKCE challenges leave your browser.
-        </p>
-        <div id="guard-error" class="error-box hidden" role="alert"></div>
-      </section>
+        <div class="row-gap">
+          <a id="open-arena-link" class="btn-link btn-primary" href="#" target="_blank" rel="noopener noreferrer">
+            Open in ScopeBomb Arena ↗
+          </a>
+        </div>
+      </header>
 
-      <section id="guard-details" class="hidden">
-        <!-- Metadata & Score -->
-        <section class="card">
-          <div class="title-sm">Intercepted Authorization Request</div>
-          <div class="grid-meta">
+      <main class="sheet">
+        <section>
+          <h1 class="title-lg" id="guard-headline">
+            OAuth authorization intercepted before consent
+          </h1>
+          <p class="subtext" style="margin-top: 6px; max-width: 70ch">
+            Evaluated locally using ScopeBomb's deterministic policy catalog. Zero credentials or PKCE challenges leave your browser.
+          </p>
+          <div id="guard-error" class="error-box hidden" role="alert"></div>
+        </section>
+
+        <section id="guard-details" class="hidden">
+          <!-- Metadata & Score Band -->
+          <div class="grid-meta" style="margin-top: 16px">
             <div class="card-inner">
-              <div class="title-sm">Risk Score</div>
-              <div class="mono" style="font-size: 20px; font-weight: 800; color: #fda4af" id="guard-score">—</div>
+              <div class="title-sm">Risk score</div>
+              <div style="font-size: 24px; font-weight: 400; color: #c4242a" id="guard-score">—</div>
             </div>
             <div class="card-inner">
               <div class="title-sm">Provider</div>
-              <div class="meta-val mono" id="guard-provider">—</div>
+              <div class="meta-val" style="font-weight: 500" id="guard-provider">—</div>
             </div>
             <div class="card-inner">
               <div class="title-sm">Client ID</div>
               <div class="meta-val mono" id="guard-client">—</div>
             </div>
             <div class="card-inner">
-              <div class="title-sm">Redirect URI / Access</div>
+              <div class="title-sm">Redirect URI &amp; access</div>
               <div class="meta-val mono" id="guard-redirect">—</div>
             </div>
           </div>
-        </section>
 
-        <!-- PKCE Integrity Callout -->
-        <section class="card">
-          <div class="pkce-callout">
+          <!-- PKCE Integrity Rationale -->
+          <div class="pkce-callout" style="margin-top: 16px">
             <div class="pkce-callout-title">
-              Why Mid-Flight Scope Rewriting Breaks PKCE code_challenge
+              Why mid-flight scope rewriting breaks PKCE code_challenge
             </div>
-            <p id="guard-pkce-warning" style="font-size: 12.5px; color: #e2e8f0; margin-bottom: 6px"></p>
-            <p class="subtext">
-              Under RFC 7636, the client binds its secret <code style="color:#7dd3fc">code_verifier</code> to <code style="color:#7dd3fc">code_challenge = BASE64URL(SHA256(code_verifier))</code> and an immutable <code style="color:#7dd3fc">state</code> token. Mutating <code style="color:#7dd3fc">scope=</code> mid-flight in an extension without the client's verifier breaks the token exchange or causes silent mismatch. ScopeBomb blocks pre-consent and provides least-privilege scopes for a fresh client initiation.
+            <p id="guard-pkce-warning" style="font-size: 13.5px; color: #131416; margin-bottom: 6px"></p>
+            <p class="subtext" style="max-width: 72ch">
+              Under RFC 7636, the client binds its secret <code style="color:#1b6c80">code_verifier</code> to <code style="color:#1b6c80">code_challenge = BASE64URL(SHA256(code_verifier))</code> and an immutable <code style="color:#1b6c80">state</code> token. Mutating <code style="color:#1b6c80">scope=</code> mid-flight in an extension without the client's verifier breaks the token exchange or causes silent mismatch. ScopeBomb pauses before consent and provides least-privilege scopes for a fresh client initiation.
             </p>
           </div>
-        </section>
 
-        <!-- Flagged Scopes -> Least Privilege Downgrades -->
-        <section class="card">
-          <div class="row-between" style="margin-bottom: 8px">
-            <div class="title-sm" style="margin-bottom: 0">
-              Flagged Over-Scoped Permissions → Least-Privilege Downgrades
-            </div>
-            <button id="copy-scopes-btn" type="button" class="btn btn-sm">
-              Copy Recommended Scopes
-            </button>
-          </div>
-          <div id="guard-flagged-list"></div>
-
-          <div style="margin-top: 10px">
-            <div class="title-sm">Recommended Least-Privilege Scope Set</div>
-            <div id="guard-recommended-pills" class="row-gap"></div>
-          </div>
-
-          <div style="margin-top: 12px">
-            <div class="row-between" style="margin-bottom: 5px">
-              <div class="title-sm" style="margin-bottom: 0">
-                Fresh Client Initiation Template (Stale code_challenge &amp; state Stripped)
+          <!-- Flagged Scopes -> Least Privilege Downgrades -->
+          <div class="section-rule">
+            <div class="row-between" style="margin-bottom: 10px">
+              <div class="title-sm" style="margin-bottom: 0; color: var(--text)">
+                Flagged permissions vs least-privilege alternatives
               </div>
-              <button id="copy-template-btn" type="button" class="btn btn-sm">
-                Copy Clean Template
+              <button id="copy-scopes-btn" type="button" class="btn btn-sm">
+                Copy recommended scopes
               </button>
             </div>
-            <div id="guard-clean-template" class="code-box mono"></div>
-          </div>
-        </section>
+            <div id="guard-flagged-list" class="scope-list"></div>
 
-        <!-- User Escape Hatches -->
-        <section class="card">
-          <div class="row-between">
-            <div class="subtext">
-              Close this tab or ask the application for least-privilege permissions before granting access.
+            <div style="margin-top: 14px">
+              <div class="title-sm">Recommended least-privilege scope set</div>
+              <div id="guard-recommended-pills" class="row-gap"></div>
             </div>
-            <div class="row-gap">
-              <button id="back-safe-btn" type="button" class="btn">
-                Close / Go Back Safely
-              </button>
-              <button id="proceed-anyway-btn" type="button" class="btn btn-danger hidden">
-                Proceed to Provider Consent Anyway (Accept Risk)
-              </button>
+
+            <div style="margin-top: 14px">
+              <div class="row-between" style="margin-bottom: 6px">
+                <div class="title-sm" style="margin-bottom: 0">
+                  Fresh client initiation template (stale code_challenge &amp; state stripped)
+                </div>
+                <button id="copy-template-btn" type="button" class="btn btn-sm">
+                  Copy clean template
+                </button>
+              </div>
+              <div id="guard-clean-template" class="code-box mono"></div>
+            </div>
+          </div>
+
+          <!-- User Escape Hatches -->
+          <div class="section-rule">
+            <div class="row-between">
+              <div class="subtext">
+                Close this tab or ask the application for least-privilege permissions before granting access.
+              </div>
+              <div class="row-gap">
+                <button id="back-safe-btn" type="button" class="btn">
+                  Close / go back safely
+                </button>
+                <button id="proceed-anyway-btn" type="button" class="btn btn-danger hidden">
+                  Proceed to provider consent anyway
+                </button>
+              </div>
             </div>
           </div>
         </section>
-      </section>
-    </main>
+      </main>
+    </div>
     <script type="module" src="guard.js"></script>
   </body>
 </html>
-

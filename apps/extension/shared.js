@@ -16,32 +16,32 @@ export const ACTION_META = {
   BLOCK_PRE_CONSENT: {
     label: "BLOCKED PRE-CONSENT",
     badgeText: "BLOCK",
-    badgeColor: "#e11d48",
+    badgeColor: "#c4242a",
     pillClass: "badge-block",
   },
   WARN: {
     label: "PRE-CONSENT WARNING",
     badgeText: "WARN",
-    badgeColor: "#d97706",
+    badgeColor: "#92400e",
     pillClass: "badge-warn",
   },
   ALLOW: {
     label: "LEAST-PRIVILEGE ALLOW",
     badgeText: "SAFE",
-    badgeColor: "#059669",
+    badgeColor: "#1e7b4f",
     pillClass: "badge-allow",
   },
 };
 
 export const SAMPLE_OAUTH_URLS = {
   google_pkce_trap:
-    "https://accounts.google.com/o/oauth2/v2/auth?client_id=9481203-shadowai.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fai-helper.example.com%2Fcallback&response_type=code&scope=https%3A%2F%2Fmail.google.com%2F%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&access_type=offline&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256&state=mv3_guard_demo",
+    "https://accounts.google.com/o/oauth2/v2/auth?client_id=9481203-shadowai.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fscopebomb.vercel.app%2Foauth-callback&response_type=code&scope=https%3A%2F%2Fmail.google.com%2F%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&access_type=offline&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256&state=mv3_guard_demo",
   github_ci_trap:
     "https://github.com/login/oauth/authorize?client_id=178c6fc778ccc68e1d6a&scope=repo%20workflow%20admin:org&redirect_uri=http%3A%2F%2F127.0.0.1%3A0%2Fcallback&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256&state=gh_guard_demo",
   entra_app_admin:
-    "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=legacy-test-oauth-app-001&response_type=code&redirect_uri=https%3A%2F%2Flegacy-test.example.internal%2Fauth&scope=Application.ReadWrite.All%20Mail.ReadWrite%20offline_access",
+    "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=legacy-test-oauth-app-001&response_type=code&redirect_uri=https%3A%2F%2Fscopebomb.vercel.app%2Fentra-callback&scope=Application.ReadWrite.All%20Mail.ReadWrite%20offline_access",
   google_safe_min:
-    "https://accounts.google.com/o/oauth2/v2/auth?client_id=safe-login-app.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fapp.example.com%2Fcb&response_type=code&scope=openid%20email%20profile&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256&state=safe_demo",
+    "https://accounts.google.com/o/oauth2/v2/auth?client_id=safe-login-app.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fscopebomb.vercel.app%2Foauth-callback&response_type=code&scope=openid%20email%20profile&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256&state=safe_demo",
 };
 
 export function isMonitoredOAuthUrl(rawUrl) {

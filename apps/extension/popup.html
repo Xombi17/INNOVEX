@@ -7,107 +7,113 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="popup-body">
-    <header class="card" style="padding: 10px 12px">
-      <div class="row-between">
-        <div class="row-gap">
-          <span class="brand-pill mono">SCOPEBOMB</span>
-          <span style="font-size: 12px; font-weight: 700">MV3 Pre-Consent Guard</span>
-        </div>
-        <button id="toggle-settings-btn" type="button" class="btn btn-sm">
-          Arena URL
-        </button>
+    <header class="shell-header">
+      <div class="brand-mark">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="18" height="18" rx="4" fill="#131416" />
+          <circle cx="7" cy="7" r="2" fill="#ffffff" />
+          <circle cx="13" cy="13" r="2.2" fill="#1b6c80" />
+          <path d="M8.5 8.5L11.5 11.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <span>ScopeBomb</span>
+        <span class="subtext">Pre-Consent Guard</span>
       </div>
-      <div id="arena-settings" class="hidden" style="margin-top: 8px">
-        <label for="arena-url-input" class="title-sm">ScopeBomb Web Arena Base URL</label>
-        <div class="row-gap">
-          <input
-            id="arena-url-input"
-            type="url"
-            class="input mono"
-            placeholder="https://scopebomb.vercel.app"
-            style="flex: 1"
-          />
-          <button id="save-arena-btn" type="button" class="btn btn-primary btn-sm">
-            Save
-          </button>
-        </div>
-      </div>
+      <button id="toggle-settings-btn" type="button" class="btn btn-sm">
+        Arena URL
+      </button>
     </header>
 
-    <!-- Paste & Test Any OAuth URL -->
-    <section class="card" style="padding: 10px 12px">
-      <div class="row-between" style="margin-bottom: 6px">
-        <label for="popup-url-input" class="title-sm" style="margin-bottom: 0">
-          Paste &amp; Test Any OAuth Authorization URL
-        </label>
-        <button id="use-active-tab-btn" type="button" class="btn btn-sm">
-          Use Active Tab
+    <div id="arena-settings" class="sheet popup-sheet hidden" style="margin-bottom: 10px">
+      <label for="arena-url-input" class="title-sm">ScopeBomb Web Arena base URL</label>
+      <div class="row-gap">
+        <input
+          id="arena-url-input"
+          type="url"
+          class="input mono"
+          placeholder="https://scopebomb.vercel.app"
+          style="flex: 1"
+        />
+        <button id="save-arena-btn" type="button" class="btn btn-primary btn-sm">
+          Save
         </button>
       </div>
+    </div>
 
-      <textarea
-        id="popup-url-input"
-        rows="3"
-        class="input mono"
-        placeholder="https://accounts.google.com/o/oauth2/v2/auth?client_id=...&scope=..."
-      ></textarea>
-
-      <div class="row-between" style="margin-top: 7px">
-        <div class="row-gap">
-          <button type="button" class="btn btn-sm sample-btn" data-sample="google_pkce_trap">
-            Google PKCE
-          </button>
-          <button type="button" class="btn btn-sm sample-btn" data-sample="github_ci_trap">
-            GitHub CI
-          </button>
-          <button type="button" class="btn btn-sm sample-btn" data-sample="entra_app_admin">
-            Entra App
-          </button>
-          <button type="button" class="btn btn-sm sample-btn" data-sample="google_safe_min">
-            Safe Min
+    <main class="sheet popup-sheet">
+      <!-- Paste & Test Any OAuth URL -->
+      <section>
+        <div class="row-between" style="margin-bottom: 6px">
+          <label for="popup-url-input" class="title-sm" style="margin-bottom: 0; color: var(--text)">
+            Inspect OAuth authorization URL
+          </label>
+          <button id="use-active-tab-btn" type="button" class="btn btn-sm">
+            Use active tab
           </button>
         </div>
-        <button id="analyze-url-btn" type="button" class="btn btn-primary btn-sm">
-          Analyze URL
-        </button>
-      </div>
 
-      <div id="popup-error" class="error-box hidden" role="alert"></div>
-    </section>
+        <textarea
+          id="popup-url-input"
+          rows="3"
+          class="input mono"
+          placeholder="https://accounts.google.com/o/oauth2/v2/auth?client_id=...&scope=..."
+        ></textarea>
 
-    <!-- Live Evaluation Output -->
-    <section id="popup-result" class="card hidden" style="padding: 10px 12px">
-      <div class="row-between" style="margin-bottom: 8px">
-        <div class="row-gap">
-          <span id="res-action-pill" class="pill badge-block mono">BLOCK</span>
-          <span id="res-pkce-pill" class="pill badge-sky mono">PKCE</span>
+        <div class="row-between" style="margin-top: 8px">
+          <div class="row-gap">
+            <button type="button" class="btn btn-sm sample-btn" data-sample="google_pkce_trap">
+              Google PKCE
+            </button>
+            <button type="button" class="btn btn-sm sample-btn" data-sample="github_ci_trap">
+              GitHub CI
+            </button>
+            <button type="button" class="btn btn-sm sample-btn" data-sample="entra_app_admin">
+              Entra App
+            </button>
+            <button type="button" class="btn btn-sm sample-btn" data-sample="google_safe_min">
+              Safe Min
+            </button>
+          </div>
+          <button id="analyze-url-btn" type="button" class="btn btn-primary btn-sm">
+            Analyze URL
+          </button>
         </div>
-        <span id="res-score" class="mono" style="font-size: 13px; font-weight: 800; color: #fda4af">
-          95 / 100
-        </span>
-      </div>
 
-      <div id="res-provider-line" class="subtext mono" style="margin-bottom: 8px"></div>
+        <div id="popup-error" class="error-box hidden" role="alert"></div>
+      </section>
 
-      <div class="pkce-callout" style="margin-bottom: 8px; padding: 8px 10px">
-        <div class="pkce-callout-title">Why Mid-Flight Rewrite Breaks PKCE</div>
-        <div id="res-pkce-note" style="font-size: 11px; color: #e2e8f0"></div>
-      </div>
+      <!-- Live Evaluation Output -->
+      <section id="popup-result" class="section-rule hidden">
+        <div class="row-between" style="margin-bottom: 8px">
+          <div class="row-gap">
+            <span id="res-action-pill" class="pill badge-block">BLOCK</span>
+            <span id="res-pkce-pill" class="pill badge-sky">PKCE</span>
+          </div>
+          <span id="res-score" style="font-size: 16px; font-weight: 600; color: #831c1e">
+            95 / 100
+          </span>
+        </div>
 
-      <div class="title-sm">Least-Privilege Scope Downgrades</div>
-      <div id="res-flagged-list" style="margin-bottom: 8px"></div>
+        <div id="res-provider-line" class="subtext mono" style="margin-bottom: 10px"></div>
 
-      <div class="row-between" style="margin-top: 8px">
-        <button id="open-guard-btn" type="button" class="btn btn-sm">
-          Full Guard Interstitial
-        </button>
-        <a id="popup-arena-link" class="btn-link btn-primary btn-sm" href="#" target="_blank" rel="noopener noreferrer">
-          Open in ScopeBomb Arena ↗
-        </a>
-      </div>
-    </section>
+        <div class="pkce-callout" style="margin-bottom: 12px">
+          <div class="pkce-callout-title">Why mid-flight rewrite breaks PKCE</div>
+          <div id="res-pkce-note" style="font-size: 13px; color: #5d5f60"></div>
+        </div>
+
+        <div class="title-sm">Least-privilege scope downgrades</div>
+        <div id="res-flagged-list" class="scope-list" style="margin-bottom: 12px"></div>
+
+        <div class="row-between" style="padding-top: 4px">
+          <button id="open-guard-btn" type="button" class="btn btn-sm">
+            Full guard view
+          </button>
+          <a id="popup-arena-link" class="btn-link btn-primary btn-sm" href="#" target="_blank" rel="noopener noreferrer">
+            Open in Arena ↗
+          </a>
+        </div>
+      </section>
+    </main>
 
     <script type="module" src="popup.js"></script>
   </body>
 </html>
-

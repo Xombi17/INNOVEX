@@ -68,10 +68,10 @@ function evaluateAndRender(rawUrl) {
   scoreEl.textContent = `${decision.risk_score} / 100`;
   scoreEl.style.color =
     decision.risk_score >= 80
-      ? "#fda4af"
+      ? "#c4242a"
       : decision.risk_score >= 45
-        ? "#fcd34d"
-        : "#6ee7b7";
+        ? "#92400e"
+        : "#1e7b4f";
 
   providerLine.textContent = `${PROVIDER_LABELS[decision.provider]} · client: ${parsed.client_id ?? "unknown"}${parsed.access_type ? ` · ${parsed.access_type}` : ""}`;
   pkceNote.textContent = decision.pkce_rewrite_warning;
@@ -90,20 +90,29 @@ function evaluateAndRender(rawUrl) {
       const row = document.createElement("div");
       row.className = "scope-row";
 
-      const oldEl = document.createElement("div");
+      const oldWrap = document.createElement("div");
+      oldWrap.className = "row-gap";
+
+      const sevBadge = document.createElement("span");
+      sevBadge.className = `pill ${item.severity === "critical" ? "badge-block" : "badge-warn"}`;
+      sevBadge.textContent = item.severity.toUpperCase();
+
+      const oldEl = document.createElement("span");
       oldEl.className = "scope-old mono";
-      oldEl.textContent = `[${item.severity.toUpperCase()}] ${item.scope_id}`;
+      oldEl.textContent = item.scope_id;
+      oldWrap.append(sevBadge, oldEl);
 
       const newEl = document.createElement("div");
+      newEl.className = "row-gap";
       const arrow = document.createElement("span");
       arrow.className = "subtext";
-      arrow.textContent = "Downgrade → ";
+      arrow.textContent = "Downgrade →";
       const pill = document.createElement("span");
       pill.className = "scope-new mono";
       pill.textContent = item.recommended_scope_id;
       newEl.append(arrow, pill);
 
-      row.append(oldEl, newEl);
+      row.append(oldWrap, newEl);
       flaggedList.appendChild(row);
     }
   }

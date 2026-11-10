@@ -18,11 +18,15 @@ __pycache__/
 .env.*
 !.env.example
 
-# Generated local graph caches & nested agent worktrees
+# Generated local graph caches, design scratch artifacts & nested agent worktrees
 graphify-out/
 .planning/graphs/
 .worktrees/
 .superpowers/
+.taste-skill/
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/build/
 .vercel/
 
 # OS / Editor
