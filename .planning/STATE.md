@@ -2,16 +2,16 @@
 gsd_state_version: '1.0'
 milestone: v1.1
 milestone_name: New-User UX, AI Triage & Sandbox
-current_phase: '6'
-current_phase_name: Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox
+current_phase: '7'
+current_phase_name: End-to-End Visual/E2E Verification, Doc Sync & Live Production Ship
 status: planning
 last_activity: 2026-11-10
 progress:
   total_phases: 4
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 50
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
+  percent: 75
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-11-10)
 
 **Core value:** First-time users and judges grasp ScopeBomb in 5 seconds, inspect any OAuth link/config/repo cleanly across 3 focused steps, and walk away with runnable containment scripts + a working Chrome blocker.
-**Current focus:** Phase 6 — Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox (`v1.1`).
+**Current focus:** Phase 7 — End-to-End Visual/E2E Verification, Doc Sync & Live Production Ship (`v1.1`).
 
 ## Current Position
 
-Phase: 6 of 7 (Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox)
-Plan: 0 of 0 in current phase (context captured; ready for `/gsd-plan-phase 6`)
-Status: Ready to plan Phase 6
-Last activity: 2026-11-10 — Shipped Phase 5 (`5cde632`), live GitHub repo scanner and AI threat triage verified
+Phase: 7 of 7 (End-to-End Visual/E2E Verification, Doc Sync & Live Production Ship)
+Plan: 0 of 0 in current phase (context captured; ready for `/gsd-plan-phase 7`)
+Status: Ready to plan Phase 7
+Last activity: 2026-11-10 — Shipped Phase 6 (`37f2595`), provider kill-switches, consent sandbox, and extension zip verified
 
-Progress: [████░░░░░░] 50% (Phases 4-5 complete; Phases 6-7 remaining)
+Progress: [██████░░░░] 75% (Phases 4-6 complete; Phase 7 remaining)
 
 ## Performance Metrics
 
@@ -40,7 +40,7 @@ Progress: [████░░░░░░] 50% (Phases 4-5 complete; Phases 6-7 
 - Verified tests: `30/30` engine tests (`node --test`), `verify_contracts.py` OK, Chrome CDP E2E passing
 
 **Milestone v1.1:**
-- Completed phases: 2/4 (Phase 4: 3-step guided stepper; Phase 5: repo scanner & AI threat triage)
+- Completed phases: 3/4 (Phase 4: 3-step UX; Phase 5: repo scanner & AI triage; Phase 6: kill-switches & sandbox)
 - Total phases planned: 4 (`4–7`)
 - Requirements mapped: `19/19` (`UX`, `SCAN`, `AI`, `REM`, `EXT`, `REL`)
 

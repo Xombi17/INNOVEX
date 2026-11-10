@@ -27,7 +27,7 @@ See full archive: `.planning/milestones/v1.0-mvp.md`
 
 - [x] **Phase 4: Guided 3-Step Information Architecture & Always-Visible Scanner** - Eliminate tab duplication and 3.6-screen vertical overload with a linear `1. Scan -> 2. Attack Path -> 3. Fix & Blocker` flow and plain-English progressive disclosure.
 - [x] **Phase 5: Live Public GitHub Repo Scanner & Plain-English AI Threat Triage** - Add stateless `/api/scan-repo` and `/api/ai-triage` serverless endpoints with strict SSRF/redaction safety and deterministic offline fallback.
-- [ ] **Phase 6: Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox** - Add rich copy-ready CLI/API revocation scripts per issuer, an in-browser `"Fake AI App Consent"` simulator, and one-click `scopebomb-mv3-extension.zip` download.
+- [x] **Phase 6: Concrete Provider Kill-Switches & Downloadable Chrome Extension Sandbox** - Add rich copy-ready CLI/API revocation scripts per issuer, an in-browser `"Fake AI App Consent"` simulator, and one-click `scopebomb-mv3-extension.zip` download.
 - [ ] **Phase 7: End-to-End Visual/E2E Verification, Doc Sync & Live Production Ship** - Run full visual, browser E2E, frozen-lane, and contract checks, update Graphify + docs, push branches, and verify live `https://scopebomb.vercel.app`.
 
 ## Phase Details
@@ -102,5 +102,5 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 3. Vercel Deploy & Porcelain UI | v1.0 | 2/2 | Complete | 2026-11-10 |
 | 4. Guided 3-Step UI & Scanner Bar | v1.1 | 1/1 | Complete | 2026-11-10 |
 | 5. Live Repo Scanner & AI Triage | v1.1 | 1/1 | Complete | 2026-11-10 |
-| 6. Kill-Switches & Extension Sandbox | v1.1 | 0/0 | Not started | - |
+| 6. Kill-Switches & Extension Sandbox | v1.1 | 1/1 | Complete | 2026-11-10 |
 | 7. E2E Audit, Doc Sync & Live Ship | v1.1 | 0/0 | Not started | - |
