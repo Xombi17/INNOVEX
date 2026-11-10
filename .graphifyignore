@@ -1,7 +1,8 @@
-# Exclude vendor/agent skill scaffolding and generated build outputs from Graphify AST extraction
+# Exclude vendor/agent skill scaffolding, worktrees, and generated build outputs from Graphify AST extraction
 .agents/
 .codex/
 .planning/
+.worktrees/
 graphify-out/
 node_modules/
 .next/

@@ -18,9 +18,10 @@ __pycache__/
 .env.*
 !.env.example
 
-# Generated local graph caches (rebuilt per worktree via `graphify update .` / `/gsd-graphify build`)
+# Generated local graph caches & nested agent worktrees
 graphify-out/
 .planning/graphs/
+.worktrees/
 .superpowers/
 
 # OS / Editor

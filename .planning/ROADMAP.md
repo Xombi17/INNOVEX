@@ -1,7 +1,7 @@
 # ScopeBomb Delivery Roadmap (Nov 10 – Nov 15, 2026)
 
 - **Phase 0: Foundation & Governance (COMPLETE — Nov 10)**
-  - Frozen `SPEC.md`, `DEMO_SCRIPT.md`, `contracts/`, `data/scope_catalog.json`, `AGENTS.md`, `GEMINI.md`, GSD + Graphify config, `feat/ui-extension` & `../INNOVEX-engine` (`feat/core-engine`) worktree split.
+  - Frozen `SPEC.md`, `DEMO_SCRIPT.md`, `contracts/`, `data/scope_catalog.json`, `AGENTS.md`, `GEMINI.md`, GSD + Graphify config, `feat/ui-extension` & `.worktrees/core-engine` (`feat/core-engine`) worktree split.
 - **Phase 1: Parallel MVP Vertical Slice (`feat/core-engine` + `feat/ui-extension`) — Nov 10–11**
   - **Mode:** mvp
   - Codex builds `packages/engine` (`parseAuditInput`, `buildBlastGraph`, `simulateContainment`, `evaluatePreConsent`) + Node tests.

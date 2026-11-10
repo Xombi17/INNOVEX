@@ -16,7 +16,7 @@ progress:
 
 - **Current Phase:** Phase 1 (`apps/web` Web Arena MVP on `feat/ui-extension`) complete and verified; ready to merge `feat/core-engine` (`packages/engine`) when ready and proceed to Phase 2 (`apps/extension` Chrome MV3 Pre-Consent Guard + live engine swap).
 - **Main Worktree (`feat/ui-extension`):** `/home/varad/Documents/hackathons/INNOVEX` (Antigravity)
-- **Worker Worktree (`feat/core-engine`):** `/home/varad/Documents/hackathons/INNOVEX-engine` (Codex)
+- **Worker Worktree (`feat/core-engine`):** `/home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine` (Codex)
 - **Phase 1 Deliverables (`apps/web/`):**
   - Lean Next.js 16 App Router + TypeScript + Tailwind v4 app (`zero auth/DB/ORM bloat`).
   - Thin boundary adapter [`apps/web/src/lib/auditAdapter.ts`](file:///home/varad/Documents/hackathons/INNOVEX/apps/web/src/lib/auditAdapter.ts) typed `AuditInput -> AuditReport`, temporarily backed by `contracts/sample_report.fixture.json` + 5 presets from `data/scope_catalog.json` (`presetFixtures.ts`), ready for 1-line live engine import post-merge.

@@ -5,14 +5,14 @@ Read this on setup/handoff only (kept out of `AGENTS.md` / `GEMINI.md` so worker
 ## 1. Worktree & Branch Topology (Zero Collisions)
 - `main`: Clean frozen baseline & integration branch.
 - `feat/ui-extension` (`/home/varad/Documents/hackathons/INNOVEX`): **Antigravity Lane** — owns `apps/web/**`, `apps/extension/**`, `SPEC.md`, `DEMO_SCRIPT.md`, `.planning/**`.
-- `feat/core-engine` (`/home/varad/Documents/hackathons/INNOVEX-engine`): **Codex Lane** — owns `packages/engine/**`, `tests/engine/**`.
+- `feat/core-engine` (`/home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine`): **Codex Lane** — owns `packages/engine/**`, `tests/engine/**`.
 - **Frozen / Orchestrator-Only:** `contracts/**`, `data/scope_catalog.json`. Workers treat these as **read-only**. If a contract field must change, pause workers, update on `main` + bump schema, rebase both branches.
 
 ## 2. Launching Parallel Agents Safely
 1. **Antigravity (current workspace):** Work directly in `/home/varad/Documents/hackathons/INNOVEX` (`feat/ui-extension`). Open a **fresh chat** when switching phases (Engine Integration vs. Web UI vs. Chrome MV3 Guard vs. E2E Polish).
 2. **Codex CLI (parallel worker terminal):** Always run inside the isolated worktree with heavy unused global MCPs disabled:
    ```bash
-   cd /home/varad/Documents/hackathons/INNOVEX-engine
+   cd /home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine
    codex \
      -c mcp_servers.rea.enabled=false \
      -c mcp_servers.aws-mcp.enabled=false \
@@ -32,6 +32,6 @@ Before merging `feat/core-engine` or `feat/ui-extension` into `main`:
 2. Run `python3 contracts/verify_contracts.py` + lane unit tests.
 3. Merge cleanly:
    ```bash
-   git -C /home/varad/Documents/hackathons/INNOVEX-engine status
-   # Integrate via dedicated merge branch/worktree or fast-forward into main after both lanes commit clean diffs
+   git -C /home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine status
+   # Integrate cleanly into main, then sync both feat/ui-extension and feat/core-engine
    ```
