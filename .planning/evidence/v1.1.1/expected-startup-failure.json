@@ -1,0 +1,6 @@
+{
+  "checks": [],
+  "errors": [
+    "Error: Chrome did not open a debugging endpoint. Error: spawn /nonexistent ENOENT"
+  ]
+}

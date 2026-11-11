@@ -1,0 +1,23 @@
+TASTESKILL · INSPECT   http://127.0.0.1:3107
+
+MEASURED (first viewport listed)
+  hero headline   "Review app access."  3 words · 1 line(s) · 32px (2.2vw) · IBM Plex Sans 600 · tracking -0.02em · leading 1.25
+  @768px          1 line(s) · 32px
+  @390px          1 line(s) · 28px
+  typefaces       IBM Plex Sans 100%
+  sizes in use    12 / 13 / 14 / 16 / 32 px   body 13px / 1.6
+  colour          page #f9fbfc · sections #f9fbfc #ffffff · button #ffffff
+  page            1 screens · 124 words · 0 images · hero media none
+  headings        1 · longest 1 line(s) · median - words
+
+FINDINGS  none. Measurements are clean — now judge the pictures.
+LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:
+  desktop 1440px  .taste-skill/inspect/desktop-fold.jpg
+                  .taste-skill/inspect/desktop-page-01.jpg
+  tablet 768px    .taste-skill/inspect/tablet-fold.jpg
+                  .taste-skill/inspect/tablet-page-01.jpg
+  mobile 390px    .taste-skill/inspect/mobile-fold.jpg
+                  .taste-skill/inspect/mobile-page-01.jpg
+
+report: .taste-skill/inspect/report.json
+RESULT: 0 FAIL, 0 WARN — measurements pass. Passing the meter is the floor, not the grade: score the screenshots with references/critique.md.

@@ -8,7 +8,7 @@ export function EvidenceSummary({ analysis }: { analysis: Analysis }) {
   return (
     <section
       aria-label="Results and supporting evidence"
-      className="space-y-5 border-t border-[#e8eaec] pt-6"
+      className="space-y-5 border-t border-[#e8eaec] pt-6 [overflow-wrap:anywhere]"
     >
       <div>
         <h2 className="text-xl font-semibold">What this input tells us</h2>

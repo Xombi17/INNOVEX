@@ -1,0 +1,128 @@
+OK: schema, 11 scope entries, 5 presets, and fixture verified.
+✔ scans MCP/env files through depth three, skips excluded trees and symlinks, and merges findings (8.200392ms)
+✔ normalized redacted parser output is analyzed without exposing values or sharing mutable arrays (0.433887ms)
+✔ --json emits one frozen AuditReport accepted by the contract verifier; default output is concise (245.034541ms)
+✔ empty scans produce an empty report; invalid scans fail without partial JSON or secret diagnostics (377.112984ms)
+✔ the browser engine has only relative imports and never imports the Node CLI (0.505936ms)
+✔ naive Google revocation retains copied keys; full plan covers each issuer with probes (4.897646ms)
+✔ GitHub grant deletion uses Basic authentication, JSON access_token, and 204 rather than RFC 7009 (0.93596ms)
+✔ Microsoft keeps JWT residual window and requires minted-app/permission cleanup (0.542435ms)
+✔ a single revoke does not contain secondary Takeout grants (0.509288ms)
+✔ static-only input never invents an RFC response; PATs need key rotation rather than OAuth grant deletion (0.905344ms)
+✔ detected OAuth tokens use their issuer's revoke flow and minted service-account keys are rotated (0.666604ms)
+✔ graph builds deterministic, connected multi-hop paths with unique IDs and correct hop depths (2.637565ms)
+✔ scope ordering/deduplication does not change the graph, and capabilities are provider-specific (0.540519ms)
+✔ identity-only grants create no invented assets or persistence; refresh persistence requires offline access (0.376869ms)
+✔ local config is an independent branch and does not assume a PAT's workflow privileges (1.249703ms)
+✔ OAuth parsing decodes once, merges repeated scopes, and keeps PKCE/state presence (1.595269ms)
+✔ OAuth parsing rejects unsafe or ambiguous URLs without reflecting the payload (0.763139ms)
+✔ MCP scanning masks every credential, handles nested headers/env, and skips placeholders (1.177252ms)
+✔ .env supports export, quoted hashes, comments, CRLF, and multiline private keys (0.441426ms)
+✔ service-account JSON is identified without returning its private key (0.145262ms)
+✔ malformed/oversized/deep configurations fail without disclosing secrets (1.000702ms)
+✔ Takeout supports nested multiple grants and ignores credential values (0.329945ms)
+✔ audit dispatch validates modes and resolves only frozen presets (0.366084ms)
+✔ scope, grant and credential count limits bound graph expansion (1.550705ms)
+✔ critical PKCE grants are blocked with least-privilege suggestions and no replayable URL (2.233279ms)
+✔ low-risk recognized identity scopes are allowed; unknown scopes/issuers or absent scopes warn (0.606572ms)
+✔ read-only mail remains sensitive and non-PKCE requests also require fresh authorization (0.348049ms)
+✔ all presets and input modes emit only frozen AuditReport properties and validate against the schema (48.63847ms)
+✔ every catalog scope is traversed and neither catalog nor a previous report can be mutated through a result (3.124657ms)
+✔ the selector does not drop either containment outcome and multi-grant guard uses the highest risk (0.622616ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 744.095472
+
+> @scopebomb/web@1.1.0 test
+> node --test tests/*.test.ts
+
+(node:788644) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/tests/analysis.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ placeholders and references are evidence, not invented credentials (2.746847ms)
+✔ real credential-like values retain provenance without exposing values (0.824647ms)
+✔ JSON references are filtered without damaging real values or service-account metadata (0.675972ms)
+✔ malformed JSON errors never repeat a pasted secret (0.329254ms)
+✔ unknown permission is reviewable, not certified safe (1.194244ms)
+✔ AI receives only fixed provider names and counts (0.913373ms)
+✔ AI can reorder vetted facts but cannot invent or duplicate claims (0.380747ms)
+✔ multi-grant summaries count every requested scope and provider (0.729817ms)
+(node:788645) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/tests/repository.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ repository input rejects foreign hosts, credentials and traversal (1.017924ms)
+✔ all inspected configuration files contribute findings, with no raw values returned (23.941745ms)
+✔ empty results do not fabricate a clean or compromised project (0.443341ms)
+✔ file cap, oversized files and truncated inventories remain visibly partial (1.493109ms)
+✔ rate limits and inaccessible repositories are errors, never clean scans (0.586249ms)
+✔ unsupported or unreadable config is skipped and reported (0.378984ms)
+(node:788651) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/tests/security.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ bounded bodies count streamed UTF-8 bytes and cancel oversized content (4.242686ms)
+✔ both routes bound request bytes without trusting content-length (1.467272ms)
+✔ configuration diagnostics exclude placeholders and raw credential values (1.936477ms)
+✔ repository route rejects arbitrary hosts and credentials before fetching (2.482573ms)
+✔ triage rejects arbitrary strings and extra fields before model calls (1.103404ms)
+✔ malformed model output falls back; valid ordering cannot add security claims (2.058424ms)
+✔ oversized upstream model bodies are canceled and use local facts (0.596192ms)
+✔ OpenAI orders only local facts and receives only allowlisted context (1.049616ms)
+▶ OpenAI invalid responses and upstream failures preserve local fallback
+  ✔ malformed envelope (0.388359ms)
+  ✔ malformed model JSON (0.357247ms)
+  ✔ duplicate indices (0.366384ms)
+  ✔ out-of-range indices (0.290339ms)
+  ✔ upstream HTTP failure (0.312461ms)
+  ✔ upstream abort (0.293863ms)
+✔ OpenAI invalid responses and upstream failures preserve local fallback (2.612657ms)
+✔ OpenAI cancels oversized UTF-8 output even when its character count fits (0.516728ms)
+▶ Gemini failure falls through to OpenAI; both failures fall back locally
+  ✔ OpenAI succeeds (0.468112ms)
+  ✔ both providers fail (0.277617ms)
+✔ Gemini failure falls through to OpenAI; both failures fall back locally (1.018212ms)
+✔ unconfigured inference never fetches and returns the supported local summary (0.315813ms)
+✔ local summary never certifies safety or observed compromise (0.074759ms)
+✔ remediation preserves issuer mechanics and independent credential verification (0.205932ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 145.462799
+Archive self-check: valid source accepted; missing, extra, changed and unsafe entries rejected
+Built 7 MV3 engine modules into apps/extension/engine
+(node:788677) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Packaged 19 extension files
+Built 7 MV3 engine modules into apps/extension/engine
+(node:788692) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Packaged 19 extension files
+Verified two identical packs, committed download, integrity and 19 source entries
+
+> @scopebomb/extension@1.1.0 test
+> node --test tests/*.test.mjs
+
+✔ MV3 scope policy and handoff preserve pending PKCE and never produce a replayable replacement (1.451279ms)
+✔ service worker redirects high-risk top-level requests to guard without changing the original URL (3.827439ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53.841289
+
+> @scopebomb/web@1.1.0 typecheck
+> tsc --noEmit

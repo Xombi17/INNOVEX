@@ -1,0 +1,39 @@
+{
+  "setting": "Chrome Page zoom 200%",
+  "window": {
+    "bounds": {
+      "left": 10,
+      "top": 10,
+      "width": 1440,
+      "height": 1000,
+      "windowState": "normal"
+    }
+  },
+  "metrics": {
+    "width": 720,
+    "height": 456,
+    "dpr": 2
+  },
+  "checks": [
+    [
+      "welcome",
+      true
+    ],
+    [
+      "input",
+      true
+    ],
+    [
+      "expanded exposure",
+      true
+    ],
+    [
+      "expanded actions",
+      true
+    ],
+    [
+      "dialog",
+      true
+    ]
+  ]
+}

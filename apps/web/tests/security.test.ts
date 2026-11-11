@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readBoundedText } from "../src/lib/boundedBody.ts";
 import { analyzeInput } from "../src/lib/analysis.ts";
 import { repositoryIdentifier } from "../src/lib/repositoryScan.ts";
-import { validateTriageRequest, localTriage } from "../src/lib/triage.ts";
+import { validateTriageRequest, localTriage, triageRequest } from "../src/lib/triage.ts";
 import { POST as triageRoute } from "../src/app/api/ai-triage/route.ts";
 import { POST as scanRoute } from "../src/app/api/scan-repo/route.ts";
 import { enrichContainmentStep } from "../src/lib/remediationTemplates.ts";
@@ -90,6 +90,112 @@ test("oversized upstream model bodies are canceled and use local facts", async t
   t.mock.method(globalThis, "fetch", async () => new Response(new ReadableStream({ pull(controller) { controller.enqueue(new Uint8Array(32769)); }, cancel() { cancelled = true; } })));
   assert.equal((await (await triageRoute(request(summary))).json()).fallbackUsed, true);
   assert.equal(cancelled, true);
+});
+
+test("OpenAI orders only local facts and receives only allowlisted context", async t => {
+  inference(t);
+  process.env.GEMINI_API_KEY = "";
+  process.env.OPENAI_API_KEY = "test-server-key";
+  const analysis = analyzeInput({ mode: "mcp_config", raw_payload: "GITHUB_TOKEN=privateInputSentinel", simulation_mode: "naive_single_revoke" }, "privatePathSentinel.env");
+  const data = triageRequest(analysis.report);
+  let calls = 0;
+  t.mock.method(globalThis, "fetch", async (url: unknown, init: RequestInit) => {
+    calls++;
+    assert.equal(url, "https://api.openai.com/v1/chat/completions");
+    assert.equal(init.redirect, "error");
+    assert.ok(init.signal instanceof AbortSignal);
+    assert.equal((init.headers as Record<string, string>).Authorization, "Bearer test-server-key");
+    const outbound = JSON.parse(String(init.body));
+    const prompt = outbound.messages[0].content;
+    assert.deepEqual(JSON.parse(prompt.split("Context: ")[1].split(". Facts: ")[0]), data);
+    for (const forbidden of ["privateInputSentinel", "privatePathSentinel", "test-server-key", "raw_payload", "source_file"])
+      assert.ok(!String(init.body).includes(forbidden));
+    return Response.json({ choices: [{ message: { content: JSON.stringify({ order: [2, 0, 1], items: [{ body: "Invented safety claim" }] }) } }] });
+  });
+  const response = await triageRoute(request(data));
+  const result = await response.json();
+  const base = localTriage(data);
+  assert.equal(calls, 1);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(result.provider, "openai");
+  assert.equal(result.fallbackUsed, false);
+  assert.match(result.modelBadge, /OpenAI.*rule-based facts/);
+  assert.deepEqual(result.items, [base.items[2], base.items[0], base.items[1]]);
+  assert.ok(!JSON.stringify(result).includes("Invented safety claim"));
+});
+
+test("OpenAI invalid responses and upstream failures preserve local fallback", async t => {
+  inference(t);
+  process.env.GEMINI_API_KEY = "";
+  process.env.OPENAI_API_KEY = "test-server-key";
+  const failures = [
+    ["malformed envelope", () => new Response("not JSON")],
+    ["malformed model JSON", () => Response.json({ choices: [{ message: { content: "not JSON" } }] })],
+    ["duplicate indices", () => Response.json({ choices: [{ message: { content: '{"order":[0,0,1]}' } }] })],
+    ["out-of-range indices", () => Response.json({ choices: [{ message: { content: '{"order":[0,1,3]}' } }] })],
+    ["upstream HTTP failure", () => new Response("privateProviderError", { status: 503 })],
+    ["upstream abort", () => { throw new DOMException("privateProviderError", "AbortError"); }],
+  ] as const;
+  for (const [label, respond] of failures) {
+    await t.test(label, async child => {
+      child.mock.method(globalThis, "fetch", async () => respond());
+      const response = await triageRoute(request(summary));
+      const result = await response.json();
+      assert.equal(response.status, 200);
+      assert.equal(result.fallbackUsed, true);
+      assert.equal(result.provider, "local-synthesizer");
+      assert.deepEqual(result.items, localTriage({ ...summary, inputMode: "mcp_config" }).items);
+      assert.ok(!JSON.stringify(result).includes("privateProviderError"));
+    });
+  }
+});
+
+test("OpenAI cancels oversized UTF-8 output even when its character count fits", async t => {
+  inference(t);
+  process.env.GEMINI_API_KEY = "";
+  process.env.OPENAI_API_KEY = "test-server-key";
+  let cancelled = false;
+  t.mock.method(globalThis, "fetch", async () => new Response(new ReadableStream({
+    pull(controller) { controller.enqueue(new TextEncoder().encode("é".repeat(16385))); },
+    cancel() { cancelled = true; },
+  }), { headers: { "content-length": "1" } }));
+  assert.equal((await (await triageRoute(request(summary))).json()).fallbackUsed, true);
+  assert.equal(cancelled, true);
+});
+
+test("Gemini failure falls through to OpenAI; both failures fall back locally", async t => {
+  inference(t);
+  process.env.OPENAI_API_KEY = "test-second-key";
+  for (const succeeds of [true, false]) {
+    await t.test(succeeds ? "OpenAI succeeds" : "both providers fail", async child => {
+      const calls: unknown[] = [];
+      child.mock.method(globalThis, "fetch", async (url: unknown) => {
+        calls.push(url);
+        if (String(url).includes("googleapis.com")) throw new DOMException("Timed out", "TimeoutError");
+        return succeeds
+          ? Response.json({ choices: [{ message: { content: '{"order":[1,2,0]}' } }] })
+          : Response.json({ choices: [{ message: { content: '{"order":[1,1,0]}' } }] });
+      });
+      const result = await (await triageRoute(request(summary))).json();
+      assert.equal(calls.length, 2);
+      assert.match(String(calls[0]), /googleapis/);
+      assert.match(String(calls[1]), /api.openai.com/);
+      assert.equal(result.provider, succeeds ? "openai" : "local-synthesizer");
+      assert.equal(result.fallbackUsed, !succeeds);
+      const items = localTriage({ ...summary, inputMode: "mcp_config" }).items;
+      assert.deepEqual(result.items, succeeds ? [items[1], items[2], items[0]] : items);
+    });
+  }
+});
+
+test("unconfigured inference never fetches and returns the supported local summary", async t => {
+  inference(t);
+  process.env.GEMINI_API_KEY = "";
+  const fetchMock = t.mock.method(globalThis, "fetch", async () => { throw new Error("Unexpected inference request"); });
+  const result = await (await triageRoute(request(summary))).json();
+  assert.equal(result.fallbackUsed, true);
+  assert.equal(result.provider, "local-synthesizer");
+  assert.equal(fetchMock.mock.callCount(), 0);
 });
 
 test("local summary never certifies safety or observed compromise", () => {

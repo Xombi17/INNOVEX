@@ -1,0 +1,38 @@
+{
+  "commit": "2d4590d08030c459c6b0ff1a4a1ac3f03c626959",
+  "checkout": "/tmp/scopebomb-v111-final-clean-_0c_cn0f",
+  "hosted": false,
+  "serverStopped": true,
+  "steps": [
+    {
+      "step": "Check approved frozen baseline",
+      "exitCode": 0,
+      "seconds": 0.004
+    },
+    {
+      "step": "npm ci --prefix apps/web",
+      "exitCode": 0,
+      "seconds": 2.79
+    },
+    {
+      "step": "Contracts and unit tests",
+      "exitCode": 0,
+      "seconds": 3.081
+    },
+    {
+      "step": "npm run build --prefix apps/web",
+      "exitCode": 0,
+      "seconds": 4.311
+    },
+    {
+      "step": "Production browser checks",
+      "exitCode": 0,
+      "seconds": 9.122
+    },
+    {
+      "step": "Reject generated drift",
+      "exitCode": 0,
+      "seconds": 0.016
+    }
+  ]
+}

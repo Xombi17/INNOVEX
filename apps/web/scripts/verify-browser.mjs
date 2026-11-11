@@ -19,8 +19,12 @@ const chrome = spawn(
     "--user-data-dir=" + profile,
     "about:blank",
   ],
-  { stdio: "ignore" },
+  { stdio: ["ignore", "ignore", "pipe"] },
 );
+let chromeDiagnostics = "";
+chrome.stderr.setEncoding("utf8");
+chrome.stderr.on("data", (chunk) => { chromeDiagnostics = (chromeDiagnostics + chunk).slice(-4096); });
+chrome.on("error", (error) => { chromeDiagnostics = String(error); });
 const checks = [],
   errors = [],
   posts = [];
@@ -38,7 +42,7 @@ try {
       await pause(100);
     }
   }
-  if (!port) throw new Error("Chrome did not open a debugging endpoint.");
+  if (!port) throw new Error("Chrome did not open a debugging endpoint. " + chromeDiagnostics);
   const tab = await (
     await fetch(
       `http://127.0.0.1:${port}/json/new?${encodeURIComponent(base)}`,
@@ -451,19 +455,20 @@ try {
     }
     throw new Error("No repository request intercepted");
   };
+  const longSource = "nested_configuration/".repeat(12) + ".env";
   const fixtureAnalysis = analyzeInput(
     {
       mode: "mcp_config",
       simulation_mode: "naive_single_revoke",
       raw_payload: "GITHUB_TOKEN=syntheticRepositoryCandidate",
     },
-    ".env",
+    longSource,
     "repository",
   );
   fixtureAnalysis.context.label = "owner/second";
   fixtureAnalysis.context.coverage = {
-    inspected: [".env"],
-    skipped: [".env.local (unavailable)"],
+    inspected: [longSource],
+    skipped: [longSource + ".local (unavailable)"],
     matchingFiles: 2,
     partial: true,
   };
@@ -513,11 +518,25 @@ try {
   check(
     "Repository results display partial coverage and preserve repository provenance",
     await js(
-      'document.body.innerText.includes("Partial repository check") && document.body.innerText.includes("Inspected 1 of 2") && document.body.innerText.includes("owner/second") && document.body.innerText.includes("Source: .env")',
+      'document.body.innerText.includes("Partial repository check") && document.body.innerText.includes("Inspected 1 of 2") && document.body.innerText.includes("owner/second") && document.body.innerText.includes("Source: nested_configuration/")',
     ),
   );
   await cdp("Fetch.disable");
   await screenshot("evidence-desktop");
+  await cdp("Emulation.setDeviceMetricsOverride", {
+    width: 320, height: 844, deviceScaleFactor: 1, mobile: true,
+  });
+  await click("View inspected and skipped files");
+  check(
+    "Long source and coverage paths wrap without clipping at 320px",
+    await js(`(() => {
+      const results = document.querySelector('[aria-label^="Results"]');
+      const source = [...results.querySelectorAll('p')].find(e => e.textContent === ${JSON.stringify("Source: " + longSource)});
+      const paths = [...results.querySelectorAll('li')].filter(e => /^(Inspected|Skipped):/.test(e.textContent));
+      return source && paths.length === 2 && [source, ...paths].every(e => e.scrollWidth <= e.clientWidth + 1);
+    })()`),
+  );
+  await screenshot("long-evidence-320");
   for (const width of [390, 320]) {
     await cdp("Emulation.setDeviceMetricsOverride", {
       width,
@@ -570,6 +589,10 @@ try {
   console.log(
     `Verified ${checks.length} browser checks. Screenshots: ${output}`,
   );
+} catch (error) {
+  await mkdir(output, { recursive: true });
+  await writeFile(path.join(output, "results.json"), JSON.stringify({ checks, errors: [...errors, String(error)] }, null, 2));
+  throw error;
 } finally {
   socket?.close();
   chrome.kill("SIGTERM");

@@ -1,0 +1,77 @@
+[
+  [
+    720,
+    "welcome",
+    true
+  ],
+  [
+    720,
+    "input",
+    true
+  ],
+  [
+    720,
+    "expanded exposure",
+    true
+  ],
+  [
+    720,
+    "expanded actions",
+    true
+  ],
+  [
+    720,
+    "consent dialog",
+    true
+  ],
+  [
+    390,
+    "welcome",
+    true
+  ],
+  [
+    390,
+    "input",
+    true
+  ],
+  [
+    390,
+    "expanded exposure",
+    true
+  ],
+  [
+    390,
+    "expanded actions",
+    true
+  ],
+  [
+    390,
+    "consent dialog",
+    true
+  ],
+  [
+    320,
+    "welcome",
+    true
+  ],
+  [
+    320,
+    "input",
+    true
+  ],
+  [
+    320,
+    "expanded exposure",
+    true
+  ],
+  [
+    320,
+    "expanded actions",
+    true
+  ],
+  [
+    320,
+    "consent dialog",
+    true
+  ]
+]
