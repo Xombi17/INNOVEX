@@ -96,7 +96,7 @@ export function EvidenceSummary({ analysis }: { analysis: Analysis }) {
           </summary>
           <ul className="mt-3 divide-y divide-[#e8eaec]">
             {found.map((item, index) => (
-              <li key={index} className="py-3">
+              <li key={index} className="py-3" data-guide-target={index === 0 ? "evidence" : undefined} tabIndex={index === 0 ? -1 : undefined}>
                 <div className="break-all text-[13px]">
                   {item.subject}
                 </div>

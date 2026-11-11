@@ -32,7 +32,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let socket;
 try {
   let port;
-  for (let attempt = 0; attempt < 100; attempt++) {
+  for (let attempt = 0; attempt < 300; attempt++) {
     try {
       port = (
         await readFile(path.join(profile, "DevToolsActivePort"), "utf8")
@@ -120,6 +120,8 @@ try {
     console.log("PASS " + label);
   };
   const click = async (name) => {
+    // Stop in-flight smooth scrolling before measuring pointer coordinates.
+    await js('window.scrollTo({ top: scrollY, left: scrollX, behavior: "instant" })');
     const nodes = (await cdp("Accessibility.getFullAXTree")).nodes;
     const node = nodes.find(
       (item) =>
@@ -130,14 +132,21 @@ try {
         ),
     );
     if (!node) throw new Error("Control not found: " + name);
-    await cdp("DOM.scrollIntoViewIfNeeded", {
-      backendNodeId: node.backendDOMNodeId,
-    });
-    const points = (
-      await cdp("DOM.getBoxModel", { backendNodeId: node.backendDOMNodeId })
-    ).model.content;
-    const x = (points[0] + points[2] + points[4] + points[6]) / 4,
+    const viewport = await js("({ width: innerWidth, height: innerHeight })");
+    let x, y, previous, stable = 0;
+    // Native smooth scrolling and entry motion can outlive a protocol command.
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await cdp("DOM.scrollIntoViewIfNeeded", { backendNodeId: node.backendDOMNodeId });
+      const points = (await cdp("DOM.getBoxModel", { backendNodeId: node.backendDOMNodeId })).model.content;
+      x = (points[0] + points[2] + points[4] + points[6]) / 4;
       y = (points[1] + points[3] + points[5] + points[7]) / 4;
+      const visible = x >= 0 && y >= 0 && x < viewport.width && y < viewport.height;
+      stable = visible && previous && Math.abs(x - previous.x) < 0.25 && Math.abs(y - previous.y) < 0.25 ? stable + 1 : 0;
+      if (stable >= 2) break;
+      previous = { x, y };
+      await pause(50);
+    }
+    assert.ok(stable >= 2, "Control did not settle before clicking: " + name);
     await cdp("Input.dispatchMouseEvent", {
       type: "mousePressed",
       x,
@@ -162,6 +171,7 @@ try {
       code,
       modifiers,
       windowsVirtualKeyCode: virtualKey,
+      ...(key === "Enter" ? { text: "\r" } : {}),
     });
     await cdp("Input.dispatchKeyEvent", {
       type: "keyUp",
@@ -581,6 +591,89 @@ try {
       'document.body.innerText.includes("Your supplied input") && !location.search.includes("oauth_url") && document.body.innerText.includes("repo")',
     ),
   );
+  await cdp("Emulation.setDeviceMetricsOverride", {
+    width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false,
+  });
+  await reload();
+  await click("Try an example");
+  check(
+    "Example starts contextual guidance with the existing sample provenance",
+    await js('!!document.querySelector("[data-walkthrough-step]") && document.body.innerText.includes("Sample simulation")'),
+  );
+  await click("Show me the evidence");
+  check(
+    "Guidance opens real supporting evidence and transfers keyboard focus to it",
+    await js('document.activeElement.dataset.guideTarget === "evidence" && document.activeElement.closest("details").open'),
+  );
+  await click("Next: follow the exposure");
+  check(
+    "Guided next action advances the actual workflow and focuses its heading",
+    await js('document.activeElement.textContent === "Understand possible exposure" && document.querySelector("[data-walkthrough-step]").dataset.walkthroughStep === "2"'),
+  );
+  await click("Show me the exposure chain");
+  check(
+    "Guidance reveals the real conditional chain",
+    await js('document.activeElement.dataset.guideTarget === "exposure" && document.activeElement.querySelectorAll("li").length > 1'),
+  );
+  await click("Next: review the actions");
+  await click("Show me the first review action");
+  check(
+    "Guidance opens the applicable provider disclosure without claiming remediation",
+    await js('document.activeElement.dataset.guideTarget === "actions" && document.activeElement.closest("details").open && document.body.innerText.includes("Remediation not verified")'),
+  );
+  await click("Mark this review action done");
+  await click("Explore without guidance");
+  check(
+    "Exiting guidance preserves the analysis and self-reported action progress",
+    await js('!document.querySelector("[data-walkthrough-step]") && document.querySelector("[data-guide-target=actions] input[type=checkbox]").checked && document.body.innerText.includes("Sample simulation")'),
+  );
+  await click("Resume walkthrough");
+  await click("Next: follow the exposure");
+  await click("Next: review the actions");
+  check(
+    "Resuming guidance does not reset reviewed actions",
+    await js('document.querySelector("[data-guide-target=actions] input[type=checkbox]").checked'),
+  );
+  await click("Finish walkthrough");
+  check(
+    "Walkthrough completion focuses the recap and leaves remediation unverified",
+    await js('!!document.querySelector("[data-walkthrough-step=complete]") && document.activeElement.tagName === "H2" && document.body.innerText.includes("No account was changed or verified")'),
+  );
+  await screenshot("walkthrough-complete-desktop");
+  await click("Check my configuration now");
+  check(
+    "Completion can start real input without carrying sample findings into it",
+    await js('!!document.querySelector("#scan-input") && !document.querySelector("[aria-label^=Results]") && !document.querySelector("[data-walkthrough-step]")'),
+  );
+  await reload();
+  await click("Try an example");
+  await js('[...document.querySelectorAll("button")].find(button => button.textContent.trim() === "Next: follow the exposure").focus()');
+  await key("Enter", "Enter");
+  check(
+    "Keyboard walkthrough navigation avoids movement animations",
+    await js('document.activeElement.textContent === "Understand possible exposure" && document.querySelectorAll("[data-step]")[1].getAnimations().length === 0'),
+  );
+  await cdp("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+  await click("Show me the exposure chain");
+  check(
+    "Reduced-motion guidance keeps the chain usable without movement",
+    await js('matchMedia("(prefers-reduced-motion: reduce)").matches && document.activeElement.dataset.guideTarget === "exposure" && document.querySelectorAll("[data-step]")[1].getAnimations().length === 0'),
+  );
+  await cdp("Emulation.setEmulatedMedia", { features: [] });
+  for (const width of [390, 320]) {
+    await cdp("Emulation.setDeviceMetricsOverride", { width, height: 844, deviceScaleFactor: 1, mobile: true });
+    await reload();
+    await click("Try an example");
+    for (const next of ["Next: follow the exposure", "Next: review the actions", "Finish walkthrough"]) {
+      const current = await js('document.querySelector("[data-walkthrough-step]").dataset.walkthroughStep');
+      check(
+        `Guidance and its controls reflow at ${width}px, step ${current}`,
+        await js('document.documentElement.scrollWidth <= innerWidth && [...document.querySelectorAll("[data-walkthrough-step] button")].every(button => { const r = button.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; })'),
+      );
+      await screenshot(`walkthrough-${current}-${width}`);
+      await click(next);
+    }
+  }
   check("No runtime or console errors", errors.length === 0);
   await writeFile(
     path.join(output, "results.json"),

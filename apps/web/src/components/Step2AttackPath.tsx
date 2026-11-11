@@ -1,16 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { AuditReport, SimulationMode } from "@contracts/index";
 import { DominoGraph } from "./DominoGraph";
 import { humanizeNodeLabel } from "./uiTokens";
 export function Step2AttackPath({
   report,
+  guidance,
   simulationMode,
   onChangeSimulationMode,
   onBack,
   onContinue,
 }: {
   report: AuditReport;
+  guidance?: ReactNode;
   simulationMode: SimulationMode;
   onChangeSimulationMode: (mode: SimulationMode) => void;
   onBack: () => void;
@@ -43,6 +45,7 @@ export function Step2AttackPath({
             : "No downstream exposure is modeled for this input. The catalog is limited, so this does not prove your accounts or project are safe."}
         </p>
       </div>
+      {guidance}
       <div className="rounded-lg bg-[#f4f6f8] p-4">
         <strong>Possible consequence, not an observed attack</strong>
         <p className="muted mt-2">
@@ -53,13 +56,13 @@ export function Step2AttackPath({
         </p>
       </div>
       {hasExposure && (
-        <ol className="space-y-3" aria-label="One possible exposure chain">
+        <ol className="exposure-chain" aria-label="One possible exposure chain" data-guide-target="exposure" tabIndex={-1}>
           {nodes.map((node, index) => (
             <li
               key={node.id}
-              className="flex gap-3 border-b border-[#e8eaec] pb-3"
+              className="exposure-link"
             >
-              <span className="text-[#1b6c80]">{index + 1}.</span>
+              <span className="exposure-number" aria-hidden="true">{index + 1}</span>
               <div>
                 <div className="font-medium">{humanizeNodeLabel(node)}</div>
                 <p className="muted mt-1 text-[13px]">{node.notes}</p>

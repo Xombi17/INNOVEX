@@ -8,6 +8,9 @@ status: shipped_v1.1
 next_milestone: v1.1.1
 next_milestone_status: hosted_ci_passed_human_validation_pending
 next_milestone_branch: feat/v1.1.1-validation
+active_development: guided_walkthrough_ui
+active_development_branch: feat/guided-walkthrough
+active_development_review: https://github.com/Xombi17/INNOVEX/pull/2
 last_activity: 2026-11-11
 release_code_commit: 1893afb
 production_url: https://scopebomb.vercel.app
@@ -58,3 +61,9 @@ At the v1.1 release, unauthenticated GitHub returned 404 for `Xombi17/INNOVEX` (
 - Full changed-file/check/risk handoff: `.planning/V1.1.1-IMPLEMENTATION-SUMMARY.md`. AST Graphify outputs refreshed and mirrored locally; document semantic extraction not rerun.
 
 - Hosted Verify run [42976589175](https://github.com/Xombi17/INNOVEX/actions/runs/42976589175) passed all steps. Downloaded artifact confirms 40 browser checks and zero errors; run metadata and results are archived under `.planning/evidence/v1.1.1/`. Repository privacy confirmed through authenticated GitHub API.
+
+## Active development — guided walkthrough and interface refinement
+
+User priority is app usability and an actual guided walkthrough; professional video production is deferred. `feat/guided-walkthrough` builds on the CI-verified validation branch. Examples now have contextual real-content reveal controls, stage navigation, exit/resume, an unverified recap and a clean own-input handoff. Shared interface tokens, control states and compact navigation were integrated; guide/runbook nesting and heading hierarchy were corrected.
+
+Isolated standard production build and TypeScript pass; contracts/30 engine/36 web/2 extension tests and deterministic packaging pass; 57 browser assertions pass. Source lint/render inspector have zero failures/warnings. Impeccable reports for all three actual guided stages are empty at 1440px and 390px. Frozen files are unchanged. See `.planning/GUIDED-WALKTHROUGH-REVIEW.md`. No new production deployment or human-validation success is claimed.
