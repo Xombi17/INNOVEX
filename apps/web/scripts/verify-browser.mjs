@@ -32,7 +32,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let socket;
 try {
   let port;
-  for (let attempt = 0; attempt < 100; attempt++) {
+  for (let attempt = 0; attempt < 300; attempt++) {
     try {
       port = (
         await readFile(path.join(profile, "DevToolsActivePort"), "utf8")
