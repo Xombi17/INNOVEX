@@ -14,7 +14,7 @@ active_development_review: https://github.com/Xombi17/INNOVEX/pull/2
 last_activity: 2026-11-12
 release_code_commit: d254e71
 production_url: https://scopebomb.vercel.app
-production_deployment: dpl_HaZqsXCaGtR1iXYF4dyvxz8CtMD8
+production_deployment: dpl_DCFev1ooCnvqUYxBd58E7w3mpYqu
 progress:
   total_phases: 4
   completed_phases: 4
@@ -29,8 +29,8 @@ ScopeBomb v1.1 is shipped and production-smoke verified. Candidate B (`641b8ad`,
 
 ## Release and branch state
 
-- Release code `1893afb` fast-forwarded into `main`; `feat/ui-extension` synced; both pushed to origin. This state/evidence update follows the code deployment and changes no runtime files.
-- `/home/varad/Documents/hackathons/INNOVEX` is the linked deployment root. The v1.1 deployment `dpl_FZPypEKaBAqYr7akMEghzTZkTTWQ` was superseded on 2026-11-12 by production deployment `dpl_HaZqsXCaGtR1iXYF4dyvxz8CtMD8`, which is Ready and aliases `https://scopebomb.vercel.app`.
+- PR #1 and PR #2 are merged to `main`; merge commit `d254e71` contains the shipped UI/runtime. GitHub's default branch is `main`; `feat/ui-extension` is synced through release-record commit `8768e93`.
+- `/home/varad/Documents/hackathons/INNOVEX` is the linked deployment root. Production deployment `dpl_DCFev1ooCnvqUYxBd58E7w3mpYqu` is Ready and aliases `https://scopebomb.vercel.app`.
 - Candidate A remains available at `/tmp/scopebomb-v11-release`, branch `fix/v11-release`, commit `5f6a576`, for comparison. Both candidates passed standard builds; A required discarding its stale generated build cache, without a webpack fallback.
 - Core worktree `feat/core-engine` remains at `4a92051`. `packages/engine/**`, `tests/engine/**`, `contracts/**` and `data/scope_catalog.json` have zero diff from frozen baseline `1ce7fb1`.
 
@@ -47,7 +47,7 @@ ScopeBomb v1.1 is shipped and production-smoke verified. Candidate B (`641b8ad`,
 
 ## Latest production deployment — 2026-11-12
 
-- PR #2 merged to `main`; production code commit `d254e71`. Deployment `dpl_HaZqsXCaGtR1iXYF4dyvxz8CtMD8` reached READY and aliases `https://scopebomb.vercel.app`. An unauthenticated HEAD request to the public alias returned HTTP 200.
+- PR #2 merged to `main`; production code commit `d254e71`. Latest deployment `dpl_DCFev1ooCnvqUYxBd58E7w3mpYqu` reached READY and aliases `https://scopebomb.vercel.app`. An unauthenticated HEAD request to the public alias returned HTTP 200.
 - Merged-commit gates: contracts valid; engine 30/30, web 36/36, extension 2/2; TypeScript and production build passed; browser workflow 57/57 passed against the production build; frozen engine/contracts/catalog diff is empty.
 - Design lint and rendered inspection: 0 FAIL / 0 WARN at 1440/768/390px; desktop and mobile Impeccable reports are empty. Extension archive is valid with 19 entries and matches the production download byte-for-byte (SHA-256 `15e3d93c83a99d81b9451f9cb64703e7ee7b18a05f9527a8220acdcda1e9f7fe`).
 - Live production smoke: home HTTP 200; extension download HTTP 200; AI triage HTTP 200 with the supported local fallback; `octocat/Hello-World` repository scan HTTP 200 with honest zero selected files; invalid loopback repository URL HTTP 400. No optional LLM environment variables are configured.
