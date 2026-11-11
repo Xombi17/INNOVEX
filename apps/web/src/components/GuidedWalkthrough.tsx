@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, type MouseEvent } from "react";
+import { createPortal } from "react-dom";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { WorkflowStep } from "./StepStepper";
 
 const steps = [
@@ -41,15 +42,20 @@ export function GuidedWalkthrough({
   onStartInput: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   useEffect(() => {
     if (complete) heading.current?.focus();
   }, [complete]);
   const current = steps[step - 1];
-  return (
+  if (!mounted) return null;
+  return createPortal(
     <section
+      id="walkthrough-guide"
       aria-label="Guided example walkthrough"
       className="walkthrough-guide"
       data-walkthrough-step={complete ? "complete" : step}
+      data-ui="tour-coachmark"
     >
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[13px]">
         <span aria-live="polite" aria-atomic="true" className="font-medium text-[#155768]">
@@ -67,6 +73,18 @@ export function GuidedWalkthrough({
           ? "You’ve seen the evidence, a possible exposure chain and a provider review action. No account was changed or verified. Try your own input when you’re ready."
           : current.body}
       </p>
+      {!complete && (
+        <div
+          className="walkthrough-progress"
+          role="progressbar"
+          aria-label="Walkthrough progress"
+          aria-valuemin={1}
+          aria-valuemax={3}
+          aria-valuenow={step}
+        >
+          <span style={{ width: `${(step / steps.length) * 100}%` }} />
+        </div>
+      )}
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {complete ? (
           <button className="control control-primary" type="button" onClick={onStartInput}>
@@ -92,6 +110,7 @@ export function GuidedWalkthrough({
           </>
         )}
       </div>
-    </section>
+    </section>,
+    document.body,
   );
 }

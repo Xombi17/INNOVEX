@@ -15,11 +15,11 @@ The shared tokens and component styles live in `src/app/globals.css`. Extend tho
 - `.workbench`, `.workbench__surface`, `.workbench__header`, and `.analysis-context` form the app shell.
 - `.control` is the standard action; `.control-primary` marks the main action. `.field` is for editable input.
 - `.workflow-stepper` and `.workflow-step` show the current stage. Keep the labels short enough to scan on a phone; the stage heading supplies the full task name.
-- `.walkthrough-guide` explains the current sample step. Keep its explanation beside the real evidence or action, and let the reveal control focus that content.
+- `.walkthrough-guide` is a fixed coachmark shown only after the visitor starts the tour. It is portaled to `document.body` so the app shell cannot clip it, stays in the lower-left corner, and includes a three-step progress bar plus a visible exit. The reveal action associates the guide with and focuses the real evidence or action. On narrow screens, keep it within the viewport and allow the card itself to scroll.
 
 ## Interaction rules
 
 - Preserve the global `:focus-visible` outline. Do not use color or motion as the only state cue.
 - Put hover styling inside a hover-capable pointer query; provide pressed, disabled, selected, and focus states separately.
-- Keep keyboard and touch controls at least 44px tall. Do not make a tour block the underlying workflow.
+- Keep keyboard and touch controls at least 44px tall. Keep the tour exit visible so visitors can return to the full workflow without losing the sample analysis.
 - Keep examples, observed evidence, possible consequences, and user-reported verification distinct in both copy and styling.
