@@ -60,9 +60,11 @@ export function ContainmentComparison({
     return (
       <li
         key={step.priority}
+        data-guide-target={step.priority === steps[0]?.priority ? "actions" : undefined}
+        tabIndex={step.priority === steps[0]?.priority ? -1 : undefined}
         className="space-y-3 border-t border-[#e8eaec] py-4"
       >
-        <h4 className="font-semibold">{target}</h4>
+        <h3 className="font-semibold">{target}</h3>
         <p>{details.guidance}</p>
         <p className="muted text-[13px]">Who can do this: {details.actor}.</p>
         {details.consoleUrl && (
@@ -193,7 +195,7 @@ export function ContainmentComparison({
   };
   return (
     <section aria-label="Recommended cleanup checklist" className="space-y-5">
-      <div className="rounded-lg border border-[#e9d7aa] bg-[#fffbeb] p-4">
+      <div className="bg-[#fffbeb] p-4">
         <h2 className="font-semibold text-[#855306]">
           Remediation not verified
         </h2>
@@ -218,7 +220,7 @@ export function ContainmentComparison({
           {groups.map((issuer) => (
             <details
               key={issuer}
-              className="rounded-lg border border-[#e8eaec] px-4"
+              className="border-t border-[#e8eaec]"
             >
               <summary className="cursor-pointer py-4 font-semibold">
                 {issuer} —{" "}

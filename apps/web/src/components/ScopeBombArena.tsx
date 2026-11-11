@@ -13,6 +13,7 @@ import { Step3FixBlocker } from "./Step3FixBlocker";
 import { HowItWorksModal } from "./HowItWorksModal";
 import { ScanInput } from "./ScanInput";
 import { PresetStrip } from "./PresetStrip";
+import { GuidedWalkthrough } from "./GuidedWalkthrough";
 
 const presets = getIncidentPresets();
 export function ScopeBombArena({
@@ -22,6 +23,7 @@ export function ScopeBombArena({
 }) {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [entry, setEntry] = useState<"welcome" | "input" | "sample">("welcome");
+  const [walkthrough, setWalkthrough] = useState<"active" | "complete" | "off">("off");
   const [step, setStep] = useState<WorkflowStep>(1);
   const [simulation, setSimulation] = useState<SimulationMode>(
     "naive_single_revoke",
@@ -99,9 +101,21 @@ export function ScopeBombArena({
         : main.current?.querySelector<HTMLElement>(`[data-step="${step}"] h1`)
       )?.focus();
       window.scrollTo({ top: 0 });
+      const panel = main.current?.querySelector<HTMLElement>(`[data-step="${step}"]`);
+      panel?.getAnimations().forEach((animation) => animation.cancel());
+      if (
+        main.current?.closest("[data-input]")?.getAttribute("data-input") === "pointer" &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        panel?.animate(
+          [{ opacity: 0.65, transform: "translateY(4px)" }, { opacity: 1, transform: "translateY(0)" }],
+          { duration: 180, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+        );
+      }
     }
-  }, [step, entry]);
+  }, [step, entry, walkthrough, session]);
   const receive = (result: Analysis, oauthUrl?: string) => {
+    setWalkthrough("off");
     setAnalysis(result);
     setUrl(oauthUrl ?? null);
     setSimulation("naive_single_revoke");
@@ -139,9 +153,11 @@ export function ScopeBombArena({
             "sample",
           );
     receive(result, preset.sample_oauth_url);
+    setWalkthrough("active");
     navigating.current = true;
   };
   const startInput = () => {
+    setWalkthrough("off");
     setEntry("input");
     setAnalysis(null);
     setUrl(null);
@@ -151,17 +167,51 @@ export function ScopeBombArena({
     navigating.current = true;
   };
   const invalidate = () => {
+    setWalkthrough("off");
     setAnalysis(null);
     setUrl(null);
     setNotice("");
   };
+  const guidance = entry === "sample" && walkthrough !== "off" ? (
+    <GuidedWalkthrough
+      step={step}
+      complete={walkthrough === "complete"}
+      onStep={go}
+      onFinish={() => setWalkthrough("complete")}
+      onExit={() => {
+        setWalkthrough("off");
+        navigating.current = true;
+      }}
+      onStartInput={startInput}
+      onReveal={(event) => {
+        const target = main.current?.querySelector<HTMLElement>(
+          `[data-step="${step}"] [data-guide-target="${["evidence", "exposure", "actions"][step - 1]}"]`,
+        );
+        if (!target) return;
+        // A guide reveals the actual content, including any closed disclosure ancestors.
+        for (let parent = target.parentElement; parent; parent = parent.parentElement) {
+          if (parent instanceof HTMLDetailsElement) parent.open = true;
+        }
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({
+          block: "start",
+          behavior: event.detail > 0 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "smooth" : "instant",
+        });
+      }}
+    />
+  ) : null;
   return (
-    <div className="min-h-screen bg-[#f9fbfc] p-3 text-[#131416] sm:p-6">
+    <div
+      className="workbench"
+      data-input="keyboard"
+      onPointerDownCapture={(event) => { event.currentTarget.dataset.input = "pointer"; }}
+      onKeyDownCapture={(event) => { event.currentTarget.dataset.input = "keyboard"; }}
+    >
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <div className="mx-auto max-w-[1180px] overflow-hidden rounded-2xl border border-[#e8eaec] bg-white">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eaec] px-5 py-4 sm:px-7">
+      <div className="workbench__surface">
+        <header className="workbench__header">
           <a href="/" className="text-lg font-semibold tracking-tight">
             ScopeBomb
           </a>
@@ -173,6 +223,18 @@ export function ScopeBombArena({
             >
               About this tool
             </button>
+            {entry === "sample" && walkthrough === "off" && (
+              <button
+                type="button"
+                className="control"
+                onClick={() => {
+                  setWalkthrough("active");
+                  go(1);
+                }}
+              >
+                Resume walkthrough
+              </button>
+            )}
             {entry !== "welcome" && (
               <button
                 type="button"
@@ -218,10 +280,10 @@ export function ScopeBombArena({
               </div>
               <div className="mt-9 grid gap-4 sm:grid-cols-2">
                 <div className="border-t border-[#e8eaec] py-5 sm:pr-6">
-                  <h2 className="text-lg font-semibold">See how it works</h2>
+                  <h2 className="text-lg font-semibold">Take a guided walkthrough</h2>
                   <p className="muted mb-5 mt-2">
-                    Follow a sample app’s permissions through possible exposure
-                    and a cleanup plan. No setup needed.
+                    Follow one example from evidence to possible exposure and
+                    provider review actions. Guidance is included; no setup needed.
                   </p>
                   <button
                     className="control control-primary"
@@ -255,7 +317,7 @@ export function ScopeBombArena({
           ) : (
             <>
               {analysis && (
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e8eaec] bg-[#f4f6f8] px-5 py-3 text-[13px] sm:px-7">
+                <div className="analysis-context">
                   <span className="break-all">
                     <strong>
                       {analysis.context.kind === "sample"
@@ -294,6 +356,7 @@ export function ScopeBombArena({
                       : "Choose one input. We’ll separate evidence in it from possible consequences."}
                   </p>
                 </div>
+                {step === 1 && guidance}
                 {entry === "input" ? (
                   <ScanInput
                     initialUrl={initialUrl}
@@ -303,11 +366,16 @@ export function ScopeBombArena({
                   />
                 ) : (
                   <>
-                    <PresetStrip
-                      presets={presets}
-                      activePresetId={analysis?.report.preset_id ?? null}
-                      onSelectPreset={sample}
-                    />
+                    <details open={walkthrough !== "active"} className="border-t border-[#e8eaec] pt-2">
+                      <summary className="cursor-pointer font-medium">Choose a different scenario</summary>
+                      <div className="mt-3">
+                        <PresetStrip
+                          presets={presets}
+                          activePresetId={analysis?.report.preset_id ?? null}
+                          onSelectPreset={sample}
+                        />
+                      </div>
+                    </details>
                     <button
                       className="control"
                       type="button"
@@ -334,6 +402,7 @@ export function ScopeBombArena({
                   >
                     <Step2AttackPath
                       key={session}
+                      guidance={step === 2 ? guidance : null}
                       report={analysis.report}
                       simulationMode={simulation}
                       onChangeSimulationMode={setSimulation}
@@ -348,6 +417,7 @@ export function ScopeBombArena({
                   >
                     <Step3FixBlocker
                       key={session}
+                      guidance={step === 3 ? guidance : null}
                       report={analysis.report}
                       simulationMode={simulation}
                       activeOAuthUrl={url}

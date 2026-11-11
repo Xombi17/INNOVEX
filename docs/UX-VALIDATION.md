@@ -81,3 +81,9 @@ If those targets fail, revise the affected step and repeat with unfamiliar parti
 Consolidation evidence and candidate tradeoffs: `.planning/V11-CONSOLIDATED-RELEASE.md`. The source lint and rendered inspector pass with zero failures/warnings; desktop/mobile Impeccable scans are empty. The installed MV3 popup, guard and actual pre-consent navigation interception were also checked in headless Chrome. Live production checks are recorded in the release report.
 
 Production verification (2026-11-11): v1.1 homepage and matching extension ZIP return 200; all 39 browser checks passed against `https://scopebomb.vercel.app`. Live API fallback, bounded public-repository retrieval, inaccessible repository error and invalid-host rejection passed. Production render inspection reports zero failures/warnings, with empty desktop/mobile Impeccable scans. No inference keys are configured.
+
+## Guided example refinement (2026-11-11, development branch)
+
+**Try an example** starts optional inline guidance through the same input, exposure and action screens. Each primary **Show me…** control opens and focuses actual supporting content; Next/Previous and browser history navigate the existing analysis. **Explore without guidance** and **Resume walkthrough** retain analysis and self-reported review progress. Finishing offers **Check my configuration now**, which clears sample results before accepting custom input. Guidance is not shown for custom input or extension deep links and is not stored across refreshes.
+
+Pointer navigation uses brief native motion; keyboard and reduced-motion navigation avoid movement. The current development build passed 57 browser assertions, including every guide stage at 390/320px. See `.planning/GUIDED-WALKTHROUGH-REVIEW.md` for exact scope, isolated-build evidence and desktop/mobile state audits. This is implementation evidence, not a completed human study or production deployment.

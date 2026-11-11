@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { AuditReport, SimulationMode } from "@contracts/index";
 import { ContainmentComparison } from "./ContainmentComparison";
 import { PreConsentPreview } from "./PreConsentPreview";
 import { ConsentTrapSandbox } from "./ConsentTrapSandbox";
 interface Props {
   report: AuditReport;
+  guidance?: ReactNode;
   simulationMode: SimulationMode;
   activeOAuthUrl: string | null;
   onChangeSimulationMode: (mode: SimulationMode) => void;
@@ -14,6 +15,7 @@ interface Props {
 }
 export function Step3FixBlocker({
   report,
+  guidance,
   simulationMode,
   activeOAuthUrl,
   onChangeSimulationMode,
@@ -32,6 +34,7 @@ export function Step3FixBlocker({
           Open technical details when you need them.
         </p>
       </div>
+      {guidance}
       <ContainmentComparison
         report={report}
         simulationMode={simulationMode}
