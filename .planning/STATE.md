@@ -12,9 +12,9 @@ active_development: null
 active_development_branch: null
 active_development_review: https://github.com/Xombi17/INNOVEX/pull/2
 last_activity: 2026-11-12
-release_code_commit: d254e71
+release_code_commit: 25f0beb
 production_url: https://scopebomb.vercel.app
-production_deployment: dpl_DCFev1ooCnvqUYxBd58E7w3mpYqu
+production_deployment: dpl_576EGyR2Y8wFbrwAzk2QR1zXExWa
 progress:
   total_phases: 4
   completed_phases: 4
@@ -29,8 +29,8 @@ ScopeBomb v1.1 is shipped and production-smoke verified. Candidate B (`641b8ad`,
 
 ## Release and branch state
 
-- PR #1 and PR #2 are merged to `main`; merge commit `d254e71` contains the shipped UI/runtime. GitHub's default branch is `main`; `feat/ui-extension` is synced through release-record commit `8768e93`.
-- `/home/varad/Documents/hackathons/INNOVEX` is the linked deployment root. Production deployment `dpl_DCFev1ooCnvqUYxBd58E7w3mpYqu` is Ready and aliases `https://scopebomb.vercel.app`.
+- PR #1, PR #2 and PR #3 are merged to `main`; merge commit `25f0beb` contains the latest guided-tour coachmark fix. GitHub's default branch is `main`; `feat/ui-extension` is synced through release-record commit `8768e93`.
+- `/home/varad/Documents/hackathons/INNOVEX` is the linked deployment root. Production deployment `dpl_576EGyR2Y8wFbrwAzk2QR1zXExWa` is Ready and aliases `https://scopebomb.vercel.app`.
 - Candidate A remains available at `/tmp/scopebomb-v11-release`, branch `fix/v11-release`, commit `5f6a576`, for comparison. Both candidates passed standard builds; A required discarding its stale generated build cache, without a webpack fallback.
 - Core worktree `feat/core-engine` remains at `4a92051`. `packages/engine/**`, `tests/engine/**`, `contracts/**` and `data/scope_catalog.json` have zero diff from frozen baseline `1ce7fb1`.
 
@@ -73,4 +73,4 @@ At the v1.1 release, unauthenticated GitHub returned 404 for `Xombi17/INNOVEX` (
 
 User priority is app usability and an actual guided walkthrough; professional video production is deferred. PR #2 merges `feat/guided-walkthrough` on top of the CI-verified validation branch. Examples now have contextual real-content reveal controls, stage navigation, exit/resume, an unverified recap and a clean own-input handoff. Shared interface tokens, control states and compact navigation were integrated; guide/runbook nesting and heading hierarchy were corrected.
 
-Standard production build and TypeScript pass; contracts/30 engine/36 web/2 extension tests and deterministic packaging pass; 57 browser assertions pass. Source lint/render inspector have zero failures/warnings. Impeccable reports for all three actual guided stages are empty at 1440px and 390px. Frozen files are unchanged. See `.planning/GUIDED-WALKTHROUGH-REVIEW.md`. The change is deployed; spoken rehearsal, participant sessions, screen-reader evaluation and live inference remain unverified.
+The guided tour now opens in a visible, fixed coachmark with a three-step progress indicator, a clear exit and screen-reader linkage to revealed content. Its placement stays within 320px and 390px viewports. PR #3 is merged and deployed at `dpl_576EGyR2Y8wFbrwAzk2QR1zXExWa`. TypeScript and production build pass; local and production browser runs pass 58/58 with no runtime or console errors. Design-taste app lint reports zero failures and one expected overlay-shadow warning; the rendered inspector reports no findings at 1440px, 768px and 390px. Spoken rehearsal, participant sessions, screen-reader evaluation and live inference remain unverified.
