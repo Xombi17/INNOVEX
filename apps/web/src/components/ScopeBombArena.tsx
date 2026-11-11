@@ -38,8 +38,14 @@ export function ScopeBombArena({
   const analysisRef = useRef<Analysis | null>(null);
   const navigating = useRef(false);
   analysisRef.current = analysis;
+  const clearGuideLink = () => {
+    main.current
+      ?.querySelectorAll('[aria-describedby="walkthrough-guide"]')
+      .forEach((node) => node.removeAttribute("aria-describedby"));
+  };
   const go = (next: WorkflowStep) => {
     if (next > 1 && !analysisRef.current) return;
+    clearGuideLink();
     const address = new URL(window.location.href);
     address.searchParams.set("step", String(next));
     if (address.href !== window.location.href)
@@ -177,17 +183,23 @@ export function ScopeBombArena({
       step={step}
       complete={walkthrough === "complete"}
       onStep={go}
-      onFinish={() => setWalkthrough("complete")}
+      onFinish={() => {
+        clearGuideLink();
+        setWalkthrough("complete");
+      }}
       onExit={() => {
+        clearGuideLink();
         setWalkthrough("off");
         navigating.current = true;
       }}
       onStartInput={startInput}
       onReveal={(event) => {
+        clearGuideLink();
         const target = main.current?.querySelector<HTMLElement>(
           `[data-step="${step}"] [data-guide-target="${["evidence", "exposure", "actions"][step - 1]}"]`,
         );
         if (!target) return;
+        target.setAttribute("aria-describedby", "walkthrough-guide");
         // A guide reveals the actual content, including any closed disclosure ancestors.
         for (let parent = target.parentElement; parent; parent = parent.parentElement) {
           if (parent instanceof HTMLDetailsElement) parent.open = true;
@@ -280,17 +292,18 @@ export function ScopeBombArena({
               </div>
               <div className="mt-9 grid gap-4 sm:grid-cols-2">
                 <div className="border-t border-[#e8eaec] py-5 sm:pr-6">
-                  <h2 className="text-lg font-semibold">Take a guided walkthrough</h2>
+                  <h2 className="text-lg font-semibold">Take an interactive tour</h2>
                   <p className="muted mb-5 mt-2">
                     Follow one example from evidence to possible exposure and
-                    provider review actions. Guidance is included; no setup needed.
+                    provider review actions. A guide card stays on screen while
+                    you inspect each step.
                   </p>
                   <button
                     className="control control-primary"
                     type="button"
                     onClick={() => sample()}
                   >
-                    Try an example
+                    Start guided tour
                   </button>
                 </div>
                 <div className="border-t border-[#e8eaec] py-5 sm:pl-6">

@@ -217,7 +217,7 @@ try {
   check(
     "Welcome has two clear starting actions and no account-risk metrics",
     await js(
-      'document.body.innerText.includes("Try an example") && document.body.innerText.includes("Check my configuration") && !document.body.innerText.includes("95") && !document.body.innerText.includes("Paths still open")',
+      'document.body.innerText.includes("Start guided tour") && document.body.innerText.includes("Check my configuration") && !document.body.innerText.includes("95") && !document.body.innerText.includes("Paths still open")',
     ),
   );
   await screenshot("welcome-desktop");
@@ -251,7 +251,7 @@ try {
       '!document.querySelector("dialog[open]") && document.activeElement.innerText === "About this tool"',
     ),
   );
-  await click("Try an example");
+  await click("Start guided tour");
   check(
     "Example results are labeled as a sample",
     await js(
@@ -259,6 +259,7 @@ try {
     ),
   );
   await screenshot("input-desktop");
+  await click("Explore without guidance");
   await click("Understand possible exposure");
   check(
     "Step navigation focuses the new heading and changes history",
@@ -560,12 +561,13 @@ try {
       await js("document.documentElement.scrollWidth <= innerWidth"),
     );
     await screenshot("welcome-" + width);
-    await click("Try an example");
+    await click("Start guided tour");
     check(
       "Analysis reflows at " + width + "px",
       await js("document.documentElement.scrollWidth <= innerWidth"),
     );
     await screenshot("input-" + width);
+    await click("Explore without guidance");
     await click("Understand possible exposure");
     check(
       "Exposure reflows at " + width + "px",
@@ -595,20 +597,25 @@ try {
     width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false,
   });
   await reload();
-  await click("Try an example");
+  await click("Start guided tour");
   check(
     "Example starts contextual guidance with the existing sample provenance",
     await js('!!document.querySelector("[data-walkthrough-step]") && document.body.innerText.includes("Sample simulation")'),
   );
+  check(
+    "Walkthrough opens as a visible fixed coachmark",
+    await js('getComputedStyle(document.querySelector("[data-walkthrough-step]")).position === "fixed" && document.querySelector("[data-walkthrough-step]").getBoundingClientRect().width > 0 && document.querySelector("[role=progressbar]").getAttribute("aria-valuenow") === "1"'),
+  );
+  await screenshot("walkthrough-1-desktop");
   await click("Show me the evidence");
   check(
     "Guidance opens real supporting evidence and transfers keyboard focus to it",
-    await js('document.activeElement.dataset.guideTarget === "evidence" && document.activeElement.closest("details").open'),
+    await js('document.activeElement.dataset.guideTarget === "evidence" && document.activeElement.getAttribute("aria-describedby") === "walkthrough-guide" && document.activeElement.closest("details").open'),
   );
   await click("Next: follow the exposure");
   check(
     "Guided next action advances the actual workflow and focuses its heading",
-    await js('document.activeElement.textContent === "Understand possible exposure" && document.querySelector("[data-walkthrough-step]").dataset.walkthroughStep === "2"'),
+    await js('document.activeElement.textContent === "Understand possible exposure" && document.querySelector("[data-walkthrough-step]").dataset.walkthroughStep === "2" && document.querySelector("[role=progressbar]").getAttribute("aria-valuenow") === "2"'),
   );
   await click("Show me the exposure chain");
   check(
@@ -646,7 +653,7 @@ try {
     await js('!!document.querySelector("#scan-input") && !document.querySelector("[aria-label^=Results]") && !document.querySelector("[data-walkthrough-step]")'),
   );
   await reload();
-  await click("Try an example");
+  await click("Start guided tour");
   await js('[...document.querySelectorAll("button")].find(button => button.textContent.trim() === "Next: follow the exposure").focus()');
   await key("Enter", "Enter");
   check(
@@ -663,7 +670,7 @@ try {
   for (const width of [390, 320]) {
     await cdp("Emulation.setDeviceMetricsOverride", { width, height: 844, deviceScaleFactor: 1, mobile: true });
     await reload();
-    await click("Try an example");
+    await click("Start guided tour");
     for (const next of ["Next: follow the exposure", "Next: review the actions", "Finish walkthrough"]) {
       const current = await js('document.querySelector("[data-walkthrough-step]").dataset.walkthroughStep');
       check(
