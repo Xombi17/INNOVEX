@@ -1,0 +1,174 @@
+[
+  {
+    "check": "homepage",
+    "status": 200,
+    "version": "v1.1"
+  },
+  {
+    "check": "zip",
+    "status": 200,
+    "sha256": "15e3d93c83a99d81b9451f9cb64703e7ee7b18a05f9527a8220acdcda1e9f7fe",
+    "bytes": 35821
+  },
+  {
+    "check": "ai-triage",
+    "input": {
+      "inputMode": "mcp_config",
+      "providers": [
+        "github"
+      ],
+      "credentialCount": 0,
+      "scopeCount": 0,
+      "modeledNodes": 0
+    },
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "title": "What was identified",
+          "body": "0 credential-like value(s) identified in the inspected configuration. This does not verify that a credential works or has been leaked to an attacker."
+        },
+        {
+          "title": "What could follow",
+          "body": "No downstream exposure is modeled by this limited catalog. Unknown permissions, additional files or other credentials may still require review."
+        },
+        {
+          "title": "What to review next",
+          "body": "Review whether the requested access is needed. If already granted, inspect the provider’s app settings. Any separate credentials or sessions must be checked at their own issuers; provider revocation policies differ."
+        }
+      ],
+      "modelBadge": "Local rule-based summary",
+      "provider": "local-synthesizer",
+      "fallbackUsed": true,
+      "timestamp": "2026-11-11T06:06:15.646Z"
+    }
+  },
+  {
+    "check": "ai-triage",
+    "input": {
+      "inputMode": "mcp_config",
+      "providers": [
+        "raw-secret"
+      ],
+      "credentialCount": 0,
+      "scopeCount": 0,
+      "modeledNodes": 0
+    },
+    "status": 400,
+    "response": {
+      "error": "Only supported provider names and non-negative summary counts are accepted. Raw input is not accepted."
+    }
+  },
+  {
+    "check": "scan-repo",
+    "input": {
+      "repo": "https://127.0.0.1/private"
+    },
+    "status": 400,
+    "response": {
+      "ok": false,
+      "error": "Use an HTTPS github.com repository URL without credentials, query parameters or fragments."
+    }
+  },
+  {
+    "check": "scan-repo",
+    "input": {
+      "repo": "octocat/Hello-World"
+    },
+    "status": 200,
+    "response": {
+      "ok": true,
+      "analysis": {
+        "report": {
+          "schema_version": "1.0.0",
+          "input_mode": "mcp_config",
+          "preset_id": null,
+          "summary": {
+            "headline": "0-hop potential blast radius across 0 trust boundaries",
+            "max_risk_score": 15,
+            "max_hops": 0,
+            "trust_boundary_crossings": [],
+            "exposed_asset_count": 0,
+            "incident_framing_note": "Potential exposure from selected public files only; not proof of credential validity, exploitation or containment."
+          },
+          "parsed_oauth": null,
+          "shadow_secrets": [],
+          "graph": {
+            "nodes": [
+              {
+                "id": "identity",
+                "label": "Account / workstation owner",
+                "kind": "human_identity",
+                "provider": "generic",
+                "severity": "low",
+                "risk_score": 15,
+                "trust_boundary": "personal",
+                "survives_naive_revoke": false,
+                "notes": "Entry point for the supplied grants and local configuration; no live account lookup."
+              }
+            ],
+            "edges": []
+          },
+          "naive_containment": {
+            "simulation_mode": "naive_single_revoke",
+            "rfc7009_http_status_returned": 0,
+            "rfc7009_trap_warning": "No RFC 7009 response is modeled (status 0 = not applicable); GitHub grant DELETE expects 204 and other issuers use their own revocation controls. Naive results assume the first grant was actually revoked; HTTP status alone cannot establish that. Other grants and independent credentials remain live. Residual JWT TTL is illustrative, not measured; actual expiry and CAE/provider policy may differ. Previously copied data cannot be recovered by revocation.",
+            "jwt_residual_ttl_seconds": 0,
+            "contained_node_ids": [],
+            "persisting_node_ids": [],
+            "persisting_edge_ids": [],
+            "containment_ratio": 1,
+            "ordered_steps": []
+          },
+          "full_containment": {
+            "simulation_mode": "full_multi_issuer",
+            "rfc7009_http_status_returned": 0,
+            "rfc7009_trap_warning": "No RFC 7009 response is modeled (status 0 = not applicable); GitHub grant DELETE expects 204 and other issuers use their own revocation controls. Full containment is a projected outcome ONLY AFTER every listed action, issuer discovery and API rejection probe succeeds, including expiry of residual tokens. Previously copied data cannot be recovered by revocation.",
+            "jwt_residual_ttl_seconds": 0,
+            "contained_node_ids": [],
+            "persisting_node_ids": [],
+            "persisting_edge_ids": [],
+            "containment_ratio": 1,
+            "ordered_steps": []
+          },
+          "pre_consent_guard": {
+            "action": "WARN",
+            "provider": "generic",
+            "risk_score": 0,
+            "pkce_protected": false,
+            "pkce_rewrite_warning": "No OAuth authorization request was supplied; pre-consent evaluation is not applicable.",
+            "flagged_scopes": [],
+            "recommended_scopes": [],
+            "safe_replacement_url": null
+          },
+          "ai_explainer_used": false
+        },
+        "context": {
+          "kind": "repository",
+          "label": "octocat/Hello-World",
+          "evidence": [],
+          "warnings": [],
+          "coverage": {
+            "inspected": [],
+            "skipped": [],
+            "matchingFiles": 0,
+            "partial": false,
+            "revision": "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d"
+          }
+        }
+      },
+      "message": "0 selected file(s) inspected. No account access was tested."
+    }
+  },
+  {
+    "check": "scan-repo",
+    "input": {
+      "repo": "Xombi17/INNOVEX"
+    },
+    "status": 404,
+    "response": {
+      "ok": false,
+      "error": "Repository not found, empty, or private. Choose a non-empty public repository."
+    }
+  }
+]

@@ -39,4 +39,12 @@ The historical `DEMO_SCRIPT.md` has older immediate-sample and replacement-URL f
 
 Human ten-second comprehension and screen-reader study remain pending. No destructive provider actions, real credentials, live LLM keys or account containment were exercised. Browser screenshots and automated assertions establish implementation behavior, not user demand or proven security of an account.
 
-Production deployment and smoke evidence are appended after deployment completes.
+## Production outcome
+
+- Code release `1893afb` merged cleanly into `main` and synced/pushed with `feat/ui-extension`.
+- Ran `vercel deploy --prod --yes` from the linked repository root. Deployment `dpl_FZPypEKaBAqYr7akMEghzTZkTTWQ` reached Ready (15-second Vercel build); production alias is https://scopebomb.vercel.app.
+- Homepage returns 200 with the v1.1 marker and new welcome. Extension download returns HTTP/2 200; downloaded ZIP passes integrity and matches the committed SHA-256 exactly.
+- 39/39 production browser checks passed with no runtime/console errors. Desktop/mobile screenshots were visually reviewed, including centered consent dialog and exposure workflow.
+- Production rendered inspector: 0 FAIL / 0 WARN at 1440/768/390px. Both production Impeccable JSON reports are empty.
+- Live APIs: AI fallback 200, unrecognized provider 400, SSRF host 400, public Hello-World 200 at a pinned revision with zero selected matches, inaccessible INNOVEX 404.
+- Production JSON evidence and selected screenshots are in `.planning/evidence/v11-consolidated/production/`. Final status is `shipped_v1.1`.
