@@ -1,11 +1,12 @@
 # Codex Agent Instructions — ScopeBomb (`INNOVEX`)
 
-## Role & Strict Ownership
-- **Your Lane:** Deterministic core engine & unit tests ONLY (`packages/engine/**`, `tests/engine/**`) inside `/home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine` (`feat/core-engine`).
-- **DO NOT MODIFY:** `apps/web/**`, `apps/extension/**`, `contracts/**`, `data/scope_catalog.json`, `SPEC.md`, `DEMO_SCRIPT.md`, `.planning/**`. Treat `contracts/scope_bomb.schema.json`, `contracts/index.d.ts`, and `data/scope_catalog.json` as read-only truth.
-- **Tech Discipline (Ponytail `full`):** Pure zero-dependency TypeScript runnable in Node 24 (`node --test`) and importable directly by Next.js / Chrome MV3. Stdlib/native APIs first (`URL`, `URLSearchParams`, `node:test`, `node:assert`). Every non-trivial parser/graph/containment function keeps one focused check.
-- **Technical Accuracy:** Preserve RFC 7009 nuances (`HTTP 200 OK` != proof of containment; access-token cascading is only `SHOULD`), GitHub `DELETE /applications/{client_id}/grant`, and never corrupt PKCE `code_challenge` via mid-flight scope rewriting. Run `python3 contracts/verify_contracts.py` after any integration check.
-- **Token Conservation:** Read `ORCHESTRATION.md` once only if needed. Keep responses brief; pipe test runs (`--tb=short` or `tail -n 30`).
+## Role & Orchestration Ownership (Updated 2026-11-11)
+- **Your Role:** **Lead Orchestrator & Release Engineer.** Antigravity has handed off orchestration to Codex across all branches and worktrees (`/home/varad/Documents/hackathons/INNOVEX`, `.worktrees/core-engine`, `/tmp/scopebomb-v11-release`).
+- **Frozen Core Baseline (Keep Read-Only Unless Contract Change Explicitly Required):** `packages/engine/**`, `tests/engine/**`, `contracts/scope_bomb.schema.json`, `contracts/index.d.ts`, and `data/scope_catalog.json` are verified (`30/30` tests, `verify_contracts.py` OK) and already merged across `main`, `feat/core-engine`, `fix/v11-release`, and `feat/ui-extension`. Do not modify them unless resolving a proven defect.
+- **Immediate Orchestration Mission:** Read `.planning/STATE.md` and `.planning/CODEX_HANDOFF.md`, compile and evaluate `fix/v11-release` (`5f6a576` in `/tmp/scopebomb-v11-release`) vs `feat/ui-extension` (`900f4c7` in `/home/varad/Documents/hackathons/INNOVEX`) vs historical `764f42b`, select/merge the strongest combination cleanly into `main`, verify end-to-end (build, tests, browser, extension, design lint), update Graphify (`graphify update .`), and deploy to live Vercel (`https://scopebomb.vercel.app`).
+- **Tech Discipline (Ponytail `full`):** Pure zero-dependency TypeScript/stdlib/native APIs first (`URL`, `URLSearchParams`, `node:test`, `node:assert`). Minimal working diffs; verify every claim directly from tool output.
+- **Technical Accuracy:** Preserve RFC 7009 nuances (`HTTP 200 OK` != proof of containment; access-token cascading is only `SHOULD`), GitHub `DELETE /applications/{client_id}/grant` (versus PAT revocation), and never corrupt PKCE `code_challenge` via mid-flight scope rewriting (`safe_replacement_url: null`). Run `python3 contracts/verify_contracts.py` and `node --test tests/engine/*.test.ts` after any integration.
+- **Token Conservation:** Read `.planning/CODEX_HANDOFF.md` & `ORCHESTRATION.md` once at startup. Keep responses concise; pipe verbose test output (`--tb=short` or `tail -n 30`).
 
 ## graphify
 

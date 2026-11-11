@@ -1,37 +1,32 @@
-# Multi-Agent Orchestration & Token-Saving Playbook (`ScopeBomb`)
+# Multi-Agent Orchestration & Handoff Playbook (`ScopeBomb`)
 
-Read this on setup/handoff only (kept out of `AGENTS.md` / `GEMINI.md` so workers do not pay its token cost on every turn).
+Read this on setup/handoff only. Notice ownership transferred from Antigravity to **Codex as Lead Orchestrator** on `2026-11-11`.
 
-## 1. Worktree & Branch Topology (Zero Collisions)
-- `main`: Clean frozen baseline & integration branch.
-- `feat/ui-extension` (`/home/varad/Documents/hackathons/INNOVEX`): **Antigravity Lane** — owns `apps/web/**`, `apps/extension/**`, `SPEC.md`, `DEMO_SCRIPT.md`, `.planning/**`.
-- `feat/core-engine` (`/home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine`): **Codex Lane** — owns `packages/engine/**`, `tests/engine/**`.
-- **Frozen / Orchestrator-Only:** `contracts/**`, `data/scope_catalog.json`. Workers treat these as **read-only**. If a contract field must change, pause workers, update on `main` + bump schema, rebase both branches.
+## 1. Current Worktree & Branch Topology (as of 2026-11-11)
+- `main` (`1ce7fb1`): Clean `v1.1` baseline prior to candidate refactors. Contains the fully merged deterministic engine.
+- `feat/core-engine` (`/home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine`, `4a92051`): **0 unmerged commits vs `main`** (`packages/engine/**`, `tests/engine/**`, `contracts/**`, `data/scope_catalog.json` are already synced across all active branches).
+- `feat/ui-extension` (`/home/varad/Documents/hackathons/INNOVEX`, `900f4c7`): **Candidate B** — full Welcome-first 3-step UX (`Check input -> Understand exposure -> Review actions`), `ScanInput`, `EvidenceSummary`, `AccessibleDialog`, `triage.ts`, `verify-browser.mjs`, `docs/UX-VALIDATION.md`, `tests/{analysis,repository}.test.ts` (`14/14` passing).
+- `fix/v11-release` (`/tmp/scopebomb-v11-release`, `5f6a576`): **Candidate A** — hardened release candidate (`boundedBody.ts`, strict runtime allowlist `aiTriage.ts`, `apps/web/tests/security.test.ts` `9/9`, `apps/extension/tests/guard.test.mjs` `2/2`, reproducible ZIP `pack.mjs`, `0 FAIL / 0 WARN` lint, `.planning/V11-RELEASE-REVIEW.md`).
+- **Frozen Contracts:** `contracts/**`, `data/scope_catalog.json`, `packages/engine/**`, `tests/engine/**`.
 
-## 2. Launching Parallel Agents Safely
-1. **Antigravity (current workspace):** Work directly in `/home/varad/Documents/hackathons/INNOVEX` (`feat/ui-extension`). Open a **fresh chat** when switching phases (Engine Integration vs. Web UI vs. Chrome MV3 Guard vs. E2E Polish).
-2. **Codex CLI (parallel worker terminal):** Always run inside the isolated worktree with heavy unused global MCPs disabled:
-   ```bash
-   cd /home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine
-   codex \
-     -c mcp_servers.rea.enabled=false \
-     -c mcp_servers.aws-mcp.enabled=false \
-     -c mcp_servers.firecrawl.enabled=false
-   ```
-   *(Repository `.codex/config.toml` also sets these once the directory is marked trusted in Codex.)*
+## 2. Launching Codex as Lead Orchestrator
+Run inside `/home/varad/Documents/hackathons/INNOVEX` (repo root owns `.vercel/project.json` and `.vercelignore`):
+```bash
+cd /home/varad/Documents/hackathons/INNOVEX
+codex \
+  -c mcp_servers.rea.enabled=false \
+  -c mcp_servers.aws-mcp.enabled=false \
+  -c mcp_servers.firecrawl.enabled=false
+```
+*(Repo `.codex/config.toml` also applies these MCP exclusions when trusted.)*
 
 ## 3. Token-Saving Discipline
-- **Graphify Before Reading:** Run `graphify query "<topic>"` or `graphify path A B` before opening multiple files. Run `graphify update .` (AST-only, $0 API cost) after modifying source files.
-- **Ponytail (`full`):** Standard library & platform primitives before adding npm/PyPI dependencies; minimal working diffs; **one focused test per non-trivial parser/graph/containment function** rather than bloated test boilerplate.
-- **Bounded Commands:** Never dump huge logs/outputs into chat. Pipe test output through `--tb=short -q` or `tail -n 30`.
-- **Fresh Context over Mega-Sessions:** Compact (`/compact`) or start a fresh chat strictly at phase boundaries after updating `.planning/STATE.md`.
+- **Graphify Before Reading:** Run `graphify query "<topic>"` or `graphify path A B` before broad greps. Run `graphify update .` (AST-only, $0 API cost) after modifying code, then sync `.planning/graphs/`.
+- **Ponytail (`full`):** Standard library & platform primitives before adding dependencies; minimal diffs; focused checks.
+- **Bounded Commands:** Pipe long outputs (`tail -n 30`). Never dump screenshots/large logs in chat; inspect visual screenshots directly.
 
-## 4. Merge-Back Gate (Zero Conflict Protocol)
-Before merging `feat/core-engine` or `feat/ui-extension` into `main`:
-1. Verify `git diff --name-only` contains **only** files owned by that lane.
-2. Run `python3 contracts/verify_contracts.py` + lane unit tests.
-3. Merge cleanly:
-   ```bash
-   git -C /home/varad/Documents/hackathons/INNOVEX/.worktrees/core-engine status
-   # Integrate cleanly into main, then sync both feat/ui-extension and feat/core-engine
-   ```
+## 4. Candidate Selection, Integration & Ship Gate
+1. Compile & evaluate both `fix/v11-release` (`5f6a576`) and `feat/ui-extension` (`900f4c7`) (plus inspect `764f42b` if UI tradeoffs matter). See `.planning/CODEX_HANDOFF.md` for exact rubric & commands.
+2. Unify the winning codebase cleanly (e.g., cherry-picking/porting security tests, ZIP pack determinism, `0 FAIL / 0 WARN` lint, and browser verification into one clean candidate).
+3. Run full non-sandbox gates (`verify_contracts.py`, engine `30/30`, web tests, extension tests, `tsc --noEmit`, standard `npm run build`, `lint.mjs`, `inspect.mjs`, `impeccable detect`, headless browser E2E).
+4. Merge winning result to `main`, push `origin/main` (and sync branches/prune temporary worktrees if desired), deploy via `vercel deploy --prod --yes` from repo root, and smoke-test live `https://scopebomb.vercel.app`.
