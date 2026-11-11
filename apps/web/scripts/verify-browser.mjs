@@ -19,8 +19,12 @@ const chrome = spawn(
     "--user-data-dir=" + profile,
     "about:blank",
   ],
-  { stdio: "ignore" },
+  { stdio: ["ignore", "ignore", "pipe"] },
 );
+let chromeDiagnostics = "";
+chrome.stderr.setEncoding("utf8");
+chrome.stderr.on("data", (chunk) => { chromeDiagnostics = (chromeDiagnostics + chunk).slice(-4096); });
+chrome.on("error", (error) => { chromeDiagnostics = String(error); });
 const checks = [],
   errors = [],
   posts = [];
@@ -38,7 +42,7 @@ try {
       await pause(100);
     }
   }
-  if (!port) throw new Error("Chrome did not open a debugging endpoint.");
+  if (!port) throw new Error("Chrome did not open a debugging endpoint. " + chromeDiagnostics);
   const tab = await (
     await fetch(
       `http://127.0.0.1:${port}/json/new?${encodeURIComponent(base)}`,
