@@ -108,3 +108,24 @@ a {
     animation-duration: 0.01ms !important;
   }
 }
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--control);
+  border-radius: 6px;
+  background: var(--surface);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.control:hover { background: var(--raised); }
+.control:disabled { opacity: 0.6; cursor: default; }
+.control-primary, .control-active { color: white; background: var(--text); border-color: var(--text); }
+.control-primary:hover, .control-active:hover { background: #2a2c30; }
+.field { width: 100%; min-height: 40px; padding: 10px 12px; border: 1px solid var(--control); border-radius: 6px; background: var(--surface); font-size: 14px; }
+.muted { color: var(--muted); }

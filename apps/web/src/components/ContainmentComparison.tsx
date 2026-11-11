@@ -17,6 +17,7 @@ interface ContainmentComparisonProps {
   simulationMode: SimulationMode;
   onChangeSimulationMode: (mode: SimulationMode) => void;
   showFullTableByDefault?: boolean;
+  runbookOnly?: boolean;
 }
 
 export function ContainmentComparison({
@@ -24,10 +25,14 @@ export function ContainmentComparison({
   simulationMode,
   onChangeSimulationMode,
   showFullTableByDefault = false,
+  runbookOnly = false,
 }: ContainmentComparisonProps) {
   const [copiedCmdKey, setCopiedCmdKey] = useState<string | null>(null);
   const [showAllSurviving, setShowAllSurviving] = useState(false);
   const [showAllSteps, setShowAllSteps] = useState(showFullTableByDefault);
+  const [reviewed, setReviewed] = useState<string[]>([]);
+  const [showCommands, setShowCommands] = useState(false);
+  const toggleReviewed = (key: string) => setReviewed(previous => previous.includes(key) ? previous.filter(item => item !== key) : [...previous, key]);
 
   const naive = report.naive_containment;
   const full = report.full_containment;
@@ -78,17 +83,17 @@ export function ContainmentComparison({
   return (
     <section
       aria-label="Naive RFC 7009 revoke vs full multi-issuer containment"
-      className="space-y-6 border-t border-[#e8eaec] pt-6"
+      className="space-y-6 border-t border-[#e8eaec] px-5 pb-6 pt-6"
     >
       {/* Top Unboxed 2-Column Split Separated by Vertical Hairline */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+      {!runbookOnly && <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
         {/* LEFT: NAIVE RFC 7009 TRAP */}
         <div>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="max-w-[54ch]">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-[16px] font-semibold leading-[1.4] text-[#131416]">
-                  Naive single revoke (RFC 7009 trap)
+                  Single-revoke simulation
                 </h2>
                 <span
                   className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium tabular-nums"
@@ -100,8 +105,7 @@ export function ContainmentComparison({
                 </span>
               </div>
               <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
-                Revoking one token gives an affirmative confirmation while
-                leaving other providers and credentials open.
+                A successful revoke at one issuer may leave independent credentials or persistence at other issuers.
               </p>
             </div>
 
@@ -133,7 +137,7 @@ export function ContainmentComparison({
               </div>
             </div>
             <div className="border-l border-[#f0f1f2] pl-3">
-              <div className="text-[13px] text-[#5d5f60]">Residual JWT</div>
+              <div className="text-[13px] text-[#5d5f60]">Illustrative TTL</div>
               <div className="mt-0.5 text-[22px] font-normal leading-[1.35] text-[#92400e] tabular-nums">
                 {naive.jwt_residual_ttl_seconds}s
               </div>
@@ -148,7 +152,7 @@ export function ContainmentComparison({
           <div className="mt-4">
             <div className="flex items-center justify-between gap-2 border-b border-[#f0f1f2] pb-2">
               <span className="text-[14px] font-medium text-[#131416]">
-                Surviving attacker paths by provider (
+                Potentially surviving resources by provider (
                 <span className="tabular-nums">
                   {naive.persisting_node_ids.length}
                 </span>
@@ -177,7 +181,7 @@ export function ContainmentComparison({
 
             {naive.persisting_node_ids.length === 0 ? (
               <p className="py-3 text-[14px] leading-[1.5] text-[#1e7b4f]">
-                No surviving paths detected for this minimal grant.
+                No surviving resources modeled for this input; this is not proof of safety.
               </p>
             ) : showAllSurviving ? (
               <div className="divide-y divide-[#f0f1f2]">
@@ -246,7 +250,7 @@ export function ContainmentComparison({
                   className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium tabular-nums"
                   style={{ backgroundColor: "#dcfae5", color: "#04250e" }}
                 >
-                  {fullPct}% contained
+                  {fullPct}% modeled contained
                 </span>
               </div>
               <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
@@ -264,7 +268,7 @@ export function ContainmentComparison({
                   : "border border-[#cdced1] bg-[#ffffff] text-[#131416] hover:bg-[#f4f6f8]"
               }`}
             >
-              {!isNaive ? "Active on graph" : "Apply full plan"}
+              {!isNaive ? "Active on graph" : "Simulate full plan"}
             </button>
           </div>
 
@@ -293,7 +297,7 @@ export function ContainmentComparison({
           {naive.ordered_steps[0] && (
             <div className="mt-4 border-b border-[#f0f1f2] pb-3.5">
               <div className="text-[13px] font-medium text-[#5d5f60]">
-                What a single revoke alone actually called
+                What the single-revoke simulation assumes
               </div>
               <code className="mt-1.5 block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#131416]">
                 {naive.ordered_steps[0].command_or_endpoint}
@@ -312,6 +316,7 @@ export function ContainmentComparison({
         </div>
       </div>
 
+      }
       {/* Priority-Ordered Multi-Issuer Remediation Checklist Table (flat on white sheet) */}
       <div className="border-t border-[#e8eaec] pt-6">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
@@ -338,8 +343,12 @@ export function ContainmentComparison({
           )}
         </div>
 
+        <div className="mb-4 flex flex-wrap items-center gap-3 text-[13px]">
+          <button type="button" onClick={() => setShowCommands(value => !value)} className="control">{showCommands ? "Plain-English steps" : "Show CLI and API templates"}</button>
+          <span>{reviewed.length} of {full.ordered_steps.length} steps reviewed in this runbook. This is not verified containment.</span>
+        </div>
         {/* Mobile Stacked Hairline List (< md) so narrow screens never clip table columns */}
-        <div className="divide-y divide-[#f0f1f2] border-t border-[#e8eaec] md:hidden">
+        <div className="divide-y divide-[#f0f1f2] border-t border-[#e8eaec]">
           {visibleSteps.map((step) => {
             const copyKey = `step-${step.priority}-${step.issuer}`;
             const copied = copiedCmdKey === copyKey;
@@ -347,12 +356,13 @@ export function ContainmentComparison({
             const readableTarget = targetNode
               ? humanizeNodeLabel(targetNode)
               : step.target_resource;
-            const enriched = enrichContainmentStep(step as any, report);
-            const consoleTarget = step.console_url || enriched.consoleUrl;
+            const enriched = enrichContainmentStep(step, report);
+            const consoleTarget = enriched.consoleUrl || step.console_url;
 
             return (
               <div key={`m-${copyKey}`} className="space-y-2.5 py-4">
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={reviewed.includes(copyKey)} onChange={() => toggleReviewed(copyKey)} />Mark reviewed</label>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2 text-[14px]">
                       <span className="font-semibold text-[#131416] tabular-nums">
@@ -391,7 +401,10 @@ export function ContainmentComparison({
                   </div>
                 </div>
 
-                <div>
+                <details open={showCommands}><summary className="cursor-pointer text-[13px] text-[#1b6c80]">Action details and verification</summary>
+                <p className="mt-2 text-[13px] text-[#5d5f60]">{enriched.rfcNote || step.why_naive_fails}</p>
+                {enriched.documentationUrl && <a className="text-[13px] text-[#1b6c80] underline" href={enriched.documentationUrl} target="_blank" rel="noopener noreferrer">Provider documentation</a>}
+                <div hidden={!showCommands}>
                   <div className="mb-1 text-[13px] font-medium text-[#5d5f60]">
                     Endpoint or rotation command
                   </div>
@@ -399,118 +412,27 @@ export function ContainmentComparison({
                     {enriched.copyableCommand}
                   </code>
                   {enriched.rfcNote && (
-                    <div className="mt-1 text-[11px] text-[#855306]">
+                    <div className="mt-1.5 text-[13px] leading-[1.45] text-[#855306]">
                       {enriched.rfcNote}
                     </div>
                   )}
                 </div>
 
-                <div>
+                <div hidden={!showCommands}>
                   <div className="mb-1 text-[13px] font-medium text-[#5d5f60]">
                     Post-revoke check
                   </div>
                   <code className="block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#1e7b4f]">
                     {enriched.verificationProbe}
                   </code>
-                  <div className="mt-0.5 text-[11px] text-[#5d5f60]">
+                  <div className="mt-1 text-[13px] text-[#5d5f60]">
                     Expected: {enriched.expectedStatus}
                   </div>
                 </div>
+                </details>
               </div>
             );
           })}
-        </div>
-
-        {/* Desktop & Tablet Table (md+) */}
-        <div className="hidden overflow-x-auto md:block">
-          <table className="w-full border-collapse text-left">
-            <thead>
-              <tr className="border-y border-[#e8eaec] text-[13px] font-medium text-[#5d5f60]">
-                <th className="py-2.5 pr-3">Step</th>
-                <th className="px-3 py-2.5">Issuer &amp; target</th>
-                <th className="px-3 py-2.5">Endpoint or rotation command</th>
-                <th className="px-3 py-2.5">Post-revoke check</th>
-                <th className="py-2.5 pl-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#f0f1f2] text-[14px] leading-[1.45]">
-              {visibleSteps.map((step) => {
-                const copyKey = `step-${step.priority}-${step.issuer}`;
-                const copied = copiedCmdKey === copyKey;
-                const targetNode = nodeMap.get(step.target_resource);
-                const readableTarget = targetNode
-                  ? humanizeNodeLabel(targetNode)
-                  : step.target_resource;
-
-                const enriched = enrichContainmentStep(step as any, report);
-                const consoleTarget = step.console_url || enriched.consoleUrl;
-
-                return (
-                  <tr key={copyKey} className="align-top">
-                    <td className="py-3.5 pr-3 text-[14px] font-semibold text-[#131416] tabular-nums whitespace-nowrap">
-                      P{step.priority}
-                    </td>
-                    <td className="min-w-[180px] px-3 py-3.5">
-                      <div className="font-medium text-[#131416]">
-                        {step.issuer}
-                      </div>
-                      <div className="mt-0.5 text-[13px] text-[#5d5f60]">
-                        Target: {readableTarget}
-                      </div>
-                      <div className="mt-1">
-                        <code className="rounded-[4px] bg-[#f4f6f8] px-1.5 py-0.5 text-[13px] text-[#5d5f60]">
-                          {step.action_type}
-                        </code>
-                      </div>
-                    </td>
-                    <td className="min-w-[230px] max-w-[360px] px-3 py-3.5">
-                      <code className="block break-words [overflow-wrap:anywhere] rounded-[6px] bg-[#f4f6f8] px-2.5 py-2 text-[13px] leading-[1.45] text-[#131416]">
-                        {enriched.copyableCommand}
-                      </code>
-                      {enriched.rfcNote && (
-                        <div className="mt-1 text-[11px] text-[#855306]">
-                          {enriched.rfcNote}
-                        </div>
-                      )}
-                    </td>
-                    <td className="min-w-[200px] max-w-[300px] px-3 py-3.5">
-                      <code className="block break-words [overflow-wrap:anywhere] text-[13px] leading-[1.45] text-[#1e7b4f]">
-                        {enriched.verificationProbe}
-                      </code>
-                      <div className="mt-0.5 text-[11px] text-[#5d5f60]">
-                        Expected: {enriched.expectedStatus}
-                      </div>
-                    </td>
-                    <td className="py-3.5 pl-3 text-right whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleCopy(copyKey, enriched.copyableCommand)
-                          }
-                          className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
-                        >
-                          {copied ? <Check size={14} /> : <Copy size={14} />}
-                          {copied ? "Copied" : "Copy"}
-                        </button>
-                        {consoleTarget && (
-                          <a
-                            href={consoleTarget}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#1b6c80] transition hover:bg-[#f4f6f8]"
-                          >
-                            Console
-                            <ArrowSquareOut size={14} />
-                          </a>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
         </div>
 
         {hiddenStepsCount > 0 && (

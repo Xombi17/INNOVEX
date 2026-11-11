@@ -3,6 +3,7 @@ import React from "react";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import type { AuditReport, SimulationMode } from "@contracts/index";
 import { DominoGraph } from "./DominoGraph";
+import { formatTrustBoundaries } from "./uiTokens";
 
 interface Step2Props {
   report: AuditReport;
@@ -27,8 +28,8 @@ export function Step2AttackPath({
 
   const headline =
     simulationMode === "naive_single_revoke"
-      ? `Why clicking Revoke still leaves ${persistingCount} paths open`
-      : `Full multi-account fix closes all ${totalContained} exposed paths`;
+      ? `One revoke: ${persistingCount} resources may remain exposed`
+      : `Full plan: ${totalContained} resources modeled contained`;
 
   return (
     <div className="space-y-0">
@@ -38,55 +39,57 @@ export function Step2AttackPath({
           {headline}
         </h1>
         <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
-          The domino map below shows how a single OAuth grant escalates across issuers and trust
-          boundaries. Use the toggle to compare outcomes.
+          The map shows possible access from the supplied permissions or credentials. It does not show observed attacker activity. Compare the two simulated outcomes.
         </p>
       </div>
 
       {persistingCount > 0 && (
         <div className="mx-5 mb-4 rounded-[6px] border border-[#f5e6c8] bg-[#fbf5e8] px-3.5 py-2 text-[13px] text-[#855306]">
-          <strong>AI Threat Note:</strong> Lateral escalation pivots across{" "}
-          {report.summary.trust_boundary_crossings.join(", ") || "external SaaS"}{" "}
-          ({report.summary.max_hops} hops). Standard 1-click revoke leaves downstream access tokens alive.
+          <strong>Catalog simulation:</strong> Possible exposure crosses{" "}
+          {formatTrustBoundaries(report.summary.trust_boundary_crossings) || "external SaaS"}{" "}
+          ({report.summary.max_hops} hops). Independent credentials and persistence may need separate cleanup.
         </div>
       )}
 
       {/* Simulation Segmented Toggle */}
       <div className="px-5 pb-4">
-        <div className="inline-flex overflow-hidden rounded-[8px] border border-[#e8eaec]">
+        <div
+          className="inline-flex flex-wrap overflow-hidden rounded-[6px] border border-[#cdced1]"
+          role="group"
+          aria-label="Containment simulation toggle"
+        >
           <button
             type="button"
             onClick={() => onChangeSimulationMode("naive_single_revoke")}
-            className={`px-4 py-1.5 text-[13px] transition ${
+            className={`px-4 py-1.5 text-[13px] font-medium transition ${
               simulationMode === "naive_single_revoke"
                 ? "bg-[#131416] text-[#ffffff]"
-                : "bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8]"
+                : "bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8] hover:text-[#131416]"
             }`}
           >
-            After 1-Click Revoke (Fails)
+            After one revoke
           </button>
           <button
             type="button"
             onClick={() => onChangeSimulationMode("full_multi_issuer")}
-            className={`border-l border-[#e8eaec] px-4 py-1.5 text-[13px] transition ${
+            className={`border-l border-[#cdced1] px-4 py-1.5 text-[13px] font-medium transition ${
               simulationMode === "full_multi_issuer"
-                ? "bg-[#131416] text-[#ffffff]"
-                : "bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8]"
+                ? "bg-[#1e7b4f] text-[#ffffff]"
+                : "bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8] hover:text-[#131416]"
             }`}
           >
-            After Full Multi-Issuer Plan (Fixed)
+            After full plan (simulated)
           </button>
         </div>
       </div>
 
       {/* DominoGraph */}
-      <div className="border-t border-[#e8eaec]">
-        <DominoGraph
-          report={report}
-          simulationMode={simulationMode}
-          onChangeSimulationMode={onChangeSimulationMode}
-        />
-      </div>
+      <DominoGraph
+        report={report}
+        simulationMode={simulationMode}
+        onChangeSimulationMode={onChangeSimulationMode}
+        hideHeaderToggle
+      />
 
       {/* Technical Forensics Collapsible Disclosure */}
       <div className="border-t border-[#f0f1f2] px-5 py-4">
@@ -97,8 +100,7 @@ export function Step2AttackPath({
           <div className="mt-3 space-y-2 text-[13px] text-[#5d5f60]">
             <p>
               RFC 7009 §2.2: servers MUST respond with HTTP 200 even when the token was already
-              invalid or expired — this response is NOT proof of revocation. Access tokens may
-              remain valid until their natural TTL expires.
+              invalid; this response is not proof of containment. Revoking a refresh token SHOULD also invalidate access tokens when supported. Independent keys and persistence require separate cleanup. Any residual TTL shown is illustrative, not a measured expiry.
             </p>
             <p>
               <strong className="text-[#131416]">Scenario:</strong>{" "}
@@ -107,7 +109,7 @@ export function Step2AttackPath({
             </p>
             <p>
               <strong className="text-[#131416]">Trust boundaries crossed:</strong>{" "}
-              {report.summary.trust_boundary_crossings.join(", ") || "none"}
+              {formatTrustBoundaries(report.summary.trust_boundary_crossings) || "none"}
             </p>
           </div>
         </details>

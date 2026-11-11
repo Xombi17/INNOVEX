@@ -1,0 +1,86 @@
+{
+  "results": [
+    {
+      "name": "Initial load has visible input and makes no AI request",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Configuration result redacts complete values and retains evidence",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Attack map switches between both modeled outcomes",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Provider runbook shows verified command template and local review progress",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Consent sandbox uses real engine, keeps current audit and traps dialog focus",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Draft survives navigation; malformed input retains the last labeled result",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Three-tool dialog opens and closes with Escape",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "AI is opt-in and uses honest offline attribution with no configured key",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Repository form rejects disallowed hosts without overwriting the last result",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Late rejection of an aborted scan cannot overwrite a newer result",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Production download serves valid ZIP bytes",
+      "passed": true,
+      "details": "35954 bytes"
+    },
+    {
+      "name": "Extension deep link analyzes the supplied URL",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Three workflow steps fit 1440px without page overflow",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Three workflow steps fit 768px without page overflow",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Three workflow steps fit 390px without page overflow",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "No uncaught browser exceptions or console errors",
+      "passed": true,
+      "details": ""
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": []
+}

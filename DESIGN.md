@@ -218,8 +218,8 @@ Every interactive primitive uses clear surface boundaries (`1px solid #cdced1` o
 - **Focus & Errors:** All focusable controls render a `2px solid #1b6c80` focus ring (`outline-offset: 2px`). Validation errors appear inline inside `role="alert"` blocks bordered at the top in `#f0c8ca` with `#831c1e` ink while keeping valid prior audits active.
 
 ### Navigation
-- **Desktop Sidebar:** `240px` rail holding the ScopeBomb mark, 4 concise section tabs (`Blast simulator`, `Remediation plan`, `PKCE guard`, `How it works` — active row uses `#ebedee` fill + `#1b6c80` icon), compact 5-row incident preset index, and bottom utility triggers.
-- **Mobile Drawer:** Native menu button opens a fullscreen `#f9fbfc` dialog with explicit close trigger (`aria-label="Close navigation menu"`).
+- **Workflow navigation:** Horizontal three-step navigation (`Check input`, `Understand exposure`, `Review actions`) with separate incident presets. Scanner drafts remain mounted across step changes; old results stay explicitly labeled until a new check succeeds.
+- **Dialogs:** Native modal dialogs provide focus containment, Escape dismissal and focus restoration for tool explanations and the isolated consent sandbox. Mobile controls wrap within the work sheet.
 
 ### Blast-Radius Domino Transit Columns
 - **Structure:** Four balanced left-to-right causal stages (`1. Entry grant`, `2. Permissions & keys`, `3. Direct blast`, `4. Downstream chain`) connected visually on desktop (`>= xl`) by compact directional arrows and 1px vertical column hairlines.
@@ -236,3 +236,9 @@ Every interactive primitive uses clear surface boundaries (`1px solid #cdced1` o
 - **Don't** nest bordered or shaded cards inside `.sheet` / `<main>` (verified by keeping automated detector output at zero findings).
 - **Don't** add decorative 3px left border stripes on alerts, uppercase category kickers above headings, drop shadows on resting panels, or dark-mode neon gradients.
 - **Don't** render plain narrative sentences in `IBM Plex Mono` or drop Web Arena labels below `13px`.
+
+## v1.1 state and evidence rules
+
+Input source labels separate sample scenarios, supplied input and selected repository files. Failed or canceled checks retain the last result with a freshness notice. Repository coverage exposes skipped files and bounds. Local explanations are immediate; external AI is opt-in with explicit provenance. Runbook review checkboxes record local review progress, not verified containment. Detailed commands and the permission guard use progressive disclosure.
+
+The compact frame, porcelain palette and IBM Plex fonts remain unchanged. The scanner input is always visible in the first workflow step. Standalone web pages do not claim to monitor other browser tabs.

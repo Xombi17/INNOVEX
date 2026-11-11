@@ -104,7 +104,7 @@ export function PreConsentPreview({
   return (
     <section
       aria-label="Chrome MV3 PKCE-safe pre-consent guard"
-      className="border-t border-[#e8eaec] pt-6"
+      className="border-t border-[#e8eaec] px-5 pb-6 pt-6"
     >
       {/* Header */}
       <div className="flex flex-col justify-between gap-3 pb-5 lg:flex-row lg:items-center">
@@ -121,8 +121,7 @@ export function PreConsentPreview({
             </span>
           </div>
           <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
-            Intercepts dangerous {PROVIDER_LABELS[guard.provider]} permissions
-            before you click Allow without corrupting live PKCE{" "}
+            Previews the decision for {PROVIDER_LABELS[guard.provider]} permissions. The separately installed extension evaluates supported consent navigations and preserves live PKCE{" "}
             <code>code_challenge</code> pairs.
           </p>
         </div>
@@ -132,7 +131,7 @@ export function PreConsentPreview({
           onClick={() => onInspectUrl(DEMO_PKCE_TRAP_URL)}
           className="h-8 shrink-0 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
         >
-          Trigger MV3 guard on PKCE trap URL
+          Inspect sample PKCE URL
         </button>
       </div>
 
@@ -190,7 +189,7 @@ export function PreConsentPreview({
           ) : (
             <div className="border-b border-[#f0f1f2] py-3 text-[14px] leading-[1.5] text-[#5d5f60]">
               {report.parsed_oauth
-                ? "All requested scopes already satisfy least-privilege baselines."
+                ? "No catalog scope downgrade is listed. Unknown scopes or absent permissions may still require review."
                 : "No OAuth consent URL loaded. Trigger the PKCE trap URL above to preview scope downgrades."}
             </div>
           )}
@@ -201,18 +200,18 @@ export function PreConsentPreview({
           <div className="border-b border-[#f0f1f2] pb-3.5">
             <div className="text-[13px] font-semibold leading-[1.4] text-[#1b6c80]">
               {guard.pkce_protected
-                ? "Why mid-flight scope rewriting breaks PKCE"
+                ? "Preserve the client-managed transaction"
                 : "Pre-consent interception rule"}
             </div>
             <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
-              {guard.pkce_rewrite_warning}
+              {guard.pkce_protected ? "S256 hashes the verifier, not the scopes. Do not mutate or replay this pending request: the initiating client must create a fresh authorization transaction with new state and PKCE values." : guard.pkce_rewrite_warning}
             </p>
           </div>
 
           <div>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <span className="text-[13px] font-semibold text-[#131416]">
-                Fresh client initiation template
+                Illustrative permission template
               </span>
               <div className="flex flex-wrap items-center gap-1.5">
                 {guard.recommended_scopes.length > 0 && (
@@ -256,7 +255,7 @@ export function PreConsentPreview({
                 <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-[13px] leading-[1.45] text-[#5d5f60]">
                     Keeps <code>safe_replacement_url: null</code> on live PKCE
-                    requests so the client mints a fresh verifier.
+                    requests. This preview lacks fresh state and verifier values; it is for simulation only and must not be opened as an authorization request.
                   </span>
                   {guard.flagged_scopes.length > 0 && (
                     <button
@@ -264,7 +263,7 @@ export function PreConsentPreview({
                       onClick={() => onInspectUrl(initiationTemplate)}
                       className="inline-flex h-8 items-center gap-1 rounded-[6px] bg-[#1b6c80] px-3 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#155768]"
                     >
-                      Re-audit clean scopes
+                      Simulate narrower scopes
                       <ArrowRight size={14} />
                     </button>
                   )}

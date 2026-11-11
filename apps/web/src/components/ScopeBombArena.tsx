@@ -1,271 +1,77 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  ArrowSquareOut,
-  Check,
-  Copy,
-  TerminalWindow,
-} from "@phosphor-icons/react";
-import type { AuditInput, AuditReport, SimulationMode } from "@contracts/index";
-import {
-  getIncidentPresets,
-  type IncidentPresetSummary,
-  tryRunScopeBombAudit,
-} from "@/lib/auditAdapter";
-import { StepStepper } from "./StepStepper";
+import { ArrowRight, Check, Copy } from "@phosphor-icons/react";
+import type { AuditReport, SimulationMode } from "@contracts/index";
+import { getIncidentPresets, type IncidentPresetSummary } from "@/lib/auditAdapter";
+import { analyzeInput, type Analysis } from "@/lib/analysis";
+import { InputAndPresetBar, DEMO_PKCE_TRAP_URL } from "./InputAndPresetBar";
+import { PresetStrip } from "./PresetStrip";
+import { StepStepper, type WorkflowStep } from "./StepStepper";
 import { Step1ScanVerdict } from "./Step1ScanVerdict";
 import { Step2AttackPath } from "./Step2AttackPath";
 import { Step3FixBlocker } from "./Step3FixBlocker";
 import { HowItWorksModal } from "./HowItWorksModal";
-import { DEMO_PKCE_TRAP_URL } from "./InputAndPresetBar";
-
-interface ScopeBombArenaProps {
-  initialReport: AuditReport;
-}
 
 const presets = getIncidentPresets();
 
-const PRESET_SHORT_NAMES: Record<string, string> = {
-  rohan_mcp_oauth_trap: "Shadow-AI MCP + OAuth",
-  midnight_blizzard_2024: "Midnight Blizzard",
-  salesloft_drift_2025: "Salesloft Drift fan-out",
-  context_ai_vercel_2026: "Context.ai Workspace",
-  litellm_ci_2026: "LiteLLM CI key leak",
-};
-
-export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
-  const [report, setReport] = useState<AuditReport>(initialReport);
-  const [simulationMode, setSimulationMode] = useState<SimulationMode>(
-    "naive_single_revoke",
-  );
-  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
+export function ScopeBombArena({ initialReport }: { initialReport: AuditReport }) {
+  const [analysis, setAnalysis] = useState<Analysis>({ report: initialReport, context: { kind: "sample", label: "Illustrative Shadow-AI MCP + OAuth scenario", evidence: [
+    ...(initialReport.parsed_oauth?.requested_scopes ?? []).map(scope => ({ source: "Sample preset", subject: scope, kind: "permission" as const, detail: "Illustrative requested permission from the preset, not observed access." })),
+    ...initialReport.shadow_secrets.map(finding => ({ source: "Sample preset", subject: finding.key_name, kind: "credential" as const, detail: "Illustrative redacted credential from the preset; not a finding in your files." })),
+  ], warnings: ["Sample scenario, not a scan of your accounts. Select another scenario or check your own input above."] } });
+  const [simulationMode, setSimulationMode] = useState<SimulationMode>("naive_single_revoke");
+  const [activeStep, setActiveStep] = useState<WorkflowStep>(1);
   const [howItWorksOpen, setHowItWorksOpen] = useState(false);
-  const [inputError, setInputError] = useState<string | null>(null);
-  const [externalOAuthUrl, setExternalOAuthUrl] = useState<string | null>(null);
-  const [activeOAuthUrl, setActiveOAuthUrl] = useState<string | null>(
-    presets[0]?.sample_oauth_url ?? null,
-  );
+  const [activeOAuthUrl, setActiveOAuthUrl] = useState<string | null>(presets[0]?.sample_oauth_url ?? null);
+  const [initialUrl, setInitialUrl] = useState<string | null>(null);
+  const [inputEpoch, setInputEpoch] = useState(0);
+  const [draftChanged, setDraftChanged] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [copiedCli, setCopiedCli] = useState(false);
-  const [interceptedBanner, setInterceptedBanner] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleRunAudit = (input: AuditInput) => {
-    const result = tryRunScopeBombAudit(input);
-    if (!result.ok) {
-      setInputError(result.error);
-      return;
-    }
-
-    setInputError(null);
-    setReport(result.report);
-    setSimulationMode(input.simulation_mode);
-
-    if (input.mode === "oauth_url") {
-      setActiveOAuthUrl(input.raw_payload);
-    } else if (input.mode === "incident_preset") {
-      const preset = presets.find(
-        (p) => p.preset_id === (input.preset_id ?? result.report.preset_id),
-      );
-      setActiveOAuthUrl(preset?.sample_oauth_url ?? null);
-    } else {
-      setActiveOAuthUrl(null);
-    }
+  const acceptAnalysis = (next: Analysis, url?: string) => {
+    setAnalysis(next); setActiveOAuthUrl(url ?? null); setDraftChanged(false); setError(""); setSimulationMode("naive_single_revoke");
   };
-
-  const handleInspectUrl = (url: string) => {
-    setExternalOAuthUrl(url);
-    handleRunAudit({
-      mode: "oauth_url",
-      raw_payload: url,
-      preset_id: null,
-      simulation_mode: simulationMode,
-    });
+  const inspectUrl = (url: string) => {
+    try { acceptAnalysis(analyzeInput({ mode: "oauth_url", raw_payload: url, simulation_mode: "naive_single_revoke" }, "Supplied permission link"), url); }
+    catch { setError("This authorization URL is unsupported or malformed. The last completed result is retained."); }
   };
-
-  const handleSelectPreset = (preset: IncidentPresetSummary) => {
-    setInputError(null);
-    handleRunAudit({
-      mode: "incident_preset",
-      raw_payload: preset.sample_oauth_url,
-      preset_id: preset.preset_id,
-      simulation_mode: "naive_single_revoke",
-    });
+  const selectPreset = (preset: IncidentPresetSummary) => {
+    const next = analyzeInput({ mode: "incident_preset", raw_payload: "", preset_id: preset.preset_id, simulation_mode: "naive_single_revoke" }, preset.title, "sample");
+    next.context.warnings.push("Illustrative incident scenario. The modeled resources are not observed compromise in your accounts.");
+    acceptAnalysis(next, preset.sample_oauth_url); setInitialUrl(null); setInputEpoch(value => value + 1); setBusy(false); setActiveStep(1);
   };
-
-  const handleCopyCli = async () => {
-    try {
-      await navigator.clipboard.writeText("node packages/engine/cli.ts . --json");
-      setCopiedCli(true);
-      setTimeout(() => setCopiedCli(false), 1600);
-    } catch {
-      // Clipboard optional in headless/restricted environments
-    }
-  };
-
+  const changeStep = (step: WorkflowStep) => { setActiveStep(step); window.scrollTo({ top: 0 }); };
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const paramUrl = params.get("oauth_url");
-    if (paramUrl && paramUrl.trim()) {
-      setExternalOAuthUrl(paramUrl);
-      setInterceptedBanner(true);
-      const result = tryRunScopeBombAudit({
-        mode: "oauth_url",
-        raw_payload: paramUrl,
-        preset_id: null,
-        simulation_mode: "naive_single_revoke",
-      });
-      if (result.ok) {
-        setInputError(null);
-        setReport(result.report);
-        setActiveOAuthUrl(paramUrl);
-      } else {
-        setInputError(result.error);
-      }
-    }
+    const url = new URLSearchParams(window.location.search).get("oauth_url");
+    if (!url) return;
+    setInitialUrl(url); setInputEpoch(value => value + 1); inspectUrl(url);
+    // The extension handoff is read only once; subsequent edits remain local.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const activePreset = presets.find((p) => p.preset_id === report.preset_id);
-  const scenarioBreadcrumb = activePreset
-    ? `${PRESET_SHORT_NAMES[activePreset.preset_id] ?? activePreset.title} (${activePreset.year})`
-    : report.input_mode === "oauth_url"
-      ? "Custom OAuth URL scan"
-      : report.input_mode === "mcp_config"
-        ? "Local config scan"
-        : "Google Takeout audit";
-
-  return (
-    <div className="min-h-screen bg-[#f9fbfc] text-[#131416] antialiased">
-      <div className="mx-auto max-w-[1440px] p-3 sm:p-5 lg:p-7">
-        <div className="rounded-[16px] border border-[#e8eaec] bg-[#ffffff] shadow-sm">
-          {/* Header Bar */}
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eaec] px-5 py-3.5">
-            <div className="flex flex-wrap items-center gap-2 text-[14px]">
-              <span className="font-semibold tracking-tight text-[#131416]">
-                ScopeBomb
-              </span>
-              <span className="text-[#cdced1]">/</span>
-              <span className="text-[13px] text-[#5d5f60]">
-                {scenarioBreadcrumb}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setHowItWorksOpen(true)}
-                className="text-[13px] font-medium text-[#1b6c80] hover:underline"
-              >
-                How 3 Tools Connect →
-              </button>
-              <button
-                type="button"
-                onClick={handleCopyCli}
-                className="inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-[#e8eaec] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
-              >
-                <TerminalWindow size={14} className="text-[#5d5f60]" />
-                <span className="hidden sm:inline">CLI Command</span>
-                {copiedCli ? (
-                  <Check size={14} className="text-[#1e7b4f]" />
-                ) : (
-                  <Copy size={14} className="text-[#5d5f60]" />
-                )}
-              </button>
-            </div>
-          </header>
-
-          {/* 3-Step Stepper Navigation */}
-          <StepStepper
-            activeStep={activeStep}
-            onChangeStep={(step) => setActiveStep(step)}
-          />
-
-          {/* Active Step Content */}
-          <main>
-            {activeStep === 1 && (
-              <Step1ScanVerdict
-                report={report}
-                simulationMode={simulationMode}
-                presets={presets}
-                inputError={inputError}
-                externalOAuthUrl={externalOAuthUrl}
-                interceptedBanner={interceptedBanner}
-                onRunAudit={handleRunAudit}
-                onClearError={() => setInputError(null)}
-                onSelectPreset={handleSelectPreset}
-                onContinue={() => setActiveStep(2)}
-              />
-            )}
-
-            {activeStep === 2 && (
-              <Step2AttackPath
-                report={report}
-                simulationMode={simulationMode}
-                onChangeSimulationMode={setSimulationMode}
-                onBack={() => setActiveStep(1)}
-                onContinue={() => setActiveStep(3)}
-              />
-            )}
-
-            {activeStep === 3 && (
-              <Step3FixBlocker
-                report={report}
-                simulationMode={simulationMode}
-                activeOAuthUrl={activeOAuthUrl}
-                onChangeSimulationMode={setSimulationMode}
-                onInspectUrl={handleInspectUrl}
-                onBack={() => setActiveStep(2)}
-              />
-            )}
-          </main>
-
-          {/* Minimal Workbench Footer */}
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e8eaec] px-5 py-4 text-[13px] leading-[1.45] text-[#5d5f60]">
-            <span>
-              ScopeBomb · INNOVEX 2026 (PS 05) · Deterministic local-first simulation
-              (zero live account changes)
-            </span>
-            <div className="flex flex-wrap items-center gap-4">
-              <span>
-                CLI: <code>node packages/engine/cli.ts . --json</code>
-              </span>
-              <a
-                href="https://github.com/Xombi17/INNOVEX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-medium text-[#1b6c80] hover:underline"
-              >
-                GitHub &amp; Extension Source
-                <ArrowSquareOut size={13} />
-              </a>
-            </div>
-          </footer>
-        </div>
-      </div>
-
-      {/* How it Works Modal */}
-      <HowItWorksModal
-        open={howItWorksOpen}
-        onClose={() => setHowItWorksOpen(false)}
-        onOpenSimulator={() => {
-          setActiveStep(2);
-        }}
-        onOpenPkceGuard={() => {
-          handleInspectUrl(DEMO_PKCE_TRAP_URL);
-          setActiveStep(3);
-        }}
-        onLoadMcpSample={() => {
-          const mcp = presets[0]?.sample_mcp_config;
-          if (mcp) {
-            handleRunAudit({
-              mode: "mcp_config",
-              raw_payload: mcp,
-              preset_id: null,
-              simulation_mode: "naive_single_revoke",
-            });
-          }
-          setActiveStep(1);
-        }}
-      />
-    </div>
-  );
+  return <div className="min-h-screen bg-[#f9fbfc] p-3 text-[#131416] sm:p-5 lg:p-7"><div className="mx-auto max-w-[1440px] rounded-[16px] border border-[#e8eaec] bg-white">
+    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eaec] px-5 py-4">
+      <div><strong className="text-[16px]">ScopeBomb</strong><p className="text-[13px] text-[#5d5f60]">Understand what app permissions and exposed credentials could reach.</p></div>
+      <div className="flex flex-wrap gap-2"><button type="button" className="control" onClick={() => setHowItWorksOpen(true)}>How 3 tools connect <ArrowRight size={14} /></button><button type="button" aria-label="Copy local CLI command" className="control" onClick={async () => { try { await navigator.clipboard.writeText("node packages/engine/cli.ts . --json"); setCopiedCli(true); } catch { setError("Clipboard unavailable. CLI: node packages/engine/cli.ts . --json"); } }}>{copiedCli ? <Check size={14} /> : <Copy size={14} />}<span className="hidden sm:inline">Copy local CLI command</span></button></div>
+    </header>
+    <StepStepper activeStep={activeStep} onChangeStep={changeStep} />
+    <main>
+      {error && <p role="alert" className="px-5 py-3 text-[#831c1e]">{error}</p>}
+      <section hidden={activeStep !== 1} className="space-y-5 p-5 sm:p-7">
+        <div><h1 className="text-[22px] font-semibold">Check app permissions or developer credentials</h1><p className="mt-1 text-[#5d5f60]">See the evidence, possible exposure and actions to review.</p></div>
+        <InputAndPresetBar key={inputEpoch} initialUrl={initialUrl} onAnalyze={acceptAnalysis} onInvalidate={() => setDraftChanged(true)} onBusy={setBusy} />
+        <PresetStrip presets={presets} activePresetId={analysis.report.preset_id ?? null} onSelectPreset={selectPreset} />
+        {(draftChanged || busy) && <p role="status" className="text-[#92400e]">Showing the last completed result for {analysis.context.label}. {busy ? "The new repository check is running." : "Edited input has not produced a new result."}</p>}
+        <p className="break-words text-[13px] text-[#5d5f60]">Result source: {analysis.context.kind === "sample" ? "Sample simulation" : analysis.context.kind === "repository" ? "Selected public repository files" : "Your supplied input"} — {analysis.context.label}</p>
+        {activeStep === 1 && <Step1ScanVerdict analysis={analysis} onContinue={() => changeStep(2)} />}
+      </section>
+      {activeStep === 2 && <Step2AttackPath report={analysis.report} simulationMode={simulationMode} onChangeSimulationMode={setSimulationMode} onBack={() => changeStep(1)} onContinue={() => changeStep(3)} />}
+      {activeStep === 3 && <Step3FixBlocker key={JSON.stringify(analysis.report)} report={analysis.report} simulationMode={simulationMode} activeOAuthUrl={activeOAuthUrl} onChangeSimulationMode={setSimulationMode} onInspectUrl={inspectUrl} onBack={() => changeStep(2)} />}
+    </main>
+    <footer className="border-t border-[#e8eaec] px-5 py-4 text-[13px] text-[#5d5f60]">ScopeBomb · INNOVEX 2026 · Potential exposure only. No live account changes or verification probes are executed.</footer>
+    <HowItWorksModal open={howItWorksOpen} onClose={() => setHowItWorksOpen(false)} onOpenSimulator={() => changeStep(2)} onOpenPkceGuard={() => { inspectUrl(DEMO_PKCE_TRAP_URL); changeStep(3); }} onLoadMcpSample={() => { const preset = presets[0]; if (preset) selectPreset(preset); }} />
+  </div></div>;
 }

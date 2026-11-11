@@ -35,7 +35,7 @@
             OAuth authorization intercepted before consent
           </h1>
           <p class="subtext" style="margin-top: 6px; max-width: 70ch">
-            Evaluated locally using ScopeBomb's deterministic policy catalog. Zero credentials or PKCE challenges leave your browser.
+            Evaluated locally using ScopeBomb's deterministic policy catalog. Analysis stays local. Choosing Open in ScopeBomb Arena sends the authorization URL, including its parameters, to the Arena; do not use URLs containing credentials.
           </p>
           <div id="guard-error" class="error-box hidden" role="alert"></div>
         </section>
@@ -64,11 +64,11 @@
           <!-- PKCE Integrity Rationale -->
           <div class="pkce-callout" style="margin-top: 16px">
             <div class="pkce-callout-title">
-              Why mid-flight scope rewriting breaks PKCE code_challenge
+              Preserve the client-managed authorization transaction
             </div>
             <p id="guard-pkce-warning" style="font-size: 13.5px; color: #131416; margin-bottom: 6px"></p>
             <p class="subtext" style="max-width: 72ch">
-              Under RFC 7636, the client binds its secret <code style="color:#1b6c80">code_verifier</code> to <code style="color:#1b6c80">code_challenge = BASE64URL(SHA256(code_verifier))</code> and an immutable <code style="color:#1b6c80">state</code> token. Mutating <code style="color:#1b6c80">scope=</code> mid-flight in an extension without the client's verifier breaks the token exchange or causes silent mismatch. ScopeBomb pauses before consent and provides least-privilege scopes for a fresh client initiation.
+              Under RFC 7636, the client binds its secret <code style="color:#1b6c80">code_verifier</code> to <code style="color:#1b6c80">code_challenge = BASE64URL(SHA256(code_verifier))</code> while <code style="color:#1b6c80">state</code> correlates the client transaction. Scopes are not part of that hash. Changing a pending request can desynchronize the client transaction; the client must initiate permission changes itself. ScopeBomb pauses before consent and provides least-privilege scopes for a fresh client initiation.
             </p>
           </div>
 
@@ -92,12 +92,13 @@
             <div style="margin-top: 14px">
               <div class="row-between" style="margin-bottom: 6px">
                 <div class="title-sm" style="margin-bottom: 0">
-                  Fresh client initiation template (stale code_challenge &amp; state stripped)
+                  Illustrative template only (not a complete authorization request)
                 </div>
                 <button id="copy-template-btn" type="button" class="btn btn-sm">
                   Copy clean template
                 </button>
               </div>
+              <p class="subtext">Do not open this template directly. The initiating app must generate fresh state and verifier/challenge values.</p>
               <div id="guard-clean-template" class="code-box mono"></div>
             </div>
           </div>

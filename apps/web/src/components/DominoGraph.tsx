@@ -26,6 +26,7 @@ interface DominoGraphProps {
   report: AuditReport;
   simulationMode: SimulationMode;
   onChangeSimulationMode: (mode: SimulationMode) => void;
+  hideHeaderToggle?: boolean;
 }
 
 const STAGE_TITLES = [
@@ -83,6 +84,7 @@ export function DominoGraph({
   report,
   simulationMode,
   onChangeSimulationMode,
+  hideHeaderToggle = false,
 }: DominoGraphProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [highlightedBoundary, setHighlightedBoundary] =
@@ -149,7 +151,7 @@ export function DominoGraph({
   return (
     <section
       aria-label="Blast-radius domino escalation map"
-      className="border-t border-[#e8eaec] pt-6"
+      className="border-t border-[#e8eaec] px-5 pb-6 pt-6"
     >
       {/* Header row */}
       <div className="flex flex-col justify-between gap-3 pb-4 lg:flex-row lg:items-center">
@@ -181,34 +183,36 @@ export function DominoGraph({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div
-            className="inline-flex items-center gap-1.5"
-            role="group"
-            aria-label="Containment simulation toggle"
-          >
-            <button
-              type="button"
-              onClick={() => onChangeSimulationMode("naive_single_revoke")}
-              className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
-                isNaive
-                  ? "border-[#131416] bg-[#131416] text-[#ffffff]"
-                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
-              }`}
+          {!hideHeaderToggle && (
+            <div
+              className="inline-flex items-center gap-1.5"
+              role="group"
+              aria-label="Containment simulation toggle"
             >
-              Naive single revoke
-            </button>
-            <button
-              type="button"
-              onClick={() => onChangeSimulationMode("full_multi_issuer")}
-              className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
-                !isNaive
-                  ? "border-[#1e7b4f] bg-[#1e7b4f] text-[#ffffff]"
-                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
-              }`}
-            >
-              Full multi-issuer plan
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => onChangeSimulationMode("naive_single_revoke")}
+                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
+                  isNaive
+                    ? "border-[#131416] bg-[#131416] text-[#ffffff]"
+                    : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+                }`}
+              >
+                Naive single revoke
+              </button>
+              <button
+                type="button"
+                onClick={() => onChangeSimulationMode("full_multi_issuer")}
+                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
+                  !isNaive
+                    ? "border-[#1e7b4f] bg-[#1e7b4f] text-[#ffffff]"
+                    : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+                }`}
+              >
+                Full multi-issuer plan
+              </button>
+            </div>
+          )}
 
           {report.graph.nodes.length > 14 && (
             <button

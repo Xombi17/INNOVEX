@@ -1,17 +1,16 @@
+import type { InputMode, ProviderId, TrustBoundary } from "../../../../contracts/index.d.ts";
+
 export interface AITriageRequest {
-  inputMode: string;
-  presetId?: string | null;
-  headline: string;
+  inputMode: InputMode;
   maxRiskScore: number;
   maxHops: number;
-  trustBoundaries: string[];
-  primaryProvider: string;
-  requestedScopes: string[];
-  detectedKeyNames: string[];
+  trustBoundaries: TrustBoundary[];
+  primaryProvider: ProviderId;
+  detectedProviders: ProviderId[];
   naivePersistingCount: number;
   naiveStoppedPct: number;
-  topPersistingLabels: string[];
   pkceProtected: boolean;
+  rfc7009Status: number;
 }
 
 export interface AITriageResponse {
@@ -21,6 +20,4 @@ export interface AITriageResponse {
   modelBadge: string;
   provider: "gemini" | "openai" | "local-synthesizer";
   fallbackUsed: boolean;
-  timestamp: string;
 }
-

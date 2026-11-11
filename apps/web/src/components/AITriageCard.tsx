@@ -1,165 +1,40 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
-import { ArrowsClockwise, ShieldWarning, Sparkle } from "@phosphor-icons/react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { AuditReport } from "@contracts/index";
 import type { AITriageRequest, AITriageResponse } from "@/lib/aiTriageTypes";
-import { PROVIDER_LABELS } from "./uiTokens";
+import { deterministicTriage } from "@/lib/aiTriage";
 
-interface AITriageCardProps {
-  report: AuditReport;
-}
-
-export function AITriageCard({ report }: AITriageCardProps) {
-  const [triage, setTriage] = useState<AITriageResponse | null>(null);
+export function AITriageCard({ report }: { report: AuditReport }) {
+  const payload = useMemo<AITriageRequest>(() => ({
+    inputMode: report.input_mode, maxRiskScore: report.summary.max_risk_score, maxHops: report.summary.max_hops,
+    trustBoundaries: report.summary.trust_boundary_crossings, primaryProvider: report.parsed_oauth?.provider ?? "generic",
+    detectedProviders: [...new Set(report.graph.nodes.map(node => node.provider))],
+    naivePersistingCount: report.naive_containment.persisting_node_ids.length,
+    naiveStoppedPct: Math.round(report.naive_containment.containment_ratio * 100), pkceProtected: report.pre_consent_guard.pkce_protected,
+    rfc7009Status: report.naive_containment.rfc7009_http_status_returned,
+  }), [report]);
+  const [result, setResult] = useState<{ report: AuditReport; triage: AITriageResponse } | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchTriage = async () => {
-    setLoading(true);
-    setError(null);
-
-    const primaryProvider = report.parsed_oauth?.provider
-      ? PROVIDER_LABELS[report.parsed_oauth.provider]
-      : "Detected Credentials";
-
-    const topLabels = report.naive_containment.persisting_node_ids
-      .slice(0, 5)
-      .map((id) => {
-        const node = report.graph.nodes.find((n) => n.id === id);
-        return node?.label ?? id;
-      });
-
-    const payload: AITriageRequest = {
-      inputMode: report.input_mode,
-      presetId: report.preset_id,
-      headline: report.summary.headline,
-      maxRiskScore: report.summary.max_risk_score,
-      maxHops: report.summary.max_hops,
-      trustBoundaries: report.summary.trust_boundary_crossings,
-      primaryProvider,
-      requestedScopes: report.parsed_oauth?.requested_scopes ?? [],
-      detectedKeyNames: report.shadow_secrets.map((s) => s.key_name),
-      naivePersistingCount: report.naive_containment.persisting_node_ids.length,
-      naiveStoppedPct: Math.round(
-        report.naive_containment.containment_ratio * 100,
-      ),
-      topPersistingLabels: topLabels,
-      pkceProtected: report.parsed_oauth?.has_pkce ?? false,
-    };
-
+  const [error, setError] = useState("");
+  const controller = useRef<AbortController | null>(null);
+  const generation = useRef(0);
+  useEffect(() => { generation.current += 1; controller.current?.abort(); setLoading(false); setError(""); return () => controller.current?.abort(); }, [report]);
+  const triage = result?.report === report ? result.triage : deterministicTriage(payload);
+  const requestAI = async () => {
+    controller.current?.abort(); const abort = new AbortController(); controller.current = abort;
+    const version = ++generation.current; setLoading(true); setError("");
     try {
-      const res = await fetch("/api/ai-triage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-
-      const data = (await res.json()) as AITriageResponse;
-      setTriage(data);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Triage request failed";
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
+      const response = await fetch("/api/ai-triage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: abort.signal });
+      if (!response.ok) throw new Error();
+      const data = await response.json() as AITriageResponse;
+      if (generation.current === version && !abort.signal.aborted) setResult({ report, triage: data });
+    } catch { if (!abort.signal.aborted && generation.current === version) setError("AI service unavailable. The local explanation remains below."); }
+    finally { if (generation.current === version && !abort.signal.aborted) setLoading(false); }
   };
-
-  useEffect(() => {
-    fetchTriage();
-  }, [
-    report.preset_id,
-    report.input_mode,
-    report.summary.max_risk_score,
-    report.naive_containment.persisting_node_ids.length,
-  ]);
-
-  return (
-    <div className="mx-5 my-4 rounded-[12px] border border-[#e8eaec] bg-[#ffffff] p-5 shadow-xs">
-      {/* Header with attribution badge */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#f0f1f2] pb-3">
-        <div className="flex items-center gap-2">
-          <ShieldWarning size={18} className="text-[#1b6c80]" />
-          <h2 className="text-[14px] font-semibold text-[#131416]">
-            Plain-English AI Threat Triage
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {triage && (
-            <span
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium ${
-                triage.fallbackUsed
-                  ? "border border-[#e8eaec] bg-[#f4f6f8] text-[#5d5f60]"
-                  : "border border-[#a2cfd8] bg-[#e6f2f5] text-[#1b6c80]"
-              }`}
-            >
-              <Sparkle size={12} />
-              {triage.modelBadge}
-            </span>
-          )}
-
-          <button
-            type="button"
-            onClick={fetchTriage}
-            disabled={loading}
-            className="inline-flex h-7 items-center gap-1 rounded-[4px] border border-[#e8eaec] px-2 text-[12px] text-[#5d5f60] transition hover:bg-[#f4f6f8] hover:text-[#131416] disabled:opacity-50"
-            title="Refresh AI Triage"
-          >
-            <ArrowsClockwise
-              size={12}
-              className={loading ? "animate-spin" : ""}
-            />
-            <span>Refresh</span>
-          </button>
-        </div>
-      </div>
-
-      {loading && !triage ? (
-        <div className="space-y-3 py-2">
-          <div className="h-4 w-3/4 animate-pulse rounded bg-[#f4f6f8]" />
-          <div className="h-4 w-5/6 animate-pulse rounded bg-[#f4f6f8]" />
-          <div className="h-4 w-2/3 animate-pulse rounded bg-[#f4f6f8]" />
-        </div>
-      ) : error && !triage ? (
-        <div className="text-[13px] text-[#831c1e]">
-          Triage generation error: {error}
-        </div>
-      ) : triage ? (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:divide-x md:divide-[#f0f1f2]">
-          <div className="space-y-1.5">
-            <div className="text-[13px] font-semibold text-[#131416]">
-              1. What an attacker could do
-            </div>
-            <p className="text-[13px] leading-[1.5] text-[#5d5f60]">
-              {triage.attackerStory}
-            </p>
-          </div>
-
-          <div className="space-y-1.5 md:pl-5">
-            <div className="text-[13px] font-semibold text-[#131416]">
-              2. Why 1-click Revoke fails
-            </div>
-            <p className="text-[13px] leading-[1.5] text-[#5d5f60]">
-              {triage.whyRevokeFails}
-            </p>
-          </div>
-
-          <div className="space-y-1.5 md:pl-5">
-            <div className="text-[13px] font-semibold text-[#131416]">
-              3. Your first 60 seconds move
-            </div>
-            <p className="text-[13px] leading-[1.5] text-[#5d5f60]">
-              {triage.first60SecondsAction}
-            </p>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
+  return <section aria-label="Plain-English threat triage" className="space-y-4 border-t border-[#e8eaec] pt-5">
+    <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-[16px] font-semibold">Plain-English security brief</h2><p className="text-[13px] text-[#5d5f60]">{triage.modelBadge}</p></div><button type="button" className="control" disabled={loading} onClick={requestAI}>{loading ? "Requesting explanation…" : "Request AI explanation"}</button></div>
+    <p className="text-[13px] text-[#5d5f60]">Optional AI sends only counts and recognized provider/boundary names. File contents, URLs, key names and credential values stay out of the request. Without a configured model, the server returns the local explanation.</p>
+    {error && <p role="status" className="text-[13px] text-[#92400e]">{error}</p>}
+    <div className="grid gap-4 md:grid-cols-3">{[["What an attacker could do", triage.attackerStory], ["Why one revoke may be insufficient", triage.whyRevokeFails], ["What to review first", triage.first60SecondsAction]].map(([title, text]) => <div key={title}><h3 className="font-semibold">{title}</h3><p className="mt-1 text-[14px] leading-normal text-[#5d5f60]">{text}</p></div>)}</div>
+  </section>;
 }
-

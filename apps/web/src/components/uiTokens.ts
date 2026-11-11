@@ -153,6 +153,17 @@ export function formatScopeShort(scope: string): string {
   return scope;
 }
 
+export function formatTrustBoundaries(boundaries: string[]): string {
+  if (!boundaries || boundaries.length === 0) return "";
+  return boundaries
+    .map(
+      (b) =>
+        TRUST_BOUNDARY_META[b as TrustBoundary]?.label ??
+        b.replace(/_/g, " "),
+    )
+    .join(", ");
+}
+
 export function humanizeNodeLabel(node: BlastNode): string {
   const decodedId = decodeSafeRecursively(node.id);
 

@@ -1,0 +1,20 @@
+{
+  "findings": [],
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "screens": 2
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "screens": 2
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "screens": 4
+    }
+  ]
+}

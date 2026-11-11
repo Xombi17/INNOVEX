@@ -1,6 +1,7 @@
 import { evaluatePreConsent, parseOAuthUrl } from "./engine/index.js";
 import {
   ACTION_META,
+  PKCE_TRANSACTION_NOTE,
   PROVIDER_LABELS,
   buildArenaDeepLink,
   buildCleanInitiationTemplate,
@@ -79,7 +80,7 @@ async function init() {
   actionPill.textContent = meta.label;
 
   pkcePill.textContent = decision.pkce_protected
-    ? `PKCE ${parsed.code_challenge_method ?? "S256"} PROTECTED`
+    ? `PKCE ${parsed.code_challenge_method ?? "S256"} PRESENT`
     : "NO PKCE CHALLENGE";
   pkcePill.className = `pill ${decision.pkce_protected ? "badge-sky" : "badge-warn"} mono`;
 
@@ -100,7 +101,7 @@ async function init() {
   providerEl.textContent = PROVIDER_LABELS[decision.provider];
   clientEl.textContent = parsed.client_id ?? "unknown";
   redirectEl.textContent = `${parsed.redirect_uri ?? "unknown"}${parsed.access_type ? ` (${parsed.access_type})` : ""}`;
-  pkceWarningEl.textContent = decision.pkce_rewrite_warning;
+  pkceWarningEl.textContent = decision.pkce_protected ? PKCE_TRANSACTION_NOTE : decision.pkce_rewrite_warning;
 
   flaggedListEl.replaceChildren();
   if (decision.flagged_scopes.length === 0) {

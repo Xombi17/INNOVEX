@@ -1,4 +1,4 @@
-import type { ContainmentStep, AuditReport } from "@contracts/index";
+import type { ContainmentStep, AuditReport } from "../../../../contracts/index.d.ts";
 
 export interface EnrichedStepDetails {
   copyableCommand: string;
@@ -7,118 +7,109 @@ export interface EnrichedStepDetails {
   consoleUrl: string;
   providerLabel: string;
   rfcNote?: string;
+  documentationUrl?: string;
 }
 
-export function enrichContainmentStep(
-  step: ContainmentStep,
-  report?: AuditReport,
-): EnrichedStepDetails {
-  const issuerLower = step.issuer.toLowerCase();
-
-  if (issuerLower.includes("google")) {
-    return {
-      providerLabel: "Google Identity",
-      copyableCommand: `curl -s -X POST https://oauth2.googleapis.com/revoke -d "token=<ACTIVE_REFRESH_OR_ACCESS_TOKEN>"`,
-      verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer <TOKEN>" https://gmail.googleapis.com/gmail/v1/users/me/profile`,
-      expectedStatus: "401 Unauthorized",
-      consoleUrl: "https://myaccount.google.com/connections",
-      rfcNote:
-        "RFC 7009 §2.2: Google returns HTTP 200 even if the token was already revoked. Verify with the probe above.",
-    };
-  }
-
-  if (issuerLower.includes("github")) {
-    if (step.action_type === "github_grant_delete") {
-      return {
-        providerLabel: "GitHub OAuth Applications",
-        copyableCommand: `curl -s -X DELETE -u "$CLIENT_ID:$CLIENT_SECRET" https://api.github.com/applications/$CLIENT_ID/grant -d '{"access_token":"<TOKEN>"}'`,
-        verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer <TOKEN>" https://api.github.com/user`,
-        expectedStatus: "401 Bad credentials (or 204 on delete)",
-        consoleUrl: "https://github.com/settings/applications",
-        rfcNote:
-          "GitHub OAuth applications use DELETE /applications/{client_id}/grant to cascade revoke all issued user tokens.",
-      };
-    }
-    return {
-      providerLabel: "GitHub Personal Access Tokens",
-      copyableCommand: `gh auth refresh -h github.com -s read:user # or revoke PAT via GitHub Settings`,
-      verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer <TOKEN>" https://api.github.com/user`,
-      expectedStatus: "401 Bad credentials",
-      consoleUrl: "https://github.com/settings/tokens",
-    };
-  }
-
-  if (issuerLower.includes("microsoft") || issuerLower.includes("entra")) {
-    return {
-      providerLabel: "Microsoft Entra ID",
-      copyableCommand: `curl -s -X POST https://graph.microsoft.com/v1.0/me/revokeSignInSessions -H "Authorization: Bearer <ADMIN_OR_USER_TOKEN>"`,
-      verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer <TOKEN>" https://graph.microsoft.com/v1.0/me`,
-      expectedStatus: "401 InvalidAuthenticationToken",
-      consoleUrl: "https://myaccount.microsoft.com/applications",
-      rfcNote:
-        "Microsoft Entra ID access tokens may remain valid for up to 60-90 minutes (residual JWT lifetime) unless Continuous Access Evaluation (CAE) is enforced.",
-    };
-  }
-
-  if (issuerLower.includes("vercel")) {
-    return {
-      providerLabel: "Vercel Platform",
-      copyableCommand: `npx vercel tokens rm <TOKEN_NAME_OR_ID> --yes`,
-      verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer <VERCEL_TOKEN>" https://api.vercel.com/v2/user`,
-      expectedStatus: "401 Unauthorized",
-      consoleUrl: "https://vercel.com/account/tokens",
-    };
-  }
-
-  if (issuerLower.includes("slack")) {
-    return {
-      providerLabel: "Slack API",
-      copyableCommand: `curl -s -X POST https://slack.com/api/auth.revoke -H "Authorization: Bearer <SLACK_TOKEN>"`,
-      verificationProbe: `curl -s -H "Authorization: Bearer <SLACK_TOKEN>" https://slack.com/api/auth.test`,
-      expectedStatus: "{\"ok\":false,\"error\":\"token_revoked\"}",
-      consoleUrl: "https://api.slack.com/apps",
-    };
-  }
-
-  if (issuerLower.includes("salesforce")) {
-    return {
-      providerLabel: "Salesforce Connected App",
-      copyableCommand: `curl -s -X POST https://login.salesforce.com/services/oauth2/revoke -d "token=<TOKEN>"`,
-      verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer <TOKEN>" https://login.salesforce.com/services/oauth2/userinfo`,
-      expectedStatus: "401 Bad Request",
-      consoleUrl: "https://login.salesforce.com",
-    };
-  }
-
-  if (issuerLower.includes("openai")) {
-    return {
-      providerLabel: "OpenAI Platform",
-      copyableCommand: `# Revoke compromised API key in OpenAI Dashboard:
-https://platform.openai.com/api-keys`,
-      verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer <KEY>" https://api.openai.com/v1/models`,
-      expectedStatus: "401 Invalid Authentication",
-      consoleUrl: "https://platform.openai.com/api-keys",
-    };
-  }
-
-  if (issuerLower.includes("anthropic")) {
-    return {
-      providerLabel: "Anthropic Console",
-      copyableCommand: `# Rotate compromised API key in Anthropic Console:
-https://console.anthropic.com/settings/keys`,
-      verificationProbe: `curl -s -o /dev/null -w "%{http_code}" -H "x-api-key: <KEY>" -H "anthropic-version: 2023-06-01" https://api.anthropic.com/v1/messages`,
-      expectedStatus: "401 authentication_error",
-      consoleUrl: "https://console.anthropic.com/settings/keys",
-    };
-  }
-
-  // Default fallback for generic downstream tokens
-  return {
-    providerLabel: step.issuer,
-    copyableCommand: step.command_or_endpoint,
-    verificationProbe: step.verification_probe,
-    expectedStatus: "401 Unauthorized",
-    consoleUrl: step.console_url ?? "https://scopebomb.vercel.app",
-    rfcNote: step.why_naive_fails ? `Why: ${step.why_naive_fails}` : undefined,
+export function enrichContainmentStep(step: ContainmentStep, _report?: AuditReport): EnrichedStepDetails {
+  const issuer = step.issuer.toLowerCase();
+  const base: EnrichedStepDetails = {
+    providerLabel: step.issuer, copyableCommand: step.command_or_endpoint, verificationProbe: step.verification_probe,
+    expectedStatus: "Review issuer-specific rejection and audit evidence; HTTP status alone does not prove containment.",
+    consoleUrl: step.console_url ?? "", rfcNote: step.why_naive_fails,
   };
+  if (step.action_type === "inspect_ci_workflows") return { ...base,
+    copyableCommand: 'git log -n 10 -p -- .github/workflows/\ngh workflow list --all\ngh run list --limit 10',
+    verificationProbe: "Review workflow diffs, runners, deployments and branch protections; rotate exposed CI credentials separately.",
+    expectedStatus: "Unapproved persistence removed and each exposed credential independently rejected.",
+    documentationUrl: "https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions",
+  };
+  if (step.action_type === "audit_minted_apps") return { ...base,
+    expectedStatus: "Unauthorized apps, credentials, role grants and consent removed; verify each discovered issuer separately.",
+    rfcNote: "An app inventory review is distinct from revoking a user's token. Use an authorized administrator and verify every discovered credential.",
+  };
+  if (issuer.includes("google") && step.action_type === "rotate_downstream_key") return { ...base,
+    providerLabel: "Google Cloud IAM",
+    copyableCommand: 'gcloud iam service-accounts keys list --iam-account="$SA_EMAIL"\ngcloud iam service-accounts keys delete "$KEY_ID" --iam-account="$SA_EMAIL"',
+    verificationProbe: 'gcloud iam service-accounts keys list --iam-account="$SA_EMAIL"',
+    expectedStatus: "Deleted key absent from inventory; separately assess already-issued short-lived credentials.",
+    consoleUrl: "https://console.cloud.google.com/iam-admin/serviceaccounts",
+    rfcNote: "Deleting a service-account key does not revoke short-lived credentials already issued from it. A generic API 403 does not establish revocation.",
+    documentationUrl: "https://docs.cloud.google.com/iam/docs/keys-create-delete",
+  };
+  if (step.action_type === "invalidate_sessions" && !issuer.includes("microsoft")) return { ...base,
+    expectedStatus: "Provider session inventory and affected account access checked; no verification was performed by ScopeBomb.",
+  };
+  if (issuer.includes("google")) return { ...base, providerLabel: "Google Identity",
+    copyableCommand: 'curl -sS -X POST https://oauth2.googleapis.com/revoke --data-urlencode "token=$OLD_TOKEN"',
+    verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" https://www.googleapis.com/drive/v3/about?fields=user',
+    expectedStatus: "Old access token rejected as invalid (normally 401); use an API this grant could access before revocation.",
+    consoleUrl: "https://myaccount.google.com/connections",
+    rfcNote: "RFC 7009 returns 200 for invalid tokens too, and access-token cascading is SHOULD. Google documents its own revocation behavior; confirm rejection after propagation and inspect other issuers separately.",
+    documentationUrl: "https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke",
+  };
+  if (issuer.includes("github")) {
+    if (step.action_type === "github_grant_delete") return { ...base, providerLabel: "GitHub OAuth Applications",
+      copyableCommand: 'curl -sS -i -X DELETE -u "$CLIENT_ID:$CLIENT_SECRET" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" "https://api.github.com/applications/$CLIENT_ID/grant" --data "{\\"access_token\\":\\"$OLD_TOKEN\\"}"',
+      verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_TOKEN" https://api.github.com/user',
+      expectedStatus: "Grant deletion: 204. Old token: 401 Bad credentials. Independent PATs need separate revocation.",
+      consoleUrl: "https://github.com/settings/connections/applications",
+      rfcNote: "The deletion API requires the OAuth app owner's client ID and secret. End users can revoke authorization in GitHub settings instead.",
+      documentationUrl: "https://docs.github.com/en/rest/apps/oauth-applications#delete-an-app-authorization",
+    };
+    return { ...base, providerLabel: "GitHub independent credentials",
+      copyableCommand: "# Revoke the exposed PAT in https://github.com/settings/tokens\n# Inspect repository deploy keys separately in the repository settings.",
+      verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_TOKEN" https://api.github.com/user',
+      expectedStatus: "Old PAT rejected with 401 Bad credentials. Deploy-key access requires its own SSH check.",
+      consoleUrl: "https://github.com/settings/tokens",
+      rfcNote: "Refreshing a gh CLI login does not revoke an exposed token or deploy key.",
+      documentationUrl: "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens",
+    };
+  }
+  if (issuer.includes("microsoft") || issuer.includes("entra")) return { ...base, providerLabel: "Microsoft Entra ID",
+    copyableCommand: 'curl -sS -X POST "https://graph.microsoft.com/v1.0/users/$USER_ID/revokeSignInSessions" -H "Authorization: Bearer $ADMIN_TOKEN"',
+    verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" https://graph.microsoft.com/v1.0/me',
+    expectedStatus: "Session invalidation may take minutes. Check refresh failure and old access-token rejection after expiry/enforcement.",
+    consoleUrl: "https://entra.microsoft.com/",
+    rfcNote: "Requires an authorized administrator with User.RevokeSessions.All. User-session revocation does not remove application credentials or app-only permissions; inspect these separately. A 403 alone is insufficient evidence.",
+    documentationUrl: "https://learn.microsoft.com/en-us/graph/api/user-revokesigninsessions?view=graph-rest-1.0",
+  };
+  if (issuer.includes("vercel")) return { ...base, providerLabel: "Vercel Platform",
+    copyableCommand: 'curl -sS -X DELETE -H "Authorization: Bearer $OLD_TOKEN" https://api.vercel.com/v3/user/tokens/current',
+    verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_TOKEN" https://api.vercel.com/v2/user',
+    expectedStatus: "Old token rejected as invalid; inspect the response body as well as status.",
+    consoleUrl: "https://vercel.com/account/tokens",
+    rfcNote: "This deletes the token authenticating the request. Replace dependent workloads with a new credential and review deployment persistence separately.",
+    documentationUrl: "https://vercel.com/docs/rest-api/authentication/delete-an-authentication-token",
+  };
+  if (issuer.includes("slack")) return { ...base, providerLabel: "Slack API",
+    copyableCommand: 'curl -sS -X POST https://slack.com/api/auth.revoke -H "Authorization: Bearer $OLD_TOKEN" -H "Content-Type: application/x-www-form-urlencoded"',
+    verificationProbe: 'curl -sS -H "Authorization: Bearer $OLD_TOKEN" https://slack.com/api/auth.test',
+    expectedStatus: 'JSON ok:false with token_revoked or invalid_auth; HTTP 200 alone is insufficient.',
+    consoleUrl: "https://api.slack.com/apps",
+    rfcNote: "With token rotation, auth.revoke revokes a single token; the installation can remain. Review refresh tokens and uninstall unauthorized apps separately.",
+    documentationUrl: "https://docs.slack.dev/authentication/using-token-rotation",
+  };
+  if (issuer.includes("salesforce")) return { ...base, providerLabel: "Salesforce Connected App",
+    copyableCommand: 'curl -sS -X POST "https://$MY_DOMAIN.my.salesforce.com/services/oauth2/revoke" --data-urlencode "token=$OLD_TOKEN"',
+    verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" "https://$MY_DOMAIN.my.salesforce.com/services/oauth2/userinfo"',
+    expectedStatus: "Userinfo rejects an invalid token with provider error Bad_OAuth_Token (documented 403); check the response body.",
+    consoleUrl: "https://login.salesforce.com/",
+    rfcNote: "Use your actual My Domain (and sandbox domain when applicable). Salesforce documents 400 invalid_token for an invalid revocation request; do not assume generic RFC 7009 semantics for every provider.",
+    documentationUrl: "https://help.salesforce.com/s/articleView?id=sf.remoteaccess_using_userinfo_endpoint.htm&language=en_US&type=5",
+  };
+  if (issuer.includes("openai")) return { ...base, providerLabel: "OpenAI Platform",
+    copyableCommand: "# Delete the exposed API key in https://platform.openai.com/api-keys\n# Create a replacement and update dependent workloads.",
+    verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_TOKEN" https://api.openai.com/v1/models',
+    expectedStatus: "401 with an invalid/revoked-key authentication error; check error details because other failures can also return 401.",
+    consoleUrl: "https://platform.openai.com/api-keys",
+    documentationUrl: "https://developers.openai.com/api/docs/guides/error-codes",
+  };
+  if (issuer.includes("anthropic")) return { ...base, providerLabel: "Anthropic Console",
+    copyableCommand: "# Delete the exposed key in https://platform.claude.com/settings/keys\n# Create a replacement and update dependent workloads.",
+    verificationProbe: 'curl -sS -i -H "x-api-key: $OLD_TOKEN" -H "anthropic-version: 2023-06-01" https://api.anthropic.com/v1/models',
+    expectedStatus: "401 authentication_error; inspect details to distinguish revoked credentials from other authentication problems.",
+    consoleUrl: "https://platform.claude.com/settings/keys",
+    documentationUrl: "https://platform.claude.com/docs/en/api/errors",
+  };
+  return base;
 }
