@@ -34,18 +34,126 @@ interface InputAndPresetBarProps {
   inputError: string | null;
   externalOAuthUrl: string | null;
   scannerOpen?: boolean;
+  hideForensicBand?: boolean;
   onToggleScanner?: (open: boolean) => void;
   onClearError: () => void;
   onRunAudit: (input: AuditInput) => void;
 }
 
+export function ForensicSummaryBand({ report }: { report: AuditReport }) {
+  return (
+    <div className="grid grid-cols-1 gap-6 border-t border-[#e8eaec] px-5 py-5 lg:grid-cols-12">
+      <div className="lg:col-span-6">
+        <div className="text-[13px] font-medium text-[#5d5f60]">
+          Incident framing &amp; root mechanism
+        </div>
+        <div className="mt-1 text-[14px] font-semibold leading-[1.45] text-[#131416]">
+          {report.summary.headline}
+        </div>
+        <p className="mt-1 text-[14px] leading-[1.55] text-[#5d5f60]">
+          {report.summary.incident_framing_note}
+        </p>
+      </div>
+
+      <div className="lg:col-span-3 lg:border-l lg:border-[#f0f1f2] lg:pl-5">
+        <div className="text-[13px] font-medium text-[#5d5f60]">
+          Parsed OAuth request
+        </div>
+        {report.parsed_oauth ? (
+          <div className="mt-1.5 space-y-2">
+            <div className="flex flex-wrap items-center gap-1.5 text-[13px] leading-[1.45]">
+              <span className="font-medium text-[#131416]">
+                {PROVIDER_LABELS[report.parsed_oauth.provider]}
+              </span>
+              <span className="text-[#5d5f60]">·</span>
+              <span
+                className="font-medium"
+                style={{
+                  color: report.parsed_oauth.has_pkce ? "#04250e" : "#92400e",
+                }}
+              >
+                {report.parsed_oauth.has_pkce
+                  ? `PKCE ${report.parsed_oauth.code_challenge_method ?? "S256"}`
+                  : "No PKCE"}
+              </span>
+              {report.parsed_oauth.access_type === "offline" && (
+                <>
+                  <span className="text-[#5d5f60]">·</span>
+                  <span className="font-medium text-[#831c1e]">
+                    Offline refresh
+                  </span>
+                </>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {report.parsed_oauth.requested_scopes.map((sc) => (
+                <code
+                  key={sc}
+                  className="rounded-[4px] bg-[#f4f6f8] px-2 py-0.5 text-[13px] text-[#131416]"
+                >
+                  {formatScopeShort(sc)}
+                </code>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
+            Static secret scan active (no OAuth URL attached).
+          </p>
+        )}
+      </div>
+
+      <div className="lg:col-span-3 lg:border-l lg:border-[#f0f1f2] lg:pl-5">
+        <div className="text-[13px] font-medium text-[#5d5f60]">
+          Masked local credentials ({report.shadow_secrets.length})
+        </div>
+        {report.shadow_secrets.length > 0 ? (
+          <div className="mt-1.5 divide-y divide-[#f0f1f2]">
+            {report.shadow_secrets.slice(0, 3).map((sec, i) => (
+              <div
+                key={`${sec.key_name}-${i}`}
+                className="flex flex-wrap items-center justify-between gap-2 py-1.5"
+              >
+                <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 text-[13px] leading-[1.4]">
+                  <code className="font-medium text-[#131416]">
+                    {sec.key_name}
+                  </code>
+                  <span className="text-[#5d5f60]">({sec.masked_preview})</span>
+                </div>
+                <span
+                  className="shrink-0 rounded-full px-2.5 py-0.5 text-[13px] font-medium"
+                  style={{
+                    backgroundColor: SEVERITY_META[sec.severity].bg,
+                    color: SEVERITY_META[sec.severity].ink,
+                  }}
+                >
+                  {SEVERITY_META[sec.severity].label}
+                </span>
+              </div>
+            ))}
+            {report.shadow_secrets.length > 3 && (
+              <div className="pt-1.5 text-[13px] text-[#5d5f60]">
+                +{report.shadow_secrets.length - 3} more masked credentials
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
+            No embedded tokens found in local config.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function InputAndPresetBar({
   presets,
-  activePresetId,
   activeInputMode,
   report,
   inputError,
   externalOAuthUrl,
+  hideForensicBand = false,
   onClearError,
   onRunAudit,
 }: InputAndPresetBarProps) {
@@ -61,6 +169,7 @@ export function InputAndPresetBar({
   const [takeoutInput, setTakeoutInput] = useState<string>(SAMPLE_TAKEOUT_JSON);
   const [repoInput, setRepoInput] = useState<string>("Xombi17/INNOVEX");
   const [repoMsg, setRepoMsg] = useState<string | null>(null);
+  const [repoWarnings, setRepoWarnings] = useState<string[]>([]);
   const [repoLoading, setRepoLoading] = useState(false);
   const [scannedFilesList, setScannedFilesList] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -71,20 +180,6 @@ export function InputAndPresetBar({
       setOauthUrlInput(externalOAuthUrl);
     }
   }, [externalOAuthUrl]);
-
-  const handleSelectPreset = (preset: IncidentPresetSummary) => {
-    onClearError();
-    setOauthUrlInput(preset.sample_oauth_url);
-    if (preset.sample_mcp_config) {
-      setMcpInput(preset.sample_mcp_config);
-    }
-    onRunAudit({
-      mode: "incident_preset",
-      raw_payload: preset.sample_oauth_url,
-      preset_id: preset.preset_id,
-      simulation_mode: "naive_single_revoke",
-    });
-  };
 
   const handleInspectOAuthUrl = (urlToInspect?: string) => {
     const payload = (urlToInspect ?? oauthUrlInput).trim();
@@ -128,6 +223,7 @@ export function InputAndPresetBar({
     setRepoInput(target);
     setRepoLoading(true);
     setRepoMsg(null);
+    setRepoWarnings([]);
     setScannedFilesList([]);
 
     try {
@@ -144,6 +240,7 @@ export function InputAndPresetBar({
       }
 
       setScannedFilesList(data.scannedFiles ?? []);
+      setRepoWarnings(data.workflowWarnings ?? []);
       setRepoMsg(data.message ?? `Scanned ${target}`);
 
       if (data.syntheticMcpPayload) {
@@ -174,42 +271,10 @@ export function InputAndPresetBar({
   return (
     <section
       aria-label="Incident framing and local input scanner"
-      className="space-y-4"
+      className="space-y-0"
     >
-      {/* Mobile Preset Selector */}
-      <div className="lg:hidden">
-        <label
-          htmlFor="mobile-preset-select"
-          className="mb-1.5 block text-[13px] font-medium text-[#5d5f60]"
-        >
-          Incident scenario
-        </label>
-        <select
-          id="mobile-preset-select"
-          value={
-            report.input_mode === "incident_preset" && activePresetId
-              ? activePresetId
-              : ""
-          }
-          onChange={(e) => {
-            const preset = presets.find((p) => p.preset_id === e.target.value);
-            if (preset) handleSelectPreset(preset);
-          }}
-          className="h-9 w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[14px] text-[#131416]"
-        >
-          <option value="" disabled>
-            Custom input active
-          </option>
-          {presets.map((preset) => (
-            <option key={preset.preset_id} value={preset.preset_id}>
-              {preset.year} · {preset.title.split(":")[0]}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {/* Always-Visible Custom Input Panel */}
-      <div className="border-y border-[#e8eaec] py-4">
+      <div className="border-t border-[#e8eaec] px-5 py-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-[#e8eaec] pb-2.5">
           <div
             className="flex flex-wrap gap-4"
@@ -235,6 +300,7 @@ export function InputAndPresetBar({
                     setSelectedTab(tab.id);
                     onClearError();
                     setRepoMsg(null);
+                    setRepoWarnings([]);
                   }}
                   className={`relative pb-1.5 text-[14px] font-medium transition ${
                     active
@@ -282,6 +348,12 @@ export function InputAndPresetBar({
                   setOauthUrlInput(e.target.value);
                   if (inputError) onClearError();
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleInspectOAuthUrl();
+                  }
+                }}
                 placeholder="https://accounts.google.com/o/oauth2/v2/auth?client_id=..."
                 className="h-9 w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[14px] text-[#131416] placeholder:text-[#5d5f60]"
               />
@@ -304,7 +376,7 @@ export function InputAndPresetBar({
             }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleFileDrop}
-            className={`rounded-[6px] p-3 transition ${
+            className={`rounded-[6px] p-1 transition ${
               isDragging ? "bg-[#e6f2f5]" : "bg-[#ffffff]"
             }`}
           >
@@ -401,7 +473,7 @@ export function InputAndPresetBar({
                 className="inline-flex items-center gap-1.5 text-[14px] font-medium leading-[1.45] text-[#131416]"
               >
                 <GitBranch size={15} className="text-[#1b6c80]" />
-                Public GitHub repository (<code className="font-mono">owner/repo</code> or URL)
+                Public GitHub repository (<code>owner/repo</code> or URL)
               </label>
               <button
                 type="button"
@@ -419,6 +491,13 @@ export function InputAndPresetBar({
                 onChange={(e) => {
                   setRepoInput(e.target.value);
                   setRepoMsg(null);
+                  setRepoWarnings([]);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleInspectRepo();
+                  }
                 }}
                 placeholder="owner/repo or https://github.com/owner/repo"
                 className="h-9 w-full rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[14px] text-[#131416] placeholder:text-[#5d5f60]"
@@ -435,15 +514,22 @@ export function InputAndPresetBar({
             {repoMsg && (
               <div className="mt-2.5 rounded-[6px] bg-[#f4f6f8] px-3 py-2 text-[13px] text-[#5d5f60]">
                 <div>{repoMsg}</div>
+                {repoWarnings.length > 0 && (
+                  <ul className="mt-1.5 space-y-1 text-[13px] text-[#92400e]">
+                    {repoWarnings.map((w) => (
+                      <li key={w}>{w}</li>
+                    ))}
+                  </ul>
+                )}
                 {scannedFilesList.length > 0 && (
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {scannedFilesList.map((file) => (
-                      <span
+                      <code
                         key={file}
-                        className="rounded-[4px] bg-[#ffffff] border border-[#e8eaec] px-2 py-0.5 font-mono text-[11px] text-[#131416]"
+                        className="rounded-[4px] border border-[#e8eaec] bg-[#ffffff] px-2 py-0.5 text-[13px] text-[#131416]"
                       >
                         {file}
-                      </span>
+                      </code>
                     ))}
                   </div>
                 )}
@@ -474,111 +560,7 @@ export function InputAndPresetBar({
         )}
       </div>
 
-      {/* Unboxed Forensic Summary Band */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-6">
-          <div className="text-[13px] font-medium text-[#5d5f60]">
-            Incident framing &amp; root mechanism
-          </div>
-          <div className="mt-1 text-[14px] font-semibold leading-[1.45] text-[#131416]">
-            {report.summary.headline}
-          </div>
-          <p className="mt-1 text-[14px] leading-[1.55] text-[#5d5f60]">
-            {report.summary.incident_framing_note}
-          </p>
-        </div>
-
-        <div className="lg:border-l lg:border-[#f0f1f2] lg:pl-5 lg:col-span-3">
-          <div className="text-[13px] font-medium text-[#5d5f60]">
-            Parsed OAuth request
-          </div>
-          {report.parsed_oauth ? (
-            <div className="mt-1.5 space-y-2">
-              <div className="flex flex-wrap items-center gap-1.5 text-[13px] leading-[1.45]">
-                <span className="font-medium text-[#131416]">
-                  {PROVIDER_LABELS[report.parsed_oauth.provider]}
-                </span>
-                <span className="text-[#5d5f60]">·</span>
-                <span
-                  className="font-medium"
-                  style={{
-                    color: report.parsed_oauth.has_pkce ? "#04250e" : "#92400e",
-                  }}
-                >
-                  {report.parsed_oauth.has_pkce
-                    ? `PKCE ${report.parsed_oauth.code_challenge_method ?? "S256"}`
-                    : "No PKCE"}
-                </span>
-                {report.parsed_oauth.access_type === "offline" && (
-                  <>
-                    <span className="text-[#5d5f60]">·</span>
-                    <span className="font-medium text-[#831c1e]">
-                      Offline refresh
-                    </span>
-                  </>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {report.parsed_oauth.requested_scopes.map((sc) => (
-                  <code
-                    key={sc}
-                    className="rounded-[4px] bg-[#f4f6f8] px-2 py-0.5 text-[13px] text-[#131416]"
-                  >
-                    {formatScopeShort(sc)}
-                  </code>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
-              Static secret scan active (no OAuth URL attached).
-            </p>
-          )}
-        </div>
-
-        <div className="lg:border-l lg:border-[#f0f1f2] lg:pl-5 lg:col-span-3">
-          <div className="text-[13px] font-medium text-[#5d5f60]">
-            Masked local credentials ({report.shadow_secrets.length})
-          </div>
-          {report.shadow_secrets.length > 0 ? (
-            <div className="mt-1.5 divide-y divide-[#f0f1f2]">
-              {report.shadow_secrets.slice(0, 3).map((sec, i) => (
-                <div
-                  key={`${sec.key_name}-${i}`}
-                  className="flex flex-wrap items-center justify-between gap-2 py-1.5"
-                >
-                  <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 text-[13px] leading-[1.4]">
-                    <code className="font-medium text-[#131416]">
-                      {sec.key_name}
-                    </code>
-                    <span className="text-[#5d5f60]">
-                      ({sec.masked_preview})
-                    </span>
-                  </div>
-                  <span
-                    className="shrink-0 rounded-full px-2.5 py-0.5 text-[13px] font-medium"
-                    style={{
-                      backgroundColor: SEVERITY_META[sec.severity].bg,
-                      color: SEVERITY_META[sec.severity].ink,
-                    }}
-                  >
-                    {SEVERITY_META[sec.severity].label}
-                  </span>
-                </div>
-              ))}
-              {report.shadow_secrets.length > 3 && (
-                <div className="pt-1.5 text-[13px] text-[#5d5f60]">
-                  +{report.shadow_secrets.length - 3} more masked credentials
-                </div>
-              )}
-            </div>
-          ) : (
-            <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
-              No embedded tokens found in local config.
-            </p>
-          )}
-        </div>
-      </div>
+      {!hideForensicBand && <ForensicSummaryBand report={report} />}
     </section>
   );
 }

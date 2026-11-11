@@ -35,7 +35,7 @@
             OAuth authorization intercepted before consent
           </h1>
           <p class="subtext" style="margin-top: 6px; max-width: 70ch">
-            Evaluated locally using ScopeBomb's deterministic policy catalog. Zero credentials or PKCE challenges leave your browser.
+            Evaluated locally using ScopeBomb's deterministic policy catalog. Opening the website sends this authorization URL to ScopeBomb; review it before sharing.
           </p>
           <div id="guard-error" class="error-box hidden" role="alert"></div>
         </section>
@@ -44,7 +44,7 @@
           <!-- Metadata & Score Band -->
           <div class="grid-meta" style="margin-top: 16px">
             <div class="card-inner">
-              <div class="title-sm">Risk score</div>
+              <div class="title-sm">Rule-based severity</div>
               <div style="font-size: 24px; font-weight: 400; color: #c4242a" id="guard-score">—</div>
             </div>
             <div class="card-inner">
@@ -64,11 +64,11 @@
           <!-- PKCE Integrity Rationale -->
           <div class="pkce-callout" style="margin-top: 16px">
             <div class="pkce-callout-title">
-              Why mid-flight scope rewriting breaks PKCE code_challenge
+              Why authorization must restart in the initiating app
             </div>
             <p id="guard-pkce-warning" style="font-size: 13.5px; color: #131416; margin-bottom: 6px"></p>
             <p class="subtext" style="max-width: 72ch">
-              Under RFC 7636, the client binds its secret <code style="color:#1b6c80">code_verifier</code> to <code style="color:#1b6c80">code_challenge = BASE64URL(SHA256(code_verifier))</code> and an immutable <code style="color:#1b6c80">state</code> token. Mutating <code style="color:#1b6c80">scope=</code> mid-flight in an extension without the client's verifier breaks the token exchange or causes silent mismatch. ScopeBomb pauses before consent and provides least-privilege scopes for a fresh client initiation.
+              PKCE links a secret verifier to a challenge; scopes and state are not part of that hash. Editing scopes can conflict with the app’s authorization transaction. Ask the initiating app to start a fresh request with reviewed scopes, fresh state and an appropriate verifier/challenge. A URL with security parameters removed is not a secure login replacement.
             </p>
           </div>
 
@@ -92,10 +92,10 @@
             <div style="margin-top: 14px">
               <div class="row-between" style="margin-bottom: 6px">
                 <div class="title-sm" style="margin-bottom: 0">
-                  Fresh client initiation template (stale code_challenge &amp; state stripped)
+                  Developer reference only — not a usable sign-in URL
                 </div>
                 <button id="copy-template-btn" type="button" class="btn btn-sm">
-                  Copy clean template
+                  Copy developer reference
                 </button>
               </div>
               <div id="guard-clean-template" class="code-box mono"></div>

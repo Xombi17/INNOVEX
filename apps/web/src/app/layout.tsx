@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ScopeBomb - OAuth Blast-Radius & Multi-Issuer Containment Workbench",
+  title: "ScopeBomb — Review app access and credentials",
   description:
-    "Deterministic OAuth and shadow-AI blast-radius simulator, RFC 7009 HTTP 200 trap analyzer, and PKCE-safe pre-consent browser guard.",
+    "Review supplied permissions and configuration, understand possible exposure, and plan provider-specific cleanup. No live account changes.",
 };
 
 export default function RootLayout({

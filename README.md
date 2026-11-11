@@ -1,106 +1,84 @@
 # ScopeBomb
 
-**Live Web Arena:** https://scopebomb.vercel.app  
-**Track:** INNOVEX 2026 — PS 05 (AI-Powered Cybersecurity)  
-**Repository:** https://github.com/Xombi17/INNOVEX
+Review app permissions and project credentials, understand possible exposure, and plan provider-specific cleanup.
 
-OAuth & Shadow-AI Blast-Radius, Persistence & Multi-Issuer Containment Simulator — proves why a single `POST /revoke` (`HTTP 200 OK`) leaves attackers inside downstream ecosystems, and intercepts over-scoped OAuth grants before the PKCE handshake.
+**Published demo:** https://scopebomb.vercel.app
+**Track:** INNOVEX 2026 — PS 05 (AI-Powered Cybersecurity)
 
----
+## Start with one task
 
-## Core Engineering Insights
+1. Choose **Try an example** for a labeled, illustrative scenario, or **Check my configuration** to supply your own input.
+2. Review **Found in input**, **Possible exposure**, and **Still unknown**. Each finding includes its source; placeholders and environment references are listed separately.
+3. Follow a conditional exposure chain, then review the relevant provider’s actions. Technical details are optional.
 
-1. **The RFC 7009 "HTTP 200 Trap":** Under RFC 7009, an authorization server returns `HTTP 200 OK` even for invalid or already-revoked tokens, and access-token cascading is only `SHOULD` (not `MUST`). Self-contained JWTs stay active until expiry, while GitHub workflows, minted service-account keys, and `.mcp.json` / `.env` static credentials (`VERCEL_TOKEN`, `OPENAI_API_KEY`, `GITHUB_TOKEN`, etc.) live at **different issuers** untouched by a single provider revoke.
-2. **Issuer-Accurate Multi-Endpoint Remediation:** Rather than inventing RFC 7009 calls everywhere, ScopeBomb pairs Google `POST oauth2.googleapis.com/revoke`, GitHub OAuth Grant Deletion (`DELETE /applications/{client_id}/grant` with Basic auth + JSON `access_token` body expecting `204`), and provider-specific key rotation (`Vercel`, `OpenAI`, `Anthropic`, Entra app cleanup) with post-revocation API verification probes (`401`/`403`) — never executing destructive live calls.
-3. **PKCE-Safe Pre-Consent Guard (`apps/extension`):** Under RFC 7636, an initiating client binds a secret `code_verifier` to `code_challenge = BASE64URL(SHA256(code_verifier))` and `state`. Naive mid-flight `scope=` URL rewriting breaks or desyncs that transaction. ScopeBomb blocks high-risk requests pre-consent, recommends least-privilege scopes (`drive` -> `drive.file`, `gmail.modify` -> `gmail.readonly`, `repo`/`workflow` -> fine-grained PAT), and strips stale `code_challenge`/`state` for fresh client initiation.
+ScopeBomb does not sign in to accounts, establish credential validity, detect active exploitation, execute cleanup, or independently verify containment. Marking an action done records your progress only. A full-plan preview is a projected outcome, not a measured security status. Scenarios are illustrative models, not forensic reconstructions.
 
----
+## Inputs and data handling
 
-## Architecture
+| Input | Processing | What the result establishes |
+| --- | --- | --- |
+| `.env` / MCP JSON | Browser only; paste, choose file, or drop a text file | Recognized credential-like values and placeholders, with redacted values |
+| OAuth authorization URL | Browser only for manually pasted input | Requested permissions, not approval or effective access |
+| Grant-export JSON (advanced) | Browser only; requires supported scope records | Permissions described by the supplied records |
+| Public GitHub repository | Server retrieves selected files at a pinned commit | Findings in inspected files, with explicit coverage and skipped files |
 
-```mermaid
-flowchart LR
-    subgraph Inputs["Zero-Login Input Surfaces"]
-        U["OAuth Authorize URL<br/>(Google / GitHub / Entra)"]
-        C[".mcp.json / .env / Takeout JSON<br/>(Masked locally, zero secret leak)"]
-        P["5 Grounded Incident Presets<br/>(2024-2026 Post-Mortems)"]
-    end
+Repository review is limited to eight matching configuration/workflow files, 64 KiB per file, a bounded inventory and a 20-second upstream deadline. It excludes history, private content and effective runtime permissions. Empty or partial results are never a claim that the repository is clean.
 
-    subgraph Engine["packages/engine (Zero-Dependency TypeScript ESM)"]
-        PAR["parsers.ts"] --> GRP["graph.ts<br/>5 Trust Boundaries"]
-        GRP --> CON["containment.ts<br/>Naive vs Full Multi-Issuer"]
-        PAR --> PC["pre-consent.ts<br/>PKCE-Safe Policy Guard"]
-    end
+The plain-English explanation works locally. **Optional AI prioritization** sends only input type, supported provider identifiers and counts after the user requests it. A configured Gemini/OpenAI model can reorder vetted facts; model-generated security claims are not accepted. No local input text, credentials, URLs, scopes or verification notes are sent to AI.
 
-    CON --> WEB["apps/web<br/>Next.js 16 Arena (Vercel)"]
-    PC --> WEB
-    PC --> EXT["apps/extension<br/>Chrome MV3 Pre-Consent Guard"]
-    EXT -->|"Deep Link (?oauth_url=)"| WEB
-    Engine --> CLI["packages/engine/cli.ts<br/>Redacted Local Audit CLI (Node 24)"]
-```
+An extension deep link (`?oauth_url=`) initially sends that authorization URL to the web host. Intake removes it from the current address after parsing; this cannot remove the initial host request or its logs. The extension discloses this handoff.
 
----
+## What the model means
 
-## `<90s` Judge Demo Flow (Zero Sign-In Required)
+- Severity scores come from fixed rules, not measured compromise probabilities.
+- Graph nodes and counts describe conditional resources and consequences, not confirmed attacks or distinct exploitable paths.
+- Revocation behavior depends on the provider. Google documents project-token invalidation with a possible propagation delay. Separately issued credentials, sessions, artifacts and copied data require separate review. See [Google’s revocation documentation](https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke) and [RFC 7009](https://www.rfc-editor.org/rfc/rfc7009).
+- GitHub app grant deletion uses `DELETE /applications/{client_id}/grant`, application-owner Basic authentication and an expected `204`. Account holders can remove an app through settings. See [GitHub’s authorization API](https://docs.github.com/en/rest/apps/oauth-applications#delete-an-app-authorization).
+- PKCE links a secret verifier and challenge; scopes are not part of that hash. Scope review should trigger a fresh authorization transaction in the initiating client. Removing security parameters from a copied URL is not a secure client restart. See [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636.html).
 
-1. **Step 1: Scan & Verdict (`0:00–0:25`):** Open https://scopebomb.vercel.app (loads immediately with always-visible scanner and 5 incident preset pills). Paste any OAuth URL, inspect a public GitHub repository (`POST /api/scan-repo`), or drop `.mcp.json`/`.env`. Read the 4-cell verdict strip and plain-English AI Threat Triage brief.
-2. **Step 2: Attack Path (`0:25–0:55`):** Click **Continue to Attack Path**. Toggle between **After 1-Click Revoke (Fails)** (showing persisting red attack paths across SaaS/cloud boundaries despite Google's HTTP 200 response) and **After Full Multi-Issuer Plan (Fixed)**. Expand the collapsible Technical Forensics disclosure for RFC 7009 citations.
-3. **Step 3: Fix Plan & Blocker (`0:55–1:25`):** Click **View Fix Plan & Blocker**. Review concrete copy-ready provider kill-switch commands and `401` verification probes. Click **Simulate Fake AI App Consent** to test pre-consent interception in-browser and watch least-privilege scope downgrades (`mail.google.com` -> `gmail.readonly`) drop the risk. Download the ready-to-load Chrome MV3 extension (`scopebomb-mv3-extension.zip`).
+## Local development
 
-### Grounded Incident Presets (`data/scope_catalog.json`)
+Requires Node 24 and Python 3 for contract verification and extension packaging.
 
-| Preset ID | Year | Exact Framing |
-|---|---|---|
-| `rohan_mcp_oauth_trap` | 2026 | Shadow-AI OAuth Over-Scope + Local MCP Secret Overlap |
-| `midnight_blizzard_2024` | 2024 | OAuth App & Permission Governance Failure (Not Shadow AI) |
-| `salesloft_drift_2025` | 2025 | Vendor / Supply-Chain OAuth Compromise (Multi-Path Fan-Out) |
-| `context_ai_vercel_2026` | 2026 | Third-Party Shadow-Integration Risk via Google Workspace OAuth |
-| `litellm_ci_2026` | 2026 | Non-Human Key Hygiene Failure + Maintainer OAuth Compromise |
-
----
-
-## Quick Start
-
-### 1. Local Redacted Audit CLI (Node 24, Zero Deps)
-
-```bash
-# Scan current or target directory (.mcp.json, .cursor/mcp.json, .env*) without leaking secret values
-node packages/engine/cli.ts /path/to/project
-
-# Emit frozen AuditReport JSON for inspection or archive
-node packages/engine/cli.ts /path/to/project --json > audit-report.json
-```
-
-### 2. Chrome MV3 Pre-Consent Guard (`apps/extension`)
-
-1. Open `chrome://extensions` in Chrome and toggle **Developer mode**.
-2. Click **Load unpacked** and select `apps/extension/`.
-3. Click the extension toolbar icon to test any Google, GitHub, or Microsoft Entra authorization URL — or browse directly to an over-scoped OAuth consent URL to see the pre-consent interstitial (`guard.html`) and **Open in ScopeBomb Arena** deep link (`https://scopebomb.vercel.app/?oauth_url=...`).
-4. (Optional) Rebuild MV3 engine modules from `packages/engine/` anytime via:
-
-```bash
-cd apps/extension && npm run build
-```
-
-### 3. Web Arena Local Dev (`apps/web`)
-
-```bash
+```sh
 cd apps/web
 npm install
 npm run dev
 ```
 
----
+## Offline command line
 
-## Verification Suite
+From the cloned repository root:
 
-```bash
-# Schema, catalog & fixture validation
-python3 contracts/verify_contracts.py
-
-# Deterministic engine + CLI unit tests (Node 24)
-node --test tests/engine/*.test.ts
-
-# Web Arena typecheck & production bundle
-cd apps/web && npm run typecheck && npm run build
+```sh
+node packages/engine/cli.ts /path/to/project
+node packages/engine/cli.ts /path/to/project --json > audit-report.json
 ```
+
+The CLI uses the deterministic engine and emits redacted reports. It does not verify live credential access.
+
+## Chrome extension
+
+Use the extension download in **Review actions → Prevent future overbroad app access**, or load `apps/extension` from this checkout:
+
+1. Download/extract the bundle, or use the source folder.
+2. Open `chrome://extensions` in desktop Chrome and enable Developer mode.
+3. Choose **Load unpacked** and select the extension folder. Confirm it is enabled and inspect a supported URL through its popup.
+
+The extension reviews supported Google, GitHub and Microsoft authorization pages. Downloading a zip or trying the website’s consent demonstration does not install or activate browser protection. The website cannot establish that the extension is installed.
+
+```sh
+node apps/extension/scripts/pack.mjs
+```
+
+## Verification
+
+```sh
+python3 contracts/verify_contracts.py
+node --test tests/engine/*.test.ts
+npm run test --prefix apps/web
+npm run typecheck --prefix apps/web
+npm run build --prefix apps/web
+```
+
+For reproducible browser checks and the five-participant human-study protocol, see [UX validation](docs/UX-VALIDATION.md). Automated checks do not establish user demand or replace testing with unfamiliar developers.

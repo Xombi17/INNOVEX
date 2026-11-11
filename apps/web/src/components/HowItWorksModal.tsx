@@ -1,72 +1,80 @@
 "use client";
-import React, { useEffect } from "react";
-import { X } from "@phosphor-icons/react";
-import { HowItWorksView } from "./HowItWorksView";
-
-interface HowItWorksModalProps {
+import { AccessibleDialog } from "./AccessibleDialog";
+interface Props {
   open: boolean;
   onClose: () => void;
   onOpenSimulator: () => void;
   onOpenPkceGuard: () => void;
   onLoadMcpSample: () => void;
 }
-
-export function HowItWorksModal({
-  open,
-  onClose,
-  onOpenSimulator,
-  onOpenPkceGuard,
-  onLoadMcpSample,
-}: HowItWorksModalProps) {
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
+export function HowItWorksModal({ open, onClose, onOpenSimulator }: Props) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#131416]/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="How 3 tools connect"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+    <AccessibleDialog
+      open={open}
+      onClose={onClose}
+      title="About ScopeBomb"
+      id="about-title"
     >
-      <div className="relative max-h-[80vh] w-full max-w-[560px] overflow-y-auto rounded-[16px] border border-[#e8eaec] bg-[#ffffff] p-6 shadow-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-[16px] font-semibold text-[#131416]">How the 3 tools connect</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close modal"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] text-[#5d5f60] hover:bg-[#ebedee] hover:text-[#131416]"
-          >
-            <X size={18} />
-          </button>
+      <div className="space-y-5">
+        <p>
+          ScopeBomb helps developers review app permissions and credential-like
+          values, understand possible exposure, and plan cleanup. Findings are
+          based on supplied input and a limited rule catalog.
+        </p>
+        <div>
+          <h3 className="font-semibold">What the website does</h3>
+          <p className="muted mt-1">
+            Parses local input in your browser. Public repository checks
+            retrieve selected files on our server. Optional AI ordering receives
+            only provider names and counts, after you request it.
+          </p>
         </div>
-        <HowItWorksView
-          onOpenSimulator={() => {
+        <div>
+          <h3 className="font-semibold">What remains unknown</h3>
+          <p className="muted mt-1">
+            We do not sign in to your accounts, validate credential access,
+            detect active attackers, execute cleanup, or confirm containment.
+            Scenarios and preview outcomes are simulations.
+          </p>
+        </div>
+        <details>
+          <summary className="cursor-pointer font-medium">
+            Browser extension and local command line
+          </summary>
+          <div className="mt-3 space-y-3">
+            <p className="muted">
+              The Chrome extension reviews supported Google, GitHub and
+              Microsoft authorization pages after you install it. Trying the
+              website sandbox does not install or activate it.
+            </p>
+            <p className="muted">
+              For an offline project scan, clone the source repository, install
+              Node 24, then run this from the project root:
+            </p>
+            <code className="block break-all rounded-md bg-[#f4f6f8] p-3 text-[13px]">
+              node packages/engine/cli.ts /path/to/project --json
+            </code>
+            <a
+              href="https://github.com/Xombi17/INNOVEX#quick-start"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#1b6c80] underline"
+            >
+              Read installation instructions
+            </a>
+          </div>
+        </details>
+        <button
+          type="button"
+          className="control control-primary"
+          onClick={() => {
             onClose();
             onOpenSimulator();
           }}
-          onOpenPkceGuard={() => {
-            onClose();
-            onOpenPkceGuard();
-          }}
-          onLoadMcpSample={() => {
-            onClose();
-            onLoadMcpSample();
-          }}
-        />
+        >
+          Try a labeled example
+        </button>
       </div>
-    </div>
+    </AccessibleDialog>
   );
 }
-

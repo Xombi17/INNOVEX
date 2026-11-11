@@ -26,8 +26,8 @@ export const ACTION_META = {
     pillClass: "badge-warn",
   },
   ALLOW: {
-    label: "LEAST-PRIVILEGE ALLOW",
-    badgeText: "SAFE",
+    label: "NO CATALOG SCOPE WARNING",
+    badgeText: "LOW",
     badgeColor: "#1e7b4f",
     pillClass: "badge-allow",
   },

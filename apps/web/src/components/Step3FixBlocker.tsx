@@ -1,19 +1,10 @@
 "use client";
-
-import React, { useState } from "react";
-import {
-  ArrowLeft,
-  ArrowSquareOut,
-  DownloadSimple,
-  PlayCircle,
-  ShieldCheck,
-} from "@phosphor-icons/react";
+import { useState } from "react";
 import type { AuditReport, SimulationMode } from "@contracts/index";
 import { ContainmentComparison } from "./ContainmentComparison";
 import { PreConsentPreview } from "./PreConsentPreview";
 import { ConsentTrapSandbox } from "./ConsentTrapSandbox";
-
-interface Step3Props {
+interface Props {
   report: AuditReport;
   simulationMode: SimulationMode;
   activeOAuthUrl: string | null;
@@ -21,7 +12,6 @@ interface Step3Props {
   onInspectUrl: (url: string) => void;
   onBack: () => void;
 }
-
 export function Step3FixBlocker({
   report,
   simulationMode,
@@ -29,125 +19,86 @@ export function Step3FixBlocker({
   onChangeSimulationMode,
   onInspectUrl,
   onBack,
-}: Step3Props) {
+}: Props) {
   const [sandboxOpen, setSandboxOpen] = useState(false);
-
   return (
-    <div className="space-y-0">
-      {/* Plain-English Headline & Sandbox Trigger */}
-      <div className="flex flex-wrap items-start justify-between gap-4 px-5 pb-4 pt-5">
-        <div>
-          <h1 className="text-[22px] font-semibold leading-[1.35] tracking-[-0.015em] text-[#131416]">
-            Follow these steps by provider &amp; block bad logins before clicking Allow
-          </h1>
-          <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
-            The containment checklist below shows the exact ordered actions needed to close all
-            exposed paths. The Chrome Extension guard stops over-scoped consent before it happens.
+    <div className="space-y-6">
+      <div>
+        <h1 tabIndex={-1} className="text-2xl font-semibold">
+          Review recommended actions
+        </h1>
+        <p className="muted mt-2">
+          Use provider settings to investigate and clean up confirmed exposure.
+          Open technical details when you need them.
+        </p>
+      </div>
+      <ContainmentComparison
+        report={report}
+        simulationMode={simulationMode}
+        onChangeSimulationMode={onChangeSimulationMode}
+      />
+      <details className="border-t border-[#e8eaec] pt-3">
+        <summary className="cursor-pointer font-semibold">
+          Prevent future overbroad app access
+        </summary>
+        <div className="mt-4 space-y-5">
+          <p className="muted">
+            The website demonstration does not enable browser protection. The
+            extension must be installed separately in desktop Chrome, and
+            supports specific Google, GitHub and Microsoft authorization pages.
           </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setSandboxOpen(true)}
-          className="inline-flex h-9 items-center gap-1.5 rounded-[6px] border border-[#1b6c80] bg-[#e6f2f5] px-3.5 text-[13px] font-medium text-[#1b6c80] transition hover:bg-[#d8eef3]"
-        >
-          <PlayCircle size={16} />
-          Simulate Fake AI App Consent
-        </button>
-      </div>
-
-      {/* Containment Comparison Table with Enriched CLI Kill-Switches */}
-      <div className="border-t border-[#e8eaec]">
-        <ContainmentComparison
-          report={report}
-          simulationMode={simulationMode}
-          onChangeSimulationMode={onChangeSimulationMode}
-          showFullTableByDefault
-        />
-      </div>
-
-      {/* Pre-Consent Preview */}
-      <div className="border-t border-[#e8eaec]">
-        <PreConsentPreview
-          report={report}
-          activeOAuthUrl={activeOAuthUrl}
-          onInspectUrl={onInspectUrl}
-        />
-      </div>
-
-      {/* Real Extension Download & 3-Step Setup Card */}
-      <div className="border-t border-[#f0f1f2] px-5 py-5">
-        <div className="rounded-[12px] border border-[#e8eaec] bg-[#ffffff] p-5 shadow-xs">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#f0f1f2] pb-3">
-            <div className="flex items-center gap-2">
-              <ShieldCheck size={18} className="text-[#1e7b4f]" />
-              <h2 className="text-[14px] font-semibold text-[#131416]">
-                Install Chrome Extension (MV3 Pre-Consent Guard)
-              </h2>
-            </div>
+          <button
+            className="control"
+            type="button"
+            onClick={() => setSandboxOpen(true)}
+          >
+            Try consent demonstration
+          </button>
+          {report.parsed_oauth && (
+            <PreConsentPreview
+              report={report}
+              activeOAuthUrl={activeOAuthUrl}
+              onInspectUrl={onInspectUrl}
+            />
+          )}
+          <section
+            aria-label="Install browser extension"
+            className="space-y-3 border-t border-[#e8eaec] pt-4"
+          >
+            <h2 className="font-semibold">Install the Chrome extension</h2>
             <a
+              className="control"
               href="/downloads/scopebomb-mv3-extension.zip"
-              download="scopebomb-mv3-extension.zip"
-              className="inline-flex h-8 items-center gap-1.5 rounded-[6px] bg-[#131416] px-3.5 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
+              download
             >
-              <DownloadSimple size={14} />
-              Download Extension (.zip)
+              Download extension (.zip)
             </a>
-          </div>
-
-          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3 md:divide-x md:divide-[#f0f1f2]">
-            <div className="space-y-1">
-              <div className="text-[13px] font-semibold text-[#131416]">
-                Step 1: Download &amp; Unzip
-              </div>
-              <p className="text-[13px] leading-[1.5] text-[#5d5f60]">
-                Download <code className="font-mono text-[12px]">scopebomb-mv3-extension.zip</code> and extract the contents into a local folder.
-              </p>
-            </div>
-
-            <div className="space-y-1 md:pl-4">
-              <div className="text-[13px] font-semibold text-[#131416]">
-                Step 2: Enable Developer Mode
-              </div>
-              <p className="text-[13px] leading-[1.5] text-[#5d5f60]">
-                In Chrome, navigate to <code className="font-mono text-[12px]">chrome://extensions</code> and toggle <strong>Developer mode</strong> on (top right).
-              </p>
-            </div>
-
-            <div className="space-y-1 md:pl-4">
-              <div className="text-[13px] font-semibold text-[#131416]">
-                Step 3: Load Unpacked
-              </div>
-              <p className="text-[13px] leading-[1.5] text-[#5d5f60]">
-                Click <strong>Load unpacked</strong> and select the extracted folder. ScopeBomb now monitors Google, GitHub &amp; Microsoft OAuth requests before consent.
-              </p>
-            </div>
-          </div>
+            <ol className="list-decimal space-y-2 pl-5">
+              <li>Download and extract the archive.</li>
+              <li>
+                On desktop Chrome, open <code>chrome://extensions</code> and
+                enable Developer mode.
+              </li>
+              <li>
+                Choose Load unpacked, select the extracted folder, and confirm
+                ScopeBomb appears enabled.
+              </li>
+            </ol>
+            <p className="muted text-[13px]">
+              Then use the extension popup to inspect a supported authorization
+              URL. Downloading the archive or using this sandbox does not
+              install protection. This website cannot confirm extension
+              installation.
+            </p>
+          </section>
         </div>
-      </div>
-
-      {/* Step Navigation */}
-      <div className="flex items-center border-t border-[#f0f1f2] px-5 pb-5 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-4 text-[13px] text-[#131416] transition hover:bg-[#f4f6f8]"
-        >
-          <ArrowLeft size={14} />
-          Attack Path
-        </button>
-      </div>
-
-      {/* Fake AI App Consent Simulator Modal */}
+      </details>
+      <button type="button" className="control" onClick={onBack}>
+        Back to possible exposure
+      </button>
       <ConsentTrapSandbox
         open={sandboxOpen}
         onClose={() => setSandboxOpen(false)}
-        onApplyCleanScopes={(cleanUrl) => {
-          onInspectUrl(cleanUrl);
-        }}
-        onInspectUrl={(url) => {
-          onInspectUrl(url);
-        }}
       />
     </div>
   );

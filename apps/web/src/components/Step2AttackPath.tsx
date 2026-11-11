@@ -1,135 +1,141 @@
 "use client";
-import React from "react";
-import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
+import { useState } from "react";
 import type { AuditReport, SimulationMode } from "@contracts/index";
 import { DominoGraph } from "./DominoGraph";
-
-interface Step2Props {
-  report: AuditReport;
-  simulationMode: SimulationMode;
-  onChangeSimulationMode: (mode: SimulationMode) => void;
-  onBack: () => void;
-  onContinue: () => void;
-}
-
+import { humanizeNodeLabel } from "./uiTokens";
 export function Step2AttackPath({
   report,
   simulationMode,
   onChangeSimulationMode,
   onBack,
   onContinue,
-}: Step2Props) {
-  const persistingCount =
-    simulationMode === "naive_single_revoke"
-      ? report.naive_containment.persisting_node_ids.length
-      : report.full_containment.persisting_node_ids.length;
-  const totalContained = report.full_containment.contained_node_ids.length;
-
-  const headline =
-    simulationMode === "naive_single_revoke"
-      ? `Why clicking Revoke still leaves ${persistingCount} paths open`
-      : `Full multi-account fix closes all ${totalContained} exposed paths`;
-
+}: {
+  report: AuditReport;
+  simulationMode: SimulationMode;
+  onChangeSimulationMode: (mode: SimulationMode) => void;
+  onBack: () => void;
+  onContinue: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  // Show one connected chain, never imply unrelated branches are a proven sequence.
+  const longest = [...report.graph.edges].sort((a, b) => b.hop - a.hop)[0];
+  const chain: string[] = longest ? [longest.target] : [];
+  let cursor: string | undefined = longest?.source;
+  const visited = new Set(chain);
+  while (cursor && !visited.has(cursor)) {
+    chain.unshift(cursor);
+    visited.add(cursor);
+    cursor = report.graph.edges.find((edge) => edge.target === cursor)?.source;
+  }
+  const nodes = chain
+    .map((id) => report.graph.nodes.find((node) => node.id === id))
+    .filter((node) => !!node);
+  const hasExposure = report.naive_containment.persisting_node_ids.length > 0;
   return (
-    <div className="space-y-0">
-      {/* Plain-English Headline */}
-      <div className="px-5 pb-4 pt-5">
-        <h1 className="text-[22px] font-semibold leading-[1.35] tracking-[-0.015em] text-[#131416]">
-          {headline}
+    <div className="space-y-6">
+      <div>
+        <h1 tabIndex={-1} className="text-2xl font-semibold">
+          Understand possible exposure
         </h1>
-        <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
-          The domino map below shows how a single OAuth grant escalates across issuers and trust
-          boundaries. Use the toggle to compare outcomes.
+        <p className="muted mt-2 max-w-[75ch]">
+          {hasExposure
+            ? "Follow one conditional chain from the supplied input. Each link depends on real permissions, resource contents and credential validity."
+            : "No downstream exposure is modeled for this input. The catalog is limited, so this does not prove your accounts or project are safe."}
         </p>
       </div>
-
-      {persistingCount > 0 && (
-        <div className="mx-5 mb-4 rounded-[6px] border border-[#f5e6c8] bg-[#fbf5e8] px-3.5 py-2 text-[13px] text-[#855306]">
-          <strong>AI Threat Note:</strong> Lateral escalation pivots across{" "}
-          {report.summary.trust_boundary_crossings.join(", ") || "external SaaS"}{" "}
-          ({report.summary.max_hops} hops). Standard 1-click revoke leaves downstream access tokens alive.
-        </div>
+      <div className="rounded-lg bg-[#f4f6f8] p-4">
+        <strong>Possible consequence, not an observed attack</strong>
+        <p className="muted mt-2">
+          For example, if an app can read a file containing another service’s
+          valid API key, that copied key may need separate revocation.
+          Disconnecting the original app does not revoke a credential issued by
+          another service.
+        </p>
+      </div>
+      {hasExposure && (
+        <ol className="space-y-3" aria-label="One possible exposure chain">
+          {nodes.map((node, index) => (
+            <li
+              key={node.id}
+              className="flex gap-3 border-b border-[#e8eaec] pb-3"
+            >
+              <span className="font-mono text-[#1b6c80]">{index + 1}.</span>
+              <div>
+                <div className="font-medium">{humanizeNodeLabel(node)}</div>
+                <p className="muted mt-1 text-[13px]">{node.notes}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       )}
-
-      {/* Simulation Segmented Toggle */}
-      <div className="px-5 pb-4">
-        <div className="inline-flex overflow-hidden rounded-[8px] border border-[#e8eaec]">
-          <button
-            type="button"
-            onClick={() => onChangeSimulationMode("naive_single_revoke")}
-            className={`px-4 py-1.5 text-[13px] transition ${
-              simulationMode === "naive_single_revoke"
-                ? "bg-[#131416] text-[#ffffff]"
-                : "bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8]"
-            }`}
-          >
-            After 1-Click Revoke (Fails)
-          </button>
-          <button
-            type="button"
-            onClick={() => onChangeSimulationMode("full_multi_issuer")}
-            className={`border-l border-[#e8eaec] px-4 py-1.5 text-[13px] transition ${
-              simulationMode === "full_multi_issuer"
-                ? "bg-[#131416] text-[#ffffff]"
-                : "bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8]"
-            }`}
-          >
-            After Full Multi-Issuer Plan (Fixed)
-          </button>
-        </div>
-      </div>
-
-      {/* DominoGraph */}
-      <div className="border-t border-[#e8eaec]">
-        <DominoGraph
-          report={report}
-          simulationMode={simulationMode}
-          onChangeSimulationMode={onChangeSimulationMode}
-        />
-      </div>
-
-      {/* Technical Forensics Collapsible Disclosure */}
-      <div className="border-t border-[#f0f1f2] px-5 py-4">
-        <details>
-          <summary className="cursor-pointer text-[13px] text-[#1b6c80] hover:underline">
-            Technical forensics &amp; RFC 7009 proof
-          </summary>
-          <div className="mt-3 space-y-2 text-[13px] text-[#5d5f60]">
-            <p>
-              RFC 7009 §2.2: servers MUST respond with HTTP 200 even when the token was already
-              invalid or expired — this response is NOT proof of revocation. Access tokens may
-              remain valid until their natural TTL expires.
+      <details onToggle={(event) => setExpanded(event.currentTarget.open)}>
+        <summary className="cursor-pointer font-medium text-[#1b6c80]">
+          Explore the full model and technical assumptions
+        </summary>
+        {expanded && (
+          <div className="mt-5 space-y-4">
+            <p className="muted text-[13px]">
+              Model contains {report.graph.nodes.length} nodes. Node counts are
+              not counts of confirmed attacks or distinct exploitable paths.
+              Severity {report.summary.max_risk_score}/100 is a rule-based
+              rating, not a probability.
             </p>
-            <p>
-              <strong className="text-[#131416]">Scenario:</strong>{" "}
-              {report.preset_id ?? report.input_mode} · Max hops: {report.summary.max_hops} ·
-              Risk score: {report.summary.max_risk_score}/100
+            <div
+              role="group"
+              aria-label="Expected outcome preview"
+              className="flex flex-wrap gap-2"
+            >
+              <button
+                type="button"
+                className="control"
+                aria-pressed={simulationMode === "naive_single_revoke"}
+                onClick={() => onChangeSimulationMode("naive_single_revoke")}
+              >
+                Model one-provider cleanup
+              </button>
+              <button
+                type="button"
+                className="control"
+                aria-pressed={simulationMode === "full_multi_issuer"}
+                onClick={() => onChangeSimulationMode("full_multi_issuer")}
+              >
+                Preview expected outcome
+              </button>
+            </div>
+            <p className="text-[#855306]">
+              Simulation only. The full-plan preview assumes every required
+              action and verification succeeds. No remediation has been
+              performed or verified.
             </p>
-            <p>
-              <strong className="text-[#131416]">Trust boundaries crossed:</strong>{" "}
-              {report.summary.trust_boundary_crossings.join(", ") || "none"}
-            </p>
+            <DominoGraph
+              report={report}
+              simulationMode={simulationMode}
+              onChangeSimulationMode={onChangeSimulationMode}
+              hideHeaderToggle
+            />
+            {report.naive_containment.rfc7009_http_status_returned > 0 && (
+              <p className="muted text-[13px]">
+                RFC 7009 permits HTTP 200 for invalid tokens; related-token
+                revocation depends on provider policy. Google documents
+                project-token invalidation with possible propagation delay.
+                Independent keys, sessions and copied data require separate
+                review. Token lifetimes in this model are illustrative, not
+                measured.
+              </p>
+            )}
           </div>
-        </details>
-      </div>
-
-      {/* Step Navigation */}
-      <div className="flex items-center justify-between border-t border-[#f0f1f2] px-5 pb-5 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-4 text-[13px] text-[#131416] transition hover:bg-[#f4f6f8]"
-        >
-          <ArrowLeft size={14} />
-          Scan &amp; Verdict
+        )}
+      </details>
+      <div className="flex flex-wrap justify-between gap-3">
+        <button type="button" className="control" onClick={onBack}>
+          Back to input
         </button>
         <button
           type="button"
+          className="control control-primary"
           onClick={onContinue}
-          className="inline-flex h-8 items-center gap-1.5 rounded-[6px] bg-[#131416] px-4 text-[13px] font-medium text-[#ffffff] transition hover:bg-[#2a2c30]"
         >
-          View Fix Plan &amp; Blocker
-          <ArrowRight size={14} />
+          Review recommended actions
         </button>
       </div>
     </div>

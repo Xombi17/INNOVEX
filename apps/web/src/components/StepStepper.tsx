@@ -1,51 +1,40 @@
 "use client";
-import React from "react";
-
-interface StepStepperProps {
-  activeStep: 1 | 2 | 3;
-  onChangeStep: (step: 1 | 2 | 3) => void;
-}
-
-const STEPS: { id: 1 | 2 | 3; label: string }[] = [
-  { id: 1, label: "1. Scan & Verdict" },
-  { id: 2, label: "2. Attack Path" },
-  { id: 3, label: "3. Fix Plan & Blocker" },
+export type WorkflowStep = 1 | 2 | 3;
+export const STEP_LABELS = [
+  "Check input",
+  "Understand exposure",
+  "Review actions",
 ];
-
-export function StepStepper({ activeStep, onChangeStep }: StepStepperProps) {
+export function StepStepper({
+  activeStep,
+  onChangeStep,
+  hasAnalysis = true,
+}: {
+  activeStep: WorkflowStep;
+  onChangeStep: (step: WorkflowStep) => void;
+  hasAnalysis?: boolean;
+}) {
   return (
-    <div
-      role="tablist"
-      aria-label="Workflow steps"
-      className="flex items-center gap-1 border-b border-[#e8eaec] px-5 py-2"
+    <nav
+      aria-label="Analysis steps"
+      className="border-b border-[#e8eaec] px-4 py-3 sm:px-7"
     >
-      {STEPS.map((step, i) => {
-        const active = activeStep === step.id;
-        const completed = activeStep > step.id;
-        return (
-          <React.Fragment key={step.id}>
+      <ol className="grid grid-cols-3 gap-2">
+        {STEP_LABELS.map((label, index) => (
+          <li key={label}>
             <button
-              role="tab"
               type="button"
-              aria-selected={active}
-              onClick={() => onChangeStep(step.id)}
-              className={`whitespace-nowrap rounded-[6px] px-3 py-1.5 text-[13px] transition ${
-                active
-                  ? "bg-[#ebedee] font-medium text-[#131416]"
-                  : "text-[#5d5f60] hover:bg-[#f4f6f8] hover:text-[#131416]"
-              }`}
+              onClick={() => onChangeStep((index + 1) as WorkflowStep)}
+              disabled={index > 0 && !hasAnalysis}
+              aria-current={activeStep === index + 1 ? "step" : undefined}
+              className={`flex min-h-11 w-full items-center gap-2 rounded-md p-2 text-left text-[13px] sm:text-[14px] ${activeStep === index + 1 ? "bg-[#e6f2f5] font-medium text-[#155768]" : "text-[#5d5f60] disabled:opacity-60"}`}
             >
-              {completed ? "✓ " : ""}
-              {step.label}
+              <span className="shrink-0 font-mono">{index + 1}.</span>
+              <span>{label}</span>
             </button>
-            {i < STEPS.length - 1 && (
-              <span className="select-none text-[13px] text-[#cdced1]" aria-hidden="true">
-                ›
-              </span>
-            )}
-          </React.Fragment>
-        );
-      })}
-    </div>
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }

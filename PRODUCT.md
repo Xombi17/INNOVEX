@@ -15,19 +15,19 @@ web
 
 ScopeBomb makes cross-issuer OAuth and shadow-AI blast radius immediately legible and actionable across three local-first surfaces:
 1. **Web Arena (`apps/web`):** Guided 3-step information architecture (`1. Scan & Verdict` → `2. Attack Path` → `3. Fix Plan & Blocker`). Visualizes multi-hop credential escalation across five trust boundaries, provides live public GitHub repo scanning (`POST /api/scan-repo`), plain-English AI threat triage (`POST /api/ai-triage`), rich copy-ready provider kill-switch scripts, and an in-browser Fake AI App Consent sandbox simulator.
-2. **Chrome MV3 Pre-Consent Guard (`apps/extension`):** Intercepts dangerous Google, GitHub, and Microsoft Entra authorization URLs before the user clicks Allow, explains why rewriting `scope=` mid-flight breaks SHA-256 PKCE `code_challenge`, and offers a fresh least-privilege initiation template plus a one-click deep link (`?oauth_url=`) into the Web Arena. Available via one-click download (`scopebomb-mv3-extension.zip`).
+2. **Chrome MV3 Pre-Consent Guard (`apps/extension`):** Intercepts dangerous Google, GitHub, and Microsoft Entra authorization URLs before the user clicks Allow, explains why the initiating client must restart authorization after scope review (scopes are not part of the PKCE hash), and offers a fresh least-privilege initiation template plus a one-click deep link (`?oauth_url=`) into the Web Arena. Available via one-click download (`scopebomb-mv3-extension.zip`).
 3. **Local Redacted Audit CLI (`packages/engine/cli.ts`):** Scans local project trees (`.mcp.json`, `mcp.json`, `.env*`) in Node 24, masks secrets locally before analysis, and emits deterministic `AuditReport` summaries or JSON matching `contracts/scope_bomb.schema.json`.
 
-Success means a first-time visitor understands within seconds what all three tools do, why HTTP 200 revocation creates a false sense of security, and how each issuer step and PKCE downgrade resolves the risk. ([Inferred clarity criterion from voice request + SPEC.md])
+Success means unfamiliar developers can choose an input, distinguish sample data and conditional consequences, and identify a practical next action without mistaking a preview for verified containment. Human usability and demand validation remain pending; see `docs/UX-VALIDATION.md`.
 
 ## Positioning
 
-Unlike generic OAuth checklist linters or single-vendor token viewers, ScopeBomb proves cross-issuer persistence after a nominal `HTTP 200 OK` revoke and enforces PKCE-safe (`code_challenge` preserving) pre-consent interception using a zero-dependency deterministic engine with zero backend calls or login friction.
+Unlike generic OAuth checklist linters or single-vendor token viewers, ScopeBomb models conditional exposure from supplied input and separates evidence from unknowns. Local parsing uses a zero-dependency engine; public repository retrieval and optional AI prioritization use stateless server routes. No live containment is asserted.
 
 ## Operating Context
 
 - Desktop and mobile security triage sessions running interactively in `<90s` live demonstrations, standalone browser tabs, or Chrome MV3 popup/interstitial handoffs (`?oauth_url=`).
-- 100% client-side/offline deterministic parsing in Next.js 16 and Chrome MV3 (`analyzeAudit` in `packages/engine`), importing `data/scope_catalog.json` and conforming strictly to `contracts/scope_bomb.schema.json`.
+- Browser/local deterministic parsing for pasted inputs and Chrome MV3 (`analyzeAudit` in `packages/engine`), importing `data/scope_catalog.json` and conforming strictly to `contracts/scope_bomb.schema.json`.
 - Zero-exfiltration policy: pasted `.mcp.json` and `.env` secrets are masked locally and never leave the browser or local runtime.
 
 ## Capabilities and Constraints
@@ -56,3 +56,12 @@ Unlike generic OAuth checklist linters or single-vendor token viewers, ScopeBomb
 2. **Prove mechanisms visually:** Contrast Naive RFC 7009 vs. Multi-Issuer containment and Raw PKCE vs. Clean Initiation side by side using real engine counts.
 3. **Never touch live secrets:** Keep scanning, masking, and replacement preview strictly local and visibly trustworthy.
 4. **Preserve protocol precision:** Never sacrifice RFC 7009, RFC 7636 PKCE, or GitHub grant-deletion accuracy for simplified marketing phrasing.
+
+## Current first-use behavior
+
+- Welcome offers an explicit example or custom-input choice before displaying findings.
+- The workflow is Check input → Understand exposure → Review actions, with browser history and keyboard focus handling.
+- Findings identify their source; placeholders, incomplete coverage and unsupported input remain visible.
+- Remediation stays unverified. Checkboxes and evidence notes are self-reported, stored only in tab memory, and reset on a new analysis or refresh.
+- Optional AI only prioritizes vetted facts from provider identifiers and counts; it does not establish new findings.
+- The consent sandbox preserves the active analysis and does not install protection.

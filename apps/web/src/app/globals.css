@@ -49,7 +49,11 @@ body {
   margin: 0;
   background-color: var(--ground);
   color: var(--text);
-  font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  font-family:
+    "IBM Plex Sans",
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -106,5 +110,104 @@ a {
   *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* Shared controls keep the review usable at narrow widths and with a keyboard. */
+.control {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--control);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  background: white;
+  color: var(--text);
+}
+.control:hover {
+  background: var(--raised);
+}
+.control:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.control-primary {
+  background: var(--text);
+  border-color: var(--text);
+  color: white;
+}
+.control-primary:hover {
+  background: #303438;
+}
+.control-active,
+.control[aria-pressed="true"] {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+  color: #155768;
+}
+.field {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid #8c9297;
+  border-radius: 6px;
+  background: white;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.field[aria-invalid="true"] {
+  border-color: var(--negative);
+}
+.muted {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.scope-dialog {
+  width: min(640px, calc(100% - 24px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--control);
+  border-radius: 14px;
+  color: var(--text);
+  background: white;
+  overflow-y: auto;
+}
+.scope-dialog::backdrop {
+  background: rgb(19 20 22 / 45%);
+}
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  transform: translateY(-180%);
+  padding: 12px;
+  background: white;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+.skip-link:focus {
+  transform: none;
+}
+[hidden] {
+  display: none !important;
+}
+summary {
+  padding-block: 8px;
+}
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+  .control {
+    border-color: ButtonText;
   }
 }

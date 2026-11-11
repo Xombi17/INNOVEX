@@ -88,7 +88,7 @@
     const sub = createEl(
       "div",
       { color: "#5d5f60", fontSize: "12px", lineHeight: "1.4" },
-      `${decision.pkce_protected ? "PKCE detected: mid-flight scope rewriting breaks code_challenge. " : ""}${downgrades}`,
+      `${decision.pkce_protected ? "PKCE parameters detected. Ask the initiating app to restart authorization with reviewed permissions. " : ""}${downgrades}`,
     );
 
     left.append(titleRow, sub);

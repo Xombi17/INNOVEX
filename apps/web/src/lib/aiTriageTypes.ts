@@ -1,26 +1,18 @@
 export interface AITriageRequest {
-  inputMode: string;
-  presetId?: string | null;
-  headline: string;
-  maxRiskScore: number;
-  maxHops: number;
-  trustBoundaries: string[];
-  primaryProvider: string;
-  requestedScopes: string[];
-  detectedKeyNames: string[];
-  naivePersistingCount: number;
-  naiveStoppedPct: number;
-  topPersistingLabels: string[];
-  pkceProtected: boolean;
+  inputMode: "oauth_url" | "mcp_config" | "takeout_grant" | "incident_preset";
+  providers: string[];
+  credentialCount: number;
+  scopeCount: number;
+  modeledNodes: number;
 }
-
+export interface TriageItem {
+  title: string;
+  body: string;
+}
 export interface AITriageResponse {
-  attackerStory: string;
-  whyRevokeFails: string;
-  first60SecondsAction: string;
+  items: TriageItem[];
   modelBadge: string;
   provider: "gemini" | "openai" | "local-synthesizer";
   fallbackUsed: boolean;
   timestamp: string;
 }
-

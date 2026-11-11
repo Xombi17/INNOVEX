@@ -16,11 +16,17 @@ interface PresetStripProps {
   onSelectPreset: (preset: IncidentPresetSummary) => void;
 }
 
-export function PresetStrip({ presets, activePresetId, onSelectPreset }: PresetStripProps) {
+export function PresetStrip({
+  presets,
+  activePresetId,
+  onSelectPreset,
+}: PresetStripProps) {
   return (
-    <div className="border-b border-[#f0f1f2] px-5 py-3">
-      <div className="mb-2 text-[13px] font-medium text-[#5d5f60]">Real incidents (2024–2026):</div>
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+    <div className="border-t border-[#f0f1f2] px-5 py-3.5">
+      <div className="mb-2 text-[13px] font-medium text-[#5d5f60]">
+        Choose an illustrative scenario (not a forensic reconstruction):
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
         {presets.map((preset) => {
           const isActive = activePresetId === preset.preset_id;
           return (
@@ -28,13 +34,15 @@ export function PresetStrip({ presets, activePresetId, onSelectPreset }: PresetS
               key={preset.preset_id}
               type="button"
               onClick={() => onSelectPreset(preset)}
-              className={`h-7 shrink-0 rounded-[9999px] border px-3 text-[13px] whitespace-nowrap transition ${
+              aria-pressed={isActive}
+              className={`inline-flex min-h-11 shrink-0 items-center rounded-[9999px] border px-3 text-[13px] whitespace-nowrap transition ${
                 isActive
                   ? "border-[#131416] bg-[#131416] text-[#ffffff]"
-                  : "border-[#e8eaec] bg-[#ffffff] text-[#5d5f60] hover:border-[#cdced1] hover:text-[#131416]"
+                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8] hover:text-[#131416]"
               }`}
             >
-              {PRESET_SHORT_NAMES[preset.preset_id] ?? preset.title} · {preset.year}
+              {PRESET_SHORT_NAMES[preset.preset_id] ?? preset.title} ·{" "}
+              {preset.year}
             </button>
           );
         })}

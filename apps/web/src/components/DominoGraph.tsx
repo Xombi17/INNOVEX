@@ -26,6 +26,7 @@ interface DominoGraphProps {
   report: AuditReport;
   simulationMode: SimulationMode;
   onChangeSimulationMode: (mode: SimulationMode) => void;
+  hideHeaderToggle?: boolean;
 }
 
 const STAGE_TITLES = [
@@ -83,6 +84,7 @@ export function DominoGraph({
   report,
   simulationMode,
   onChangeSimulationMode,
+  hideHeaderToggle = false,
 }: DominoGraphProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [highlightedBoundary, setHighlightedBoundary] =
@@ -149,14 +151,14 @@ export function DominoGraph({
   return (
     <section
       aria-label="Blast-radius domino escalation map"
-      className="border-t border-[#e8eaec] pt-6"
+      className="border-t border-[#e8eaec] px-5 pb-6 pt-6"
     >
       {/* Header row */}
       <div className="flex flex-col justify-between gap-3 pb-4 lg:flex-row lg:items-center">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
             <h2 className="text-[16px] font-semibold leading-[1.4] text-[#131416]">
-              Cross-issuer escalation domino map
+              Full conditional exposure model
             </h2>
             <span
               className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium tabular-nums"
@@ -169,46 +171,48 @@ export function DominoGraph({
             >
               {isNaive
                 ? persistingCount > 0
-                  ? `${persistingCount} path${persistingCount === 1 ? "" : "s"} persist after HTTP ${outcome.rfc7009_http_status_returned || "0"}`
-                  : "No persisting paths"
-                : `${containedCount} of ${containedCount + persistingCount} paths contained`}
+                  ? `${persistingCount} modeled nodes may need review`
+                  : "No downstream exposure modeled"
+                : `${containedCount} modeled nodes: projected cleanup only`}
             </span>
           </div>
           <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
-            Follow left to right how a single login or secret propagates across
-            trust boundaries. Select any node to inspect why single revoke misses it.
+            Explore conditional consequences across
+            trust boundaries. Select a node to inspect its assumptions. No account activity is measured.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div
-            className="inline-flex items-center gap-1.5"
-            role="group"
-            aria-label="Containment simulation toggle"
-          >
-            <button
-              type="button"
-              onClick={() => onChangeSimulationMode("naive_single_revoke")}
-              className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
-                isNaive
-                  ? "border-[#131416] bg-[#131416] text-[#ffffff]"
-                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
-              }`}
+          {!hideHeaderToggle && (
+            <div
+              className="inline-flex items-center gap-1.5"
+              role="group"
+              aria-label="Containment simulation toggle"
             >
-              Naive single revoke
-            </button>
-            <button
-              type="button"
-              onClick={() => onChangeSimulationMode("full_multi_issuer")}
-              className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
-                !isNaive
-                  ? "border-[#1e7b4f] bg-[#1e7b4f] text-[#ffffff]"
-                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
-              }`}
-            >
-              Full multi-issuer plan
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => onChangeSimulationMode("naive_single_revoke")}
+                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
+                  isNaive
+                    ? "border-[#131416] bg-[#131416] text-[#ffffff]"
+                    : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+                }`}
+              >
+                Naive single revoke
+              </button>
+              <button
+                type="button"
+                onClick={() => onChangeSimulationMode("full_multi_issuer")}
+                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
+                  !isNaive
+                    ? "border-[#1e7b4f] bg-[#1e7b4f] text-[#ffffff]"
+                    : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+                }`}
+              >
+                Full multi-issuer plan
+              </button>
+            </div>
+          )}
 
           {report.graph.nodes.length > 14 && (
             <button
@@ -313,7 +317,7 @@ export function DominoGraph({
                     </div>
                     <span className="shrink-0 text-[13px] font-medium text-[#5d5f60] tabular-nums">
                       {stagePersisting > 0 && isNaive
-                        ? `${stagePersisting} live`
+                        ? `${stagePersisting} modeled`
                         : `${allStageNodes.length}`}
                     </span>
                   </div>
@@ -401,12 +405,12 @@ export function DominoGraph({
                                 }}
                               >
                                 {isPersisting
-                                  ? "Persists"
+                                  ? "Review needed"
                                   : !isNaive
-                                    ? "Contained"
+                                    ? "Projected cleanup"
                                     : node.kind === "human_identity"
                                       ? "Origin"
-                                      : "Revoked"}
+                                      : "Modeled revoked"}
                               </span>
                             </div>
                           </button>

@@ -1,270 +1,404 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
-import {
-  ArrowSquareOut,
-  Check,
-  Copy,
-  TerminalWindow,
-} from "@phosphor-icons/react";
-import type { AuditInput, AuditReport, SimulationMode } from "@contracts/index";
+import React, { useEffect, useRef, useState } from "react";
+import type { AuditReport, SimulationMode } from "@contracts/index";
 import {
   getIncidentPresets,
   type IncidentPresetSummary,
-  tryRunScopeBombAudit,
 } from "@/lib/auditAdapter";
-import { StepStepper } from "./StepStepper";
+import { analyzeInput, type Analysis } from "@/lib/analysis";
+import { StepStepper, STEP_LABELS, type WorkflowStep } from "./StepStepper";
 import { Step1ScanVerdict } from "./Step1ScanVerdict";
 import { Step2AttackPath } from "./Step2AttackPath";
 import { Step3FixBlocker } from "./Step3FixBlocker";
 import { HowItWorksModal } from "./HowItWorksModal";
-import { DEMO_PKCE_TRAP_URL } from "./InputAndPresetBar";
-
-interface ScopeBombArenaProps {
-  initialReport: AuditReport;
-}
+import { ScanInput } from "./ScanInput";
+import { PresetStrip } from "./PresetStrip";
 
 const presets = getIncidentPresets();
-
-const PRESET_SHORT_NAMES: Record<string, string> = {
-  rohan_mcp_oauth_trap: "Shadow-AI MCP + OAuth",
-  midnight_blizzard_2024: "Midnight Blizzard",
-  salesloft_drift_2025: "Salesloft Drift fan-out",
-  context_ai_vercel_2026: "Context.ai Workspace",
-  litellm_ci_2026: "LiteLLM CI key leak",
-};
-
-export function ScopeBombArena({ initialReport }: ScopeBombArenaProps) {
-  const [report, setReport] = useState<AuditReport>(initialReport);
-  const [simulationMode, setSimulationMode] = useState<SimulationMode>(
+export function ScopeBombArena({
+  initialReport,
+}: {
+  initialReport: AuditReport;
+}) {
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [entry, setEntry] = useState<"welcome" | "input" | "sample">("welcome");
+  const [step, setStep] = useState<WorkflowStep>(1);
+  const [simulation, setSimulation] = useState<SimulationMode>(
     "naive_single_revoke",
   );
-  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
-  const [howItWorksOpen, setHowItWorksOpen] = useState(false);
-  const [inputError, setInputError] = useState<string | null>(null);
-  const [externalOAuthUrl, setExternalOAuthUrl] = useState<string | null>(null);
-  const [activeOAuthUrl, setActiveOAuthUrl] = useState<string | null>(
-    presets[0]?.sample_oauth_url ?? null,
-  );
-  const [copiedCli, setCopiedCli] = useState(false);
-  const [interceptedBanner, setInterceptedBanner] = useState(false);
-
-  const handleRunAudit = (input: AuditInput) => {
-    const result = tryRunScopeBombAudit(input);
-    if (!result.ok) {
-      setInputError(result.error);
-      return;
-    }
-
-    setInputError(null);
-    setReport(result.report);
-    setSimulationMode(input.simulation_mode);
-
-    if (input.mode === "oauth_url") {
-      setActiveOAuthUrl(input.raw_payload);
-    } else if (input.mode === "incident_preset") {
-      const preset = presets.find(
-        (p) => p.preset_id === (input.preset_id ?? result.report.preset_id),
-      );
-      setActiveOAuthUrl(preset?.sample_oauth_url ?? null);
-    } else {
-      setActiveOAuthUrl(null);
-    }
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [url, setUrl] = useState<string | null>(null);
+  const [initialUrl, setInitialUrl] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [session, setSession] = useState(0);
+  const main = useRef<HTMLElement>(null);
+  const analysisRef = useRef<Analysis | null>(null);
+  const navigating = useRef(false);
+  analysisRef.current = analysis;
+  const go = (next: WorkflowStep) => {
+    if (next > 1 && !analysisRef.current) return;
+    const address = new URL(window.location.href);
+    address.searchParams.set("step", String(next));
+    if (address.href !== window.location.href)
+      window.history.pushState(null, "", address);
+    navigating.current = true;
+    setStep(next);
   };
-
-  const handleInspectUrl = (url: string) => {
-    setExternalOAuthUrl(url);
-    handleRunAudit({
-      mode: "oauth_url",
-      raw_payload: url,
-      preset_id: null,
-      simulation_mode: simulationMode,
-    });
-  };
-
-  const handleSelectPreset = (preset: IncidentPresetSummary) => {
-    setInputError(null);
-    handleRunAudit({
-      mode: "incident_preset",
-      raw_payload: preset.sample_oauth_url,
-      preset_id: preset.preset_id,
-      simulation_mode: "naive_single_revoke",
-    });
-  };
-
-  const handleCopyCli = async () => {
-    try {
-      await navigator.clipboard.writeText("node packages/engine/cli.ts . --json");
-      setCopiedCli(true);
-      setTimeout(() => setCopiedCli(false), 1600);
-    } catch {
-      // Clipboard optional in headless/restricted environments
-    }
-  };
-
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const paramUrl = params.get("oauth_url");
-    if (paramUrl && paramUrl.trim()) {
-      setExternalOAuthUrl(paramUrl);
-      setInterceptedBanner(true);
-      const result = tryRunScopeBombAudit({
-        mode: "oauth_url",
-        raw_payload: paramUrl,
-        preset_id: null,
-        simulation_mode: "naive_single_revoke",
-      });
-      if (result.ok) {
-        setInputError(null);
-        setReport(result.report);
-        setActiveOAuthUrl(paramUrl);
-      } else {
-        setInputError(result.error);
+    const address = new URL(window.location.href);
+    const suppliedUrl = address.searchParams.get("oauth_url");
+    if (suppliedUrl) {
+      setInitialUrl(suppliedUrl);
+      setEntry("input");
+      try {
+        const result = analyzeInput(
+          {
+            mode: "oauth_url",
+            raw_payload: suppliedUrl,
+            simulation_mode: "naive_single_revoke",
+          },
+          "Supplied permission link",
+        );
+        setAnalysis(result);
+        setUrl(suppliedUrl);
+      } catch {
+        setNotice(
+          "The supplied permission link could not be analyzed. Check it below and try again.",
+        );
       }
+      address.searchParams.delete("oauth_url");
     }
+    address.searchParams.set("step", "1");
+    window.history.replaceState(null, "", address);
+    const back = () => {
+      const requested = Number(
+        new URLSearchParams(window.location.search).get("step"),
+      );
+      navigating.current = true;
+      const next =
+        analysisRef.current && (requested === 2 || requested === 3)
+          ? requested
+          : 1;
+      setStep(next);
+      if (requested !== next) {
+        const address = new URL(window.location.href);
+        address.searchParams.set("step", String(next));
+        window.history.replaceState(null, "", address);
+      }
+    };
+    window.addEventListener("popstate", back);
+    return () => window.removeEventListener("popstate", back);
   }, []);
-
-  const activePreset = presets.find((p) => p.preset_id === report.preset_id);
-  const scenarioBreadcrumb = activePreset
-    ? `${PRESET_SHORT_NAMES[activePreset.preset_id] ?? activePreset.title} (${activePreset.year})`
-    : report.input_mode === "oauth_url"
-      ? "Custom OAuth URL scan"
-      : report.input_mode === "mcp_config"
-        ? "Local config scan"
-        : "Google Takeout audit";
-
-  return (
-    <div className="min-h-screen bg-[#f9fbfc] text-[#131416] antialiased">
-      <div className="mx-auto max-w-[1440px] p-3 sm:p-5 lg:p-7">
-        <div className="rounded-[16px] border border-[#e8eaec] bg-[#ffffff] shadow-sm">
-          {/* Header Bar */}
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eaec] px-5 py-3.5">
-            <div className="flex flex-wrap items-center gap-2 text-[14px]">
-              <span className="font-semibold tracking-tight text-[#131416]">
-                ScopeBomb
-              </span>
-              <span className="text-[#cdced1]">/</span>
-              <span className="text-[13px] text-[#5d5f60]">
-                {scenarioBreadcrumb}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setHowItWorksOpen(true)}
-                className="text-[13px] font-medium text-[#1b6c80] hover:underline"
-              >
-                How 3 Tools Connect →
-              </button>
-              <button
-                type="button"
-                onClick={handleCopyCli}
-                className="inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-[#e8eaec] bg-[#ffffff] px-2.5 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
-              >
-                <TerminalWindow size={14} className="text-[#5d5f60]" />
-                <span className="hidden sm:inline">CLI Command</span>
-                {copiedCli ? (
-                  <Check size={14} className="text-[#1e7b4f]" />
-                ) : (
-                  <Copy size={14} className="text-[#5d5f60]" />
-                )}
-              </button>
-            </div>
-          </header>
-
-          {/* 3-Step Stepper Navigation */}
-          <StepStepper
-            activeStep={activeStep}
-            onChangeStep={(step) => setActiveStep(step)}
-          />
-
-          {/* Active Step Content */}
-          <main>
-            {activeStep === 1 && (
-              <Step1ScanVerdict
-                report={report}
-                simulationMode={simulationMode}
-                presets={presets}
-                inputError={inputError}
-                externalOAuthUrl={externalOAuthUrl}
-                interceptedBanner={interceptedBanner}
-                onRunAudit={handleRunAudit}
-                onClearError={() => setInputError(null)}
-                onSelectPreset={handleSelectPreset}
-                onContinue={() => setActiveStep(2)}
-              />
-            )}
-
-            {activeStep === 2 && (
-              <Step2AttackPath
-                report={report}
-                simulationMode={simulationMode}
-                onChangeSimulationMode={setSimulationMode}
-                onBack={() => setActiveStep(1)}
-                onContinue={() => setActiveStep(3)}
-              />
-            )}
-
-            {activeStep === 3 && (
-              <Step3FixBlocker
-                report={report}
-                simulationMode={simulationMode}
-                activeOAuthUrl={activeOAuthUrl}
-                onChangeSimulationMode={setSimulationMode}
-                onInspectUrl={handleInspectUrl}
-                onBack={() => setActiveStep(2)}
-              />
-            )}
-          </main>
-
-          {/* Minimal Workbench Footer */}
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e8eaec] px-5 py-4 text-[13px] leading-[1.45] text-[#5d5f60]">
-            <span>
-              ScopeBomb · INNOVEX 2026 (PS 05) · Deterministic local-first simulation
-              (zero live account changes)
-            </span>
-            <div className="flex flex-wrap items-center gap-4">
-              <span>
-                CLI: <code>node packages/engine/cli.ts . --json</code>
-              </span>
-              <a
-                href="https://github.com/Xombi17/INNOVEX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-medium text-[#1b6c80] hover:underline"
-              >
-                GitHub &amp; Extension Source
-                <ArrowSquareOut size={13} />
-              </a>
-            </div>
-          </footer>
-        </div>
-      </div>
-
-      {/* How it Works Modal */}
-      <HowItWorksModal
-        open={howItWorksOpen}
-        onClose={() => setHowItWorksOpen(false)}
-        onOpenSimulator={() => {
-          setActiveStep(2);
-        }}
-        onOpenPkceGuard={() => {
-          handleInspectUrl(DEMO_PKCE_TRAP_URL);
-          setActiveStep(3);
-        }}
-        onLoadMcpSample={() => {
-          const mcp = presets[0]?.sample_mcp_config;
-          if (mcp) {
-            handleRunAudit({
-              mode: "mcp_config",
-              raw_payload: mcp,
-              preset_id: null,
-              simulation_mode: "naive_single_revoke",
-            });
+  useEffect(() => {
+    document.title = `ScopeBomb — ${entry === "welcome" ? "Check app access" : STEP_LABELS[step - 1]}`;
+    if (navigating.current) {
+      navigating.current = false;
+      (entry === "welcome"
+        ? main.current?.querySelector<HTMLElement>("h1")
+        : main.current?.querySelector<HTMLElement>(`[data-step="${step}"] h1`)
+      )?.focus();
+      window.scrollTo({ top: 0 });
+    }
+  }, [step, entry]);
+  const receive = (result: Analysis, oauthUrl?: string) => {
+    setAnalysis(result);
+    setUrl(oauthUrl ?? null);
+    setSimulation("naive_single_revoke");
+    setNotice("");
+    setSession((previous) => previous + 1);
+    go(1);
+  };
+  const sample = (preset: IncidentPresetSummary = presets[0]) => {
+    if (!preset) return;
+    setEntry("sample");
+    setBusy(false);
+    const result =
+      preset.preset_id === initialReport.preset_id
+        ? {
+            report: initialReport,
+            context: analyzeInput(
+              {
+                mode: "incident_preset",
+                raw_payload: preset.sample_oauth_url,
+                preset_id: preset.preset_id,
+                simulation_mode: "naive_single_revoke",
+              },
+              preset.title,
+              "sample",
+            ).context,
           }
-          setActiveStep(1);
+        : analyzeInput(
+            {
+              mode: "incident_preset",
+              raw_payload: preset.sample_oauth_url,
+              preset_id: preset.preset_id,
+              simulation_mode: "naive_single_revoke",
+            },
+            preset.title,
+            "sample",
+          );
+    receive(result, preset.sample_oauth_url);
+    navigating.current = true;
+  };
+  const startInput = () => {
+    setEntry("input");
+    setAnalysis(null);
+    setUrl(null);
+    setInitialUrl(null);
+    setNotice("");
+    go(1);
+    navigating.current = true;
+  };
+  const invalidate = () => {
+    setAnalysis(null);
+    setUrl(null);
+    setNotice("");
+  };
+  return (
+    <div className="min-h-screen bg-[#f9fbfc] p-3 text-[#131416] sm:p-6">
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
+      <div className="mx-auto max-w-[1180px] overflow-hidden rounded-2xl border border-[#e8eaec] bg-white">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eaec] px-5 py-4 sm:px-7">
+          <a href="/" className="text-lg font-semibold tracking-tight">
+            ScopeBomb
+          </a>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="control"
+              onClick={() => setHelpOpen(true)}
+            >
+              About this tool
+            </button>
+            {entry !== "welcome" && (
+              <button
+                type="button"
+                className="control"
+                onClick={() => {
+                  setEntry("welcome");
+                  invalidate();
+                  setBusy(false);
+                  go(1);
+                  navigating.current = true;
+                }}
+              >
+                Start over
+              </button>
+            )}
+          </div>
+        </header>
+        {entry !== "welcome" && (
+          <StepStepper
+            activeStep={step}
+            hasAnalysis={!!analysis && !busy}
+            onChangeStep={go}
+          />
+        )}
+        <main id="main-content" ref={main} tabIndex={-1}>
+          {entry === "welcome" ? (
+            <div className="px-5 py-10 sm:px-10 sm:py-16">
+              <div className="max-w-[740px]">
+                <p className="mb-4 text-sm font-medium text-[#1b6c80]">
+                  App permissions and credential review
+                </p>
+                <h1
+                  tabIndex={-1}
+                  className="text-[32px] font-semibold leading-tight tracking-tight sm:text-[42px]"
+                >
+                  Understand what access you’re giving away.
+                </h1>
+                <p className="muted mt-5 max-w-[65ch] text-lg">
+                  Check what access an app or exposed credential could provide,
+                  and learn what to review. Start with an example or check your
+                  own project configuration.
+                </p>
+              </div>
+              <div className="mt-9 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-[#a2cfd8] bg-[#f0f8fa] p-6">
+                  <h2 className="text-lg font-semibold">See how it works</h2>
+                  <p className="muted mb-5 mt-2">
+                    Follow a sample app’s permissions through possible exposure
+                    and a cleanup plan. No setup needed.
+                  </p>
+                  <button
+                    className="control control-primary"
+                    type="button"
+                    onClick={() => sample()}
+                  >
+                    Try an example
+                  </button>
+                </div>
+                <div className="rounded-xl border border-[#e8eaec] p-6">
+                  <h2 className="text-lg font-semibold">Review your input</h2>
+                  <p className="muted mb-5 mt-2">
+                    Paste a configuration, inspect an app permission link, or
+                    check selected files in a public repository.
+                  </p>
+                  <button
+                    className="control"
+                    type="button"
+                    onClick={startInput}
+                  >
+                    Check my configuration
+                  </button>
+                </div>
+              </div>
+              <p className="muted mt-7 max-w-[78ch] text-[13px]">
+                No sign-in required. ScopeBomb models possible exposure; it does
+                not scan your accounts, prove compromise, or revoke access.
+                Local configuration parsing stays in your browser.
+              </p>
+            </div>
+          ) : (
+            <>
+              {analysis && (
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e8eaec] bg-[#f4f6f8] px-5 py-3 text-[13px] sm:px-7">
+                  <span className="break-all">
+                    <strong>
+                      {analysis.context.kind === "sample"
+                        ? "Sample simulation"
+                        : "Your supplied input"}
+                    </strong>{" "}
+                    · {analysis.context.label}
+                  </span>
+                  <span>
+                    {analysis.context.kind === "sample"
+                      ? "Illustrative data; not your accounts"
+                      : "Remediation not verified"}
+                  </span>
+                </div>
+              )}
+              <div
+                role="status"
+                className={notice ? "px-5 py-3 text-[#855306]" : "sr-only"}
+              >
+                {notice}
+              </div>
+              <section
+                data-step="1"
+                hidden={step !== 1}
+                className="space-y-6 p-5 sm:p-7"
+              >
+                <div>
+                  <h1 tabIndex={-1} className="text-2xl font-semibold">
+                    {entry === "sample"
+                      ? "Explore the sample input"
+                      : "Check your input"}
+                  </h1>
+                  <p className="muted mt-2">
+                    {entry === "sample"
+                      ? "These scenarios illustrate possible exposure. They are not forensic reconstructions or findings about your accounts."
+                      : "Choose one input. We’ll separate evidence in it from possible consequences."}
+                  </p>
+                </div>
+                {entry === "input" ? (
+                  <ScanInput
+                    initialUrl={initialUrl}
+                    onAnalyze={receive}
+                    onInvalidate={invalidate}
+                    onBusy={setBusy}
+                  />
+                ) : (
+                  <>
+                    <PresetStrip
+                      presets={presets}
+                      activePresetId={analysis?.report.preset_id ?? null}
+                      onSelectPreset={sample}
+                    />
+                    <button
+                      className="control"
+                      type="button"
+                      onClick={startInput}
+                    >
+                      Check my configuration instead
+                    </button>
+                  </>
+                )}
+                {analysis && (
+                  <Step1ScanVerdict
+                    key={session}
+                    analysis={analysis}
+                    onContinue={() => go(2)}
+                  />
+                )}
+              </section>
+              {analysis && (
+                <>
+                  <section
+                    hidden={step !== 2}
+                    data-step="2"
+                    className="p-5 sm:p-7"
+                  >
+                    <Step2AttackPath
+                      key={session}
+                      report={analysis.report}
+                      simulationMode={simulation}
+                      onChangeSimulationMode={setSimulation}
+                      onBack={() => go(1)}
+                      onContinue={() => go(3)}
+                    />
+                  </section>
+                  <section
+                    hidden={step !== 3}
+                    data-step="3"
+                    className="p-5 sm:p-7"
+                  >
+                    <Step3FixBlocker
+                      key={session}
+                      report={analysis.report}
+                      simulationMode={simulation}
+                      activeOAuthUrl={url}
+                      onChangeSimulationMode={setSimulation}
+                      onInspectUrl={(next) => {
+                        receive(
+                          analyzeInput(
+                            {
+                              mode: "oauth_url",
+                              raw_payload: next,
+                              simulation_mode: "naive_single_revoke",
+                            },
+                            "Scope recommendation preview",
+                            analysis.context.kind === "sample"
+                              ? "sample"
+                              : "custom",
+                          ),
+                          next,
+                        );
+                      }}
+                      onBack={() => go(2)}
+                    />
+                  </section>
+                </>
+              )}
+            </>
+          )}
+        </main>
+        <footer className="flex flex-wrap justify-between gap-3 border-t border-[#e8eaec] px-5 py-4 text-[13px] text-[#5d5f60] sm:px-7">
+          <span>
+            Local parsing · Rule-based analysis · No live account changes
+          </span>
+          <a
+            href="https://github.com/Xombi17/INNOVEX"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#1b6c80] underline"
+          >
+            Source and setup instructions
+          </a>
+        </footer>
+      </div>
+      <HowItWorksModal
+        open={helpOpen}
+        onClose={() => setHelpOpen(false)}
+        onOpenSimulator={() => sample()}
+        onOpenPkceGuard={() => {
+          sample();
+          go(3);
         }}
+        onLoadMcpSample={() => sample()}
       />
     </div>
   );

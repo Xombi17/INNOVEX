@@ -79,16 +79,16 @@ async function init() {
   actionPill.textContent = meta.label;
 
   pkcePill.textContent = decision.pkce_protected
-    ? `PKCE ${parsed.code_challenge_method ?? "S256"} PROTECTED`
+    ? `PKCE ${parsed.code_challenge_method ?? "S256"} DETECTED`
     : "NO PKCE CHALLENGE";
   pkcePill.className = `pill ${decision.pkce_protected ? "badge-sky" : "badge-warn"} mono`;
 
   headlineEl.textContent =
     decision.action === "BLOCK_PRE_CONSENT"
-      ? `Blocked High-Risk ${PROVIDER_LABELS[decision.provider]} Consent Before Handshake`
+      ? `High-Risk ${PROVIDER_LABELS[decision.provider]} Request Paused for Review`
       : decision.action === "WARN"
         ? `Sensitive ${PROVIDER_LABELS[decision.provider]} Scopes Flagged Pre-Consent`
-        : `${PROVIDER_LABELS[decision.provider]} Request Matches Least-Privilege Baseline`;
+        : `${PROVIDER_LABELS[decision.provider]} Request Has No Catalog Scope Warning`;
 
   scoreEl.textContent = `${decision.risk_score} / 100`;
   scoreEl.style.color =
