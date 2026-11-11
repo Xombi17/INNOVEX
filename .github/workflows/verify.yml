@@ -1,0 +1,100 @@
+name: Verify
+
+on:
+  push:
+    branches: [main, 'feat/**', 'fix/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OPENAI_API_KEY: ''
+      GEMINI_API_KEY: ''
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # Native TS stripping affects the committed extension modules.
+          node-version: '24.21.0'
+          package-manager-cache: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14'
+      - name: Check approved frozen baseline
+        run: git diff 1ce7fb1 --exit-code -- packages/engine tests/engine contracts data/scope_catalog.json SPEC.md
+      - run: npm ci --prefix apps/web
+      - name: Contracts and unit tests
+        run: |
+          python3 contracts/verify_contracts.py
+          node --test tests/engine/*.test.ts
+          npm test --prefix apps/web
+          python3 apps/web/scripts/verify-extension.py --self-test
+          python3 apps/web/scripts/verify-extension.py
+          npm test --prefix apps/extension
+          npm run typecheck --prefix apps/web
+      - run: npm run build --prefix apps/web
+      - name: Production browser checks
+        shell: bash
+        env:
+          BASE_URL: http://127.0.0.1:3107
+          BROWSER_ARTIFACTS: ${{ runner.temp }}/scopebomb-browser
+        run: |
+          set -euo pipefail
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null; then
+              export CHROME_BIN="$(command -v "$candidate")"
+              break
+            fi
+          done
+          test -n "${CHROME_BIN:-}" || { echo 'No Chrome found on runner'; exit 1; }
+          mkdir -p "$BROWSER_ARTIFACTS"
+          server_log="$RUNNER_TEMP/scopebomb-next.log"
+          node apps/web/node_modules/next/dist/bin/next start apps/web --hostname 127.0.0.1 --port 3107 >"$server_log" 2>&1 &
+          server_pid=$!
+          cleanup() {
+            kill "$server_pid" 2>/dev/null || true
+            wait "$server_pid" 2>/dev/null || true
+            tail -c 65536 "$server_log" >"$BROWSER_ARTIFACTS/server.log"
+          }
+          trap cleanup EXIT
+          ready=false
+          for attempt in {1..60}; do
+            kill -0 "$server_pid" || exit 1
+            if curl --fail --silent --max-time 2 "$BASE_URL" >/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+          "$ready" || { echo 'Production server did not become ready'; exit 1; }
+          node apps/web/scripts/verify-browser.mjs
+      - name: Reject generated drift
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Upload bounded browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-diagnostics
+          path: |
+            ${{ runner.temp }}/scopebomb-browser/*.png
+            ${{ runner.temp }}/scopebomb-browser/results.json
+            ${{ runner.temp }}/scopebomb-browser/server.log
+          if-no-files-found: ignore
+          retention-days: 7

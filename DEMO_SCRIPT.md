@@ -1,21 +1,18 @@
-# ScopeBomb — <90s Live Demo Script
+# ScopeBomb — presenter walkthrough
 
-**Goal:** Judge understands and tests ScopeBomb end-to-end in under 90 seconds with zero setup or sign-in.
+Target: under 90 seconds, using a production build and the built-in example. Timing is a rehearsal target, not a product guarantee. Start on the welcome page with no prior analysis. Rehearsal evidence: [v1.1.1 validation](docs/validation/v1.1.1-checks.md).
 
-## Step 1 — Instant Trigger (`0:00 – 0:25`)
-- **Action:** Load ScopeBomb Web Arena (`rohan_mcp_oauth_trap` pre-loaded, or paste any live Google/GitHub OAuth consent URL + drop `.mcp.json`/`.env`).
-- **What Happens:** Deterministic engine parses `gmail.modify`, `drive`, GitHub `repo` + `workflow`, and an unrevoked `VERCEL_TOKEN` in `<50ms`.
-- **Visual:** 4-hop **Blast-Radius Domino Graph** lights up across 4 trust boundaries (`personal` -> `developer_local` -> `ci_cd` -> `vendor`), showing exact exposed assets (Gmail OTP resets, `.github/workflows` RCE, production env vars).
+| Time budget | Visible action | Presenter narration |
+| --- | --- | --- |
+| 0–15s | Choose **Try an example**. Point to **Sample simulation** and the source beside a finding. | “ScopeBomb reviews supplied permissions and configuration. This is an illustrative example, not an assessment of your accounts. Found in input, possible exposure and still unknown are separate.” |
+| 15–40s | Choose **Understand possible exposure**, then **Explore the full model and technical assumptions**. | “This is a conditional chain, not an observed attack. A copied key issued by another service needs separate review. HTTP 200 from revocation is not proof of containment: RFC 7009 also permits it for invalid tokens. Actual behavior depends on provider policy.” |
+| 40–65s | Choose **Review recommended actions**. Open the **GitHub** review group and **Technical instructions and verification** for its independent credential action. | “This sample identifies a GitHub token: its owner must handle that PAT separately. OAuth grant deletion instead requires the app owner. These are instructions, not executed actions. Marking a review action done records progress only; remediation remains unverified.” |
+| 65–85s | Open **Prevent future overbroad app access**, choose **Try consent demonstration**, then **Review the example permissions**. | “This demonstration does not install browser protection. Review scopes, then restart authorization in the initiating client. ScopeBomb does not rewrite a pending login or supply a replacement login URL.” |
 
-## Step 2 — The RFC 7009 "HTTP 200 Trap" (`0:25 – 0:55`)
-- **Action:** Click **"Simulate Naive Containment (Single RFC 7009 Revoke)"**.
-- **What Happens:** Graph highlights `POST https://oauth2.googleapis.com/revoke` returning **`HTTP 200 OK`**, yet **65% of the blast graph pulses RED**:
-  1. Access-token cascading is only RFC 7009 `SHOULD`; residual JWT TTL stays live.
-  2. GitHub `workflow` backdoor (`repo` + `workflow`) & exfiltrated `VERCEL_TOKEN` live at **different issuers** — Google's `200 OK` didn't touch them.
-  3. Attacker-minted persistence survives password reset.
+Presenter notes: GitHub grant deletion is `DELETE /applications/{client_id}/grant`, using application-owner credentials, with expected status 204. Account holders can use provider app settings. RFC 7009 access-token cascading after refresh-token revocation is SHOULD, not a guarantee; Google documents its own project-token policy and possible propagation delay. PKCE S256 hashes the verifier, not scopes. Fresh authorization belongs to the initiating client, with fresh state and appropriate verifier/challenge values. Read-only email still exposes message contents.
 
-## Step 3 — Ordered Multi-Issuer Containment + MV3 Guard (`0:55 – 1:25`)
-- **Action 1:** Switch to **"Full Multi-Issuer Containment Plan"**.
-- **What Happens:** All persisting paths turn **GREEN** via priority-ordered actions (GitHub `DELETE /applications/{client_id}/grant`, workflow audit, downstream Vercel/OpenAI key rotation at each issuer, API probe verifying `401 Unauthorized` beyond HTTP `200`).
-- **Action 2:** Trigger Chrome MV3 Pre-Consent Guard preview against an over-scoped OAuth consent URL (`drive` + `mail.google.com` + `code_challenge`).
-- **What Happens:** Extension intercepts **before** user clicks Allow (explaining why naive in-flight URL rewriting would break PKCE `code_challenge`), flags least-privilege downgrades (`drive.file`, `gmail.readonly`), and generates a clean replacement initiation URL.
+Optional extra after the timed path: open **Preview the modeled outcome** → **Preview expected outcome** and read its conditional/unverified wording. Nothing changes in an account, and no green projection establishes containment.
+
+Optional installed-extension flow (outside the 90-second target): install the unpacked bundle in desktop Chrome beforehand, confirm it is enabled, then inspect an inert supported authorization URL in the popup or navigate to it to show the guard. Never approve a live grant. The website cannot establish installation. Opening the web handoff initially shares the authorization URL with the host; removing it from the address later cannot erase that request or its logs.
+
+Offline fallback: build/start locally in advance and use **Try an example** with networking disabled. Local analysis and consent demonstration need no inference key or provider account. Do not include the public repository request in the timed or offline path. If showing `octocat/Hello-World` online, explain that zero selected configuration files means no matching files inspected at that pinned revision, not a clean repository or secure accounts. `Xombi17/INNOVEX` is not a confirmed public demo repository.

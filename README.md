@@ -42,7 +42,7 @@ Requires Node 24 and Python 3 for contract verification and extension packaging.
 
 ```sh
 cd apps/web
-npm install
+npm ci
 npm run dev
 ```
 
@@ -82,3 +82,5 @@ npm run build --prefix apps/web
 ```
 
 For reproducible browser checks and the five-participant human-study protocol, see [UX validation](docs/UX-VALIDATION.md). Automated checks do not establish user demand or replace testing with unfamiliar developers.
+
+Pull requests and main/feature/fix pushes run [.github/workflows/verify.yml](.github/workflows/verify.yml): frozen-baseline comparison, tests, reproducible extension packaging, TypeScript, production build and Chrome browser checks with inference disabled. No deployment or production secrets are used. See the [v1.1.1 check record](docs/validation/v1.1.1-checks.md), [presenter walkthrough](DEMO_SCRIPT.md) and [ready-to-run session kit](docs/validation/v1.1.1-usability.md).

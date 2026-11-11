@@ -55,6 +55,8 @@ These checks do not substitute for a screen-reader evaluation, live provider rev
 
 ## Human study: pending
 
+The [v1.1.1 facilitator script and blank results sheets](validation/v1.1.1-usability.md) are ready. Updated engineering and accessibility evidence is recorded separately in [v1.1.1 checks](validation/v1.1.1-checks.md); the results below remain the historical shipped v1.1 baseline.
+
 Recruit five developers unfamiliar with ScopeBomb. Do not explain the product or controls before the tasks. Use fixture credentials, never live secrets.
 
 1. Open the landing page. After ten seconds ask: “What does this tool do, and what would you choose first?”
