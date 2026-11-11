@@ -10,6 +10,7 @@ next_milestone_status: hosted_ci_passed_human_validation_pending
 next_milestone_branch: feat/v1.1.1-validation
 active_development: guided_walkthrough_ui
 active_development_branch: feat/guided-walkthrough
+active_development_review: https://github.com/Xombi17/INNOVEX/pull/2
 last_activity: 2026-11-11
 release_code_commit: 1893afb
 production_url: https://scopebomb.vercel.app

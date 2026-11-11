@@ -39,3 +39,7 @@ Shared shell/control styling already being edited concurrently was preserved and
 Local review: production build served from `/tmp/scopebomb-guided-check` at `http://127.0.0.1:3115`. Choose **Try an example**. The existing root dev server is separate and was not stopped.
 
 Human comprehension, real screen-reader validation and live inference remain separate pending checks. These automated results do not establish account containment or full accessibility conformance. Professional video production is deferred; no Remotion/video dependencies were added.
+
+## Hosted-run follow-up
+
+The first hosted push/PR runs at `a9be4b4` failed at the guided Next assertion after revealing evidence; the local run had passed. The CDP click helper now waits for a control center to be visible and stable across consecutive geometry measurements before dispatching pointer input, with a bounded 30-sample timeout. This handles native scrolling and entry motion without removing motion from the app or weakening assertions. All 57 checks passed locally after the correction. Latest hosted status is available on [PR #2](https://github.com/Xombi17/INNOVEX/pull/2); the original failed runs remain visible there.

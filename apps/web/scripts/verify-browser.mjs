@@ -132,14 +132,21 @@ try {
         ),
     );
     if (!node) throw new Error("Control not found: " + name);
-    await cdp("DOM.scrollIntoViewIfNeeded", {
-      backendNodeId: node.backendDOMNodeId,
-    });
-    const points = (
-      await cdp("DOM.getBoxModel", { backendNodeId: node.backendDOMNodeId })
-    ).model.content;
-    const x = (points[0] + points[2] + points[4] + points[6]) / 4,
+    const viewport = await js("({ width: innerWidth, height: innerHeight })");
+    let x, y, previous, stable = 0;
+    // Native smooth scrolling and entry motion can outlive a protocol command.
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await cdp("DOM.scrollIntoViewIfNeeded", { backendNodeId: node.backendDOMNodeId });
+      const points = (await cdp("DOM.getBoxModel", { backendNodeId: node.backendDOMNodeId })).model.content;
+      x = (points[0] + points[2] + points[4] + points[6]) / 4;
       y = (points[1] + points[3] + points[5] + points[7]) / 4;
+      const visible = x >= 0 && y >= 0 && x < viewport.width && y < viewport.height;
+      stable = visible && previous && Math.abs(x - previous.x) < 0.25 && Math.abs(y - previous.y) < 0.25 ? stable + 1 : 0;
+      if (stable >= 2) break;
+      previous = { x, y };
+      await pause(50);
+    }
+    assert.ok(stable >= 2, "Control did not settle before clicking: " + name);
     await cdp("Input.dispatchMouseEvent", {
       type: "mousePressed",
       x,
