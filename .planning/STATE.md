@@ -6,7 +6,7 @@ current_phase: '7'
 current_phase_name: Cross-Branch Comparison, Consolidation & Live Production Ship
 status: shipped_v1.1
 next_milestone: v1.1.1
-next_milestone_status: implementation_complete_validation_pending
+next_milestone_status: hosted_ci_passed_human_validation_pending
 next_milestone_branch: feat/v1.1.1-validation
 last_activity: 2026-11-11
 release_code_commit: 1893afb
@@ -50,9 +50,11 @@ At the v1.1 release, unauthenticated GitHub returned 404 for `Xombi17/INNOVEX` (
 
 ## v1.1.1 — implementation complete, external validation pending
 
-- Code commits `e8af6d6`, `2d4590d` on `feat/v1.1.1-validation`; no merge, push or deployment. The shipped v1.1 deployment record above is unchanged.
+- Code commits `e8af6d6`, `2d4590d` and implementation evidence commit `c53c5f2` on pushed `feat/v1.1.1-validation`; no main merge or deployment. The shipped v1.1 deployment record above is unchanged.
 - Added portable read-only GitHub Actions verification, deterministic archive/source checks, truthful timed-demo instructions and a ready-to-run five-person session kit. Extended mocked OpenAI/failover coverage. Fixed confirmed clipping of long evidence/coverage paths; no engine or contract changes.
 - Final clean local clone: all six workflow shell steps passed; contracts valid, engine 30/30, web 36/36, extension 2/2, browser 40/40; TypeScript/build and generated drift checks passed. Two packs match the committed 19-entry ZIP. Production server cleanup confirmed.
 - Keyboard and 390/320px inspection completed; actual Chrome 200% zoom checked. Local source/render checks: 0 FAIL / 0 WARN; desktop/mobile Impeccable empty. Initial clean Chrome startup timed out once; explicit retry and final full clean run passed. Startup diagnostics now retain bounded stderr.
-- Agent-operated walkthrough: 15.292 seconds without spoken narration; no human timing or comprehension success inferred. Human spoken rehearsal, five participants, real screen reader, live inference and hosted CI remain pending with exact next actions in `docs/validation/v1.1.1-checks.md`.
+- Agent-operated walkthrough: 15.292 seconds without spoken narration; no human timing or comprehension success inferred. Hosted CI passed at `c53c5f2`; human spoken rehearsal, five participants, real screen reader and live inference remain pending with exact next actions in `docs/validation/v1.1.1-checks.md`.
 - Full changed-file/check/risk handoff: `.planning/V1.1.1-IMPLEMENTATION-SUMMARY.md`. AST Graphify outputs refreshed and mirrored locally; document semantic extraction not rerun.
+
+- Hosted Verify run [42976589175](https://github.com/Xombi17/INNOVEX/actions/runs/42976589175) passed all steps. Downloaded artifact confirms 40 browser checks and zero errors; run metadata and results are archived under `.planning/evidence/v1.1.1/`. Repository privacy confirmed through authenticated GitHub API.
