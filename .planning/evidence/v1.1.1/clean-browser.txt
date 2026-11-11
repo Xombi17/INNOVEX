@@ -1,0 +1,45 @@
+(node:789129) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/src/lib/analysis.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/scopebomb-v111-final-clean-_0c_cn0f/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS Welcome has two clear starting actions and no account-risk metrics
+PASS Keyboard skip link is visible when focused
+PASS Dialog receives focus and makes background modal
+PASS Dialog is centered within the viewport
+PASS Keyboard focus stays in dialog
+PASS Escape closes dialog and restores its trigger
+PASS Example results are labeled as a sample
+PASS Step navigation focuses the new heading and changes history
+PASS Browser Back returns to the same analysis
+PASS Remediation is explicitly unverified
+PASS Checklist records self-reported progress without claiming containment
+PASS Verification cannot be recorded without evidence
+PASS Recorded evidence is explicitly self-reported
+PASS Full-plan preview is conditional and does not verify remediation
+PASS Sandbox explains protection is not enabled
+PASS Sandbox explains read-only mail remains sensitive
+PASS Sandbox preserves the active analysis
+PASS Custom results distinguish a real candidate from a placeholder
+PASS Credential values do not appear in results or network requests
+PASS Local analysis makes no automatic AI request
+PASS Input draft survives step navigation
+PASS Editing input clears prior findings and disables later steps
+PASS Invalid input announces an error and keeps results cleared
+PASS File selection works and placeholders do not invent credentials
+PASS Optional AI request contains only provider names and counts
+PASS Unknown permissions remain reviewable rather than declared safe
+PASS Repository check announces progress and offers cancellation
+PASS Canceled repository responses do not overwrite the selected input
+PASS Repository results display partial coverage and preserve repository provenance
+PASS Long source and coverage paths wrap without clipping at 320px
+PASS Welcome reflows at 390px
+PASS Analysis reflows at 390px
+PASS Exposure reflows at 390px
+PASS Actions reflow at 390px
+PASS Welcome reflows at 320px
+PASS Analysis reflows at 320px
+PASS Exposure reflows at 320px
+PASS Actions reflow at 320px
+PASS Deep-link intake analyzes input and removes OAuth parameters from current URL
+PASS No runtime or console errors
+Verified 40 browser checks. Screenshots: /tmp/scopebomb-v111-final-clean-results/scopebomb-browser
