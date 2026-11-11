@@ -8,13 +8,13 @@ status: shipped_v1.1
 next_milestone: v1.1.1
 next_milestone_status: hosted_ci_passed_human_validation_pending
 next_milestone_branch: feat/v1.1.1-validation
-active_development: guided_walkthrough_ui
-active_development_branch: feat/guided-walkthrough
+active_development: null
+active_development_branch: null
 active_development_review: https://github.com/Xombi17/INNOVEX/pull/2
-last_activity: 2026-11-11
-release_code_commit: 1893afb
+last_activity: 2026-11-12
+release_code_commit: d254e71
 production_url: https://scopebomb.vercel.app
-production_deployment: dpl_FZPypEKaBAqYr7akMEghzTZkTTWQ
+production_deployment: dpl_HaZqsXCaGtR1iXYF4dyvxz8CtMD8
 progress:
   total_phases: 4
   completed_phases: 4
@@ -30,7 +30,7 @@ ScopeBomb v1.1 is shipped and production-smoke verified. Candidate B (`641b8ad`,
 ## Release and branch state
 
 - Release code `1893afb` fast-forwarded into `main`; `feat/ui-extension` synced; both pushed to origin. This state/evidence update follows the code deployment and changes no runtime files.
-- `/home/varad/Documents/hackathons/INNOVEX` is the linked deployment root. Vercel deployment `dpl_FZPypEKaBAqYr7akMEghzTZkTTWQ` is Ready and aliases `https://scopebomb.vercel.app`.
+- `/home/varad/Documents/hackathons/INNOVEX` is the linked deployment root. The v1.1 deployment `dpl_FZPypEKaBAqYr7akMEghzTZkTTWQ` was superseded on 2026-11-12 by production deployment `dpl_HaZqsXCaGtR1iXYF4dyvxz8CtMD8`, which is Ready and aliases `https://scopebomb.vercel.app`.
 - Candidate A remains available at `/tmp/scopebomb-v11-release`, branch `fix/v11-release`, commit `5f6a576`, for comparison. Both candidates passed standard builds; A required discarding its stale generated build cache, without a webpack fallback.
 - Core worktree `feat/core-engine` remains at `4a92051`. `packages/engine/**`, `tests/engine/**`, `contracts/**` and `data/scope_catalog.json` have zero diff from frozen baseline `1ce7fb1`.
 
@@ -45,6 +45,13 @@ ScopeBomb v1.1 is shipped and production-smoke verified. Candidate B (`641b8ad`,
 - `vercel env ls`: no optional LLM environment variables. No live inference is claimed; local summaries remain functional.
 - `graphify update .`: AST-only, 836 nodes / 1320 edges / 52 communities, generated graph mirrored into ignored `.planning/graphs/` artifacts.
 
+## Latest production deployment — 2026-11-12
+
+- PR #2 merged to `main`; production code commit `d254e71`. Deployment `dpl_HaZqsXCaGtR1iXYF4dyvxz8CtMD8` reached READY and aliases `https://scopebomb.vercel.app`. An unauthenticated HEAD request to the public alias returned HTTP 200.
+- Merged-commit gates: contracts valid; engine 30/30, web 36/36, extension 2/2; TypeScript and production build passed; browser workflow 57/57 passed against the production build; frozen engine/contracts/catalog diff is empty.
+- Design lint and rendered inspection: 0 FAIL / 0 WARN at 1440/768/390px; desktop and mobile Impeccable reports are empty. Extension archive is valid with 19 entries and matches the production download byte-for-byte (SHA-256 `15e3d93c83a99d81b9451f9cb64703e7ee7b18a05f9527a8220acdcda1e9f7fe`).
+- Live production smoke: home HTTP 200; extension download HTTP 200; AI triage HTTP 200 with the supported local fallback; `octocat/Hello-World` repository scan HTTP 200 with honest zero selected files; invalid loopback repository URL HTTP 400. No optional LLM environment variables are configured.
+
 ## Product guardrails and remaining limits
 
 Preserve RFC 7009 HTTP 200 caveats, SHOULD access-token cascading, GitHub grant deletion versus independent PAT revocation, and fresh client-managed PKCE authorization. No account actions or probes are executed by ScopeBomb. Public repository checks inspect bounded selected files, not account security or full history. Example findings, conditional exposure and self-reported remediation remain distinct.
@@ -53,7 +60,7 @@ At the v1.1 release, unauthenticated GitHub returned 404 for `Xombi17/INNOVEX` (
 
 ## v1.1.1 — implementation complete, external validation pending
 
-- Code commits `e8af6d6`, `2d4590d` and implementation evidence commit `c53c5f2` on pushed `feat/v1.1.1-validation`; no main merge or deployment. The shipped v1.1 deployment record above is unchanged.
+- Code commits `e8af6d6`, `2d4590d`, `c53c5f2` and guided-walkthrough commit `a9be4b4` were merged to `main` through PRs #1 and #2. The resulting production deployment is recorded above; human validation remains pending.
 - Added portable read-only GitHub Actions verification, deterministic archive/source checks, truthful timed-demo instructions and a ready-to-run five-person session kit. Extended mocked OpenAI/failover coverage. Fixed confirmed clipping of long evidence/coverage paths; no engine or contract changes.
 - Final clean local clone: all six workflow shell steps passed; contracts valid, engine 30/30, web 36/36, extension 2/2, browser 40/40; TypeScript/build and generated drift checks passed. Two packs match the committed 19-entry ZIP. Production server cleanup confirmed.
 - Keyboard and 390/320px inspection completed; actual Chrome 200% zoom checked. Local source/render checks: 0 FAIL / 0 WARN; desktop/mobile Impeccable empty. Initial clean Chrome startup timed out once; explicit retry and final full clean run passed. Startup diagnostics now retain bounded stderr.
@@ -64,6 +71,6 @@ At the v1.1 release, unauthenticated GitHub returned 404 for `Xombi17/INNOVEX` (
 
 ## Active development — guided walkthrough and interface refinement
 
-User priority is app usability and an actual guided walkthrough; professional video production is deferred. `feat/guided-walkthrough` builds on the CI-verified validation branch. Examples now have contextual real-content reveal controls, stage navigation, exit/resume, an unverified recap and a clean own-input handoff. Shared interface tokens, control states and compact navigation were integrated; guide/runbook nesting and heading hierarchy were corrected.
+User priority is app usability and an actual guided walkthrough; professional video production is deferred. PR #2 merges `feat/guided-walkthrough` on top of the CI-verified validation branch. Examples now have contextual real-content reveal controls, stage navigation, exit/resume, an unverified recap and a clean own-input handoff. Shared interface tokens, control states and compact navigation were integrated; guide/runbook nesting and heading hierarchy were corrected.
 
-Isolated standard production build and TypeScript pass; contracts/30 engine/36 web/2 extension tests and deterministic packaging pass; 57 browser assertions pass. Source lint/render inspector have zero failures/warnings. Impeccable reports for all three actual guided stages are empty at 1440px and 390px. Frozen files are unchanged. See `.planning/GUIDED-WALKTHROUGH-REVIEW.md`. No new production deployment or human-validation success is claimed.
+Standard production build and TypeScript pass; contracts/30 engine/36 web/2 extension tests and deterministic packaging pass; 57 browser assertions pass. Source lint/render inspector have zero failures/warnings. Impeccable reports for all three actual guided stages are empty at 1440px and 390px. Frozen files are unchanged. See `.planning/GUIDED-WALKTHROUGH-REVIEW.md`. The change is deployed; spoken rehearsal, participant sessions, screen-reader evaluation and live inference remain unverified.
