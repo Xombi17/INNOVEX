@@ -227,7 +227,7 @@ export function ScanInput({
               spellCheck={false}
               aria-invalid={!!error}
               aria-describedby={`input-help input-privacy${error ? " input-error" : ""}`}
-              className="field font-mono"
+              className="field"
               placeholder={
                 type === "mcp_config"
                   ? "OPENAI_API_KEY=${OPENAI_API_KEY}"

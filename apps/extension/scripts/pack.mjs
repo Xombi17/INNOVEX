@@ -1,43 +1,24 @@
-import { execSync } from "node:child_process";
-import fs from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const extRoot = path.resolve(__dirname, "..");
-const repoRoot = path.resolve(extRoot, "../..");
-const publicDownloads = path.join(repoRoot, "apps", "web", "public", "downloads");
-const outZip = path.join(publicDownloads, "scopebomb-mv3-extension.zip");
-
-// 1. Build engine modules first
-console.log("Building extension engine...");
-execSync(`node ${path.join(__dirname, "build.mjs")}`, { stdio: "inherit" });
-
-// 2. Package into zip via Python zipfile
-fs.mkdirSync(publicDownloads, { recursive: true });
-console.log(`Packaging extension into ${outZip}...`);
-
-const pyScript = `
-import zipfile, os
-ext_dir = "${extRoot}"
-out_zip = "${outZip}"
-include_files = ["manifest.json", "background.js", "content.js", "guard.html", "guard.js", "popup.html", "popup.js", "shared.js", "styles.css"]
-include_dirs = ["icons", "engine"]
-with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED) as z:
-    for f in include_files:
-        full_path = os.path.join(ext_dir, f)
-        if os.path.exists(full_path):
-            z.write(full_path, arcname=f)
-    for d in include_dirs:
-        dir_path = os.path.join(ext_dir, d)
-        for root, dirs, files in os.walk(dir_path):
-            for file in files:
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, ext_dir)
-                z.write(full_path, arcname=rel_path)
-print("Zip package complete")
-`;
-
-execSync(`python3 -c '${pyScript}'`, { stdio: "inherit" });
-console.log("Chrome MV3 extension zip ready.");
-
+const scripts = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(scripts, "..");
+const output = path.resolve(root, "../web/public/downloads/scopebomb-mv3-extension.zip");
+execFileSync(process.execPath, [path.join(scripts, "build.mjs")], { stdio: "inherit" });
+mkdirSync(path.dirname(output), { recursive: true });
+// Fixed timestamps and sorted entries make the committed download reproducible.
+execFileSync("python3", ["-c", `
+import pathlib, sys, zipfile
+root, output = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+files = [root / name for name in ["manifest.json", "background.js", "content.js", "guard.html", "guard.js", "popup.html", "popup.js", "shared.js", "styles.css"]]
+files += list((root / "icons").glob("*.png")) + list((root / "engine").glob("*.js"))
+with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
+    for file in sorted(files):
+        info = zipfile.ZipInfo(file.relative_to(root).as_posix(), (2026, 1, 1, 0, 0, 0))
+        info.compress_type = zipfile.ZIP_DEFLATED
+        info.external_attr = 0o100644 << 16
+        archive.writestr(info, file.read_bytes())
+print(f"Packaged {len(files)} extension files")
+`, root, output], { stdio: "inherit" });

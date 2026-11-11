@@ -206,9 +206,9 @@ export function ScopeBombArena({
                 </p>
                 <h1
                   tabIndex={-1}
-                  className="text-[32px] font-semibold leading-tight tracking-tight sm:text-[42px]"
+                  className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]"
                 >
-                  Understand what access you’re giving away.
+                  Review app access.
                 </h1>
                 <p className="muted mt-5 max-w-[65ch] text-lg">
                   Check what access an app or exposed credential could provide,
@@ -217,7 +217,7 @@ export function ScopeBombArena({
                 </p>
               </div>
               <div className="mt-9 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border border-[#a2cfd8] bg-[#f0f8fa] p-6">
+                <div className="border-t border-[#e8eaec] py-5 sm:pr-6">
                   <h2 className="text-lg font-semibold">See how it works</h2>
                   <p className="muted mb-5 mt-2">
                     Follow a sample app’s permissions through possible exposure
@@ -231,7 +231,7 @@ export function ScopeBombArena({
                     Try an example
                   </button>
                 </div>
-                <div className="rounded-xl border border-[#e8eaec] p-6">
+                <div className="border-t border-[#e8eaec] py-5 sm:pl-6">
                   <h2 className="text-lg font-semibold">Review your input</h2>
                   <p className="muted mb-5 mt-2">
                     Paste a configuration, inspect an app permission link, or
@@ -378,15 +378,15 @@ export function ScopeBombArena({
         </main>
         <footer className="flex flex-wrap justify-between gap-3 border-t border-[#e8eaec] px-5 py-4 text-[13px] text-[#5d5f60] sm:px-7">
           <span>
-            Local parsing · Rule-based analysis · No live account changes
+            v1.1 · Local parsing · Rule-based analysis · No live account changes
           </span>
           <a
-            href="https://github.com/Xombi17/INNOVEX"
+            href="/downloads/scopebomb-mv3-extension.zip"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#1b6c80] underline"
           >
-            Source and setup instructions
+            Download Chrome extension
           </a>
         </footer>
       </div>

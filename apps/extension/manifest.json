@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "ScopeBomb — Pre-Consent OAuth Guard",
-  "version": "1.0.0",
+  "name": "ScopeBomb \u2014 Pre-Consent OAuth Guard",
+  "version": "1.1.0",
   "description": "Intercepts over-scoped Google, GitHub, and Microsoft Entra OAuth requests before consent without corrupting PKCE code_challenge.",
   "permissions": [
     "tabs",
@@ -45,4 +45,3 @@
     "128": "icons/icon128.png"
   }
 }
-

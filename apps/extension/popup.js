@@ -1,6 +1,7 @@
 import { evaluatePreConsent, parseOAuthUrl } from "./engine/index.js";
 import {
   ACTION_META,
+  PKCE_TRANSACTION_NOTE,
   DEFAULT_ARENA_URL,
   PROVIDER_LABELS,
   SAMPLE_OAUTH_URLS,
@@ -74,7 +75,7 @@ function evaluateAndRender(rawUrl) {
         : "#1e7b4f";
 
   providerLine.textContent = `${PROVIDER_LABELS[decision.provider]} · client: ${parsed.client_id ?? "unknown"}${parsed.access_type ? ` · ${parsed.access_type}` : ""}`;
-  pkceNote.textContent = decision.pkce_rewrite_warning;
+  pkceNote.textContent = decision.pkce_protected ? PKCE_TRANSACTION_NOTE : decision.pkce_rewrite_warning;
 
   flaggedList.replaceChildren();
   if (decision.flagged_scopes.length === 0) {

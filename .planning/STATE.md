@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: New-User UX, AI Triage & Sandbox
 current_phase: '7'
 current_phase_name: Cross-Branch Comparison, Consolidation & Live Production Ship
-status: handoff_to_codex
+status: release_verified
 last_activity: 2026-11-11
 progress:
   total_phases: 4
@@ -19,7 +19,7 @@ progress:
 See: `.planning/CODEX_HANDOFF.md` (created 2026-11-11 for Antigravity -> Codex orchestration handover).
 
 **Core value:** First-time users and judges grasp ScopeBomb in seconds, distinguish illustrative presets from real local/repository findings without false safety claims, see the domino exposure path cleanly, and walk away with runnable provider remediation checklists + an MV3 pre-consent Chrome extension.
-**Current focus:** Role transferred to **Codex** as Lead Orchestrator to compile/benchmark all active branches & worktrees, consolidate the strongest implementation, verify production build/browser E2E, and deploy live to `https://scopebomb.vercel.app`.
+**Current focus:** Consolidation verified. Candidate B with Candidate A streaming limits, provider commands, deterministic ZIP and extension tests is ready for production deployment. See `.planning/V11-CONSOLIDATED-RELEASE.md`.
 
 ## Branch & Worktree Topology (Verified 2026-11-11)
 

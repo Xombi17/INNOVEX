@@ -44,11 +44,11 @@ Coverage includes welcome/sample distinction, local redaction, placeholders, inv
 
 These checks do not substitute for a screen-reader evaluation, live provider revocation verification, or an installed-extension interception test. No live account mutations are part of this suite.
 
-## Latest local verification (2026-11-10)
+## Latest local verification (2026-11-11)
 
-- 30 existing engine tests and 14 web regression tests passed.
+- 30 frozen engine tests, 23 web regression/security tests and 2 extension tests passed.
 - Production build, TypeScript check and frozen contract verification passed.
-- 37 browser assertions passed against the production build, with no runtime/console errors captured by the suite.
+- 39 browser assertions passed against the production build, with no runtime/console errors captured by the suite.
 - The extension archive passed integrity checks and its 19 entries matched source files.
 - A live public-repository request for `octocat/Hello-World` returned bounded empty coverage at a pinned revision; an inaccessible repository returned an error rather than a clean result. Mocked upstream tests cover findings, skipped files, truncation, rate limits, malformed content and response redaction.
 - Live AI inference and destructive provider API operations were not exercised. Browser tests use inference-disabled fallback; no accounts were changed.
@@ -75,3 +75,5 @@ Record time, unprompted success/failure, intervention required and the participa
 | Identify a practical next action | ≥4 of 5 | Pending |
 
 If those targets fail, revise the affected step and repeat with unfamiliar participants. If users understand the workflow but cannot identify a decision it helps them make, narrow the product before adding features. No user-study or demand-validation claims are established by the automated results.
+
+Consolidation evidence and candidate tradeoffs: `.planning/V11-CONSOLIDATED-RELEASE.md`. The source lint and rendered inspector pass with zero failures/warnings; desktop/mobile Impeccable scans are empty. The installed MV3 popup, guard and actual pre-consent navigation interception were also checked in headless Chrome. Live production checks are recorded in the release report.

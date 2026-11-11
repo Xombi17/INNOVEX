@@ -59,7 +59,7 @@ export function Step2AttackPath({
               key={node.id}
               className="flex gap-3 border-b border-[#e8eaec] pb-3"
             >
-              <span className="font-mono text-[#1b6c80]">{index + 1}.</span>
+              <span className="text-[#1b6c80]">{index + 1}.</span>
               <div>
                 <div className="font-medium">{humanizeNodeLabel(node)}</div>
                 <p className="muted mt-1 text-[13px]">{node.notes}</p>

@@ -1,3 +1,4 @@
+import { readBoundedText } from "./boundedBody.ts";
 import { analyzeAudit } from "../../../../packages/engine/index.ts";
 import type { ShadowSecretFinding } from "../../../../contracts/index.d.ts";
 import { analyzeInput, type Analysis, type Evidence } from "./analysis.ts";
@@ -51,37 +52,6 @@ export function repositoryIdentifier(raw: unknown): string {
     );
   return value;
 }
-async function readBounded(response: Response, limit: number): Promise<string> {
-  if (Number(response.headers.get("content-length")) > limit) {
-    await response.body?.cancel();
-    throw new Error("size");
-  }
-  const reader = response.body?.getReader();
-  if (!reader) return "";
-  let size = 0;
-  const chunks: Uint8Array[] = [];
-  try {
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      size += value.byteLength;
-      if (size > limit) {
-        await reader.cancel();
-        throw new Error("size");
-      }
-      chunks.push(value);
-    }
-  } finally {
-    reader.releaseLock();
-  }
-  const bytes = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.length;
-  }
-  return new TextDecoder().decode(bytes);
-}
 export async function scanRepository(
   raw: unknown,
   request: typeof fetch = fetch,
@@ -124,7 +94,7 @@ export async function scanRepository(
         502,
       );
     try {
-      return JSON.parse(await readBounded(response, 2_000_000));
+      return JSON.parse(await readBoundedText(response, 2_000_000));
     } catch {
       throw new RepositoryError(
         "GitHub’s response exceeded the supported size or format. No assessment was produced.",
@@ -180,7 +150,7 @@ export async function scanRepository(
         skipped.push(`${path} (unavailable)`);
         continue;
       }
-      const rawText = await readBounded(response, 65536);
+      const rawText = await readBoundedText(response, 65536);
       if (path.startsWith(".github/workflows/")) {
         if (/\bwrite-all\b|\bid-token\s*:\s*write\b/.test(rawText))
           evidence.push({

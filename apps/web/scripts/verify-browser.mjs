@@ -207,12 +207,21 @@ try {
     ),
   );
   await screenshot("welcome-desktop");
+  await key("Tab", "Tab");
+  check(
+    "Keyboard skip link is visible when focused",
+    await js('document.activeElement.classList.contains("skip-link") && document.activeElement.getBoundingClientRect().left >= 0 && document.activeElement.getBoundingClientRect().top >= 0'),
+  );
   await click("About this tool");
   check(
     "Dialog receives focus and makes background modal",
     await js(
       'document.querySelector("dialog[open]")?.contains(document.activeElement) && !!document.querySelector("dialog:modal")',
     ),
+  );
+  check(
+    "Dialog is centered within the viewport",
+    await js('(() => { const r = document.querySelector("dialog[open]").getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 2 && Math.abs(r.top + r.height / 2 - innerHeight / 2) < 2; })()'),
   );
   await key("Tab", "Tab");
   check(
@@ -235,6 +244,7 @@ try {
       'document.body.innerText.includes("Sample simulation") && document.body.innerText.includes("not your accounts")',
     ),
   );
+  await screenshot("input-desktop");
   await click("Understand possible exposure");
   check(
     "Step navigation focuses the new heading and changes history",
@@ -256,6 +266,7 @@ try {
     '!document.querySelectorAll("[data-step]")[1].hidden',
     "browser forward",
   );
+  await screenshot("exposure-desktop");
   await click("Review recommended actions");
   check(
     "Remediation is explicitly unverified",
@@ -304,6 +315,7 @@ try {
       'document.body.innerText.includes("conditional on successful cleanup") && document.body.innerText.includes("Actual remediation remains unverified")',
     ),
   );
+  await screenshot("actions-desktop");
   await click("Prevent future overbroad app access");
   await click("Try consent demonstration");
   check(
@@ -312,6 +324,7 @@ try {
       'document.querySelector("dialog[open]").innerText.includes("browser protection is not enabled")',
     ),
   );
+  await screenshot("consent-sandbox-desktop");
   await click("Review the example permissions");
   check(
     "Sandbox explains read-only mail remains sensitive",
@@ -517,16 +530,19 @@ try {
       "Welcome reflows at " + width + "px",
       await js("document.documentElement.scrollWidth <= innerWidth"),
     );
+    await screenshot("welcome-" + width);
     await click("Try an example");
     check(
       "Analysis reflows at " + width + "px",
       await js("document.documentElement.scrollWidth <= innerWidth"),
     );
+    await screenshot("input-" + width);
     await click("Understand possible exposure");
     check(
       "Exposure reflows at " + width + "px",
       await js("document.documentElement.scrollWidth <= innerWidth"),
     );
+    await screenshot("exposure-" + width);
     await click("Review recommended actions");
     check(
       "Actions reflow at " + width + "px",

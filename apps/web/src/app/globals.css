@@ -171,6 +171,7 @@ a {
   line-height: 1.6;
 }
 .scope-dialog {
+  margin: auto;
   width: min(640px, calc(100% - 24px));
   max-height: calc(100dvh - 32px);
   padding: 0;
@@ -186,7 +187,7 @@ a {
 .skip-link {
   position: fixed;
   top: 8px;
-  left: 8px;
+  left: -9999px;
   z-index: 100;
   transform: translateY(-180%);
   padding: 12px;
@@ -195,6 +196,7 @@ a {
   border: 2px solid var(--accent);
 }
 .skip-link:focus {
+  left: 8px;
   transform: none;
 }
 [hidden] {

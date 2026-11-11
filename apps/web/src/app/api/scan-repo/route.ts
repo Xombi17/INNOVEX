@@ -1,19 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { RepositoryError, scanRepository } from "@/lib/repositoryScan";
+import { NextResponse } from "next/server.js";
+import { readBoundedText } from "../../../lib/boundedBody.ts";
+import { RepositoryError, scanRepository } from "../../../lib/repositoryScan.ts";
 export const runtime = "nodejs";
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    if (Number(req.headers.get("content-length")) > 2048)
+    let body: string;
+    try {
+      body = await readBoundedText(req, 2048);
+    } catch {
       return NextResponse.json(
-        { ok: false, error: "Repository request is too large." },
+        { ok: false, error: "Repository request is too large or unreadable." },
         { status: 413 },
       );
-    const body = await req.text();
-    if (body.length > 2048)
-      return NextResponse.json(
-        { ok: false, error: "Repository request is too large." },
-        { status: 413 },
-      );
+    }
     let data: { repo?: unknown };
     try {
       data = JSON.parse(body);

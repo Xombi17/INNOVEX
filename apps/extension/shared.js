@@ -1,3 +1,5 @@
+export const PKCE_TRANSACTION_NOTE = "S256 derives its challenge from the verifier, not the scopes. Preserve this pending request; the initiating client must start a fresh authorization with new state and PKCE values. Challenge presence is not cryptographic verification.";
+
 export const DEFAULT_ARENA_URL = "https://scopebomb.vercel.app";
 
 export const PROVIDER_LABELS = {

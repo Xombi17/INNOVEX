@@ -167,7 +167,7 @@ export function InputAndPresetBar({
     presets[0]?.sample_mcp_config ?? "",
   );
   const [takeoutInput, setTakeoutInput] = useState<string>(SAMPLE_TAKEOUT_JSON);
-  const [repoInput, setRepoInput] = useState<string>("Xombi17/INNOVEX");
+  const [repoInput, setRepoInput] = useState<string>("octocat/Hello-World");
   const [repoMsg, setRepoMsg] = useState<string | null>(null);
   const [repoWarnings, setRepoWarnings] = useState<string[]>([]);
   const [repoLoading, setRepoLoading] = useState(false);
@@ -477,10 +477,10 @@ export function InputAndPresetBar({
               </label>
               <button
                 type="button"
-                onClick={() => handleInspectRepo("Xombi17/INNOVEX")}
+                onClick={() => handleInspectRepo("octocat/Hello-World")}
                 className="text-[13px] font-medium text-[#1b6c80] hover:underline"
               >
-                Try Xombi17/INNOVEX
+                Try octocat/Hello-World
               </button>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">

@@ -97,7 +97,7 @@ export function EvidenceSummary({ analysis }: { analysis: Analysis }) {
           <ul className="mt-3 divide-y divide-[#e8eaec]">
             {found.map((item, index) => (
               <li key={index} className="py-3">
-                <div className="break-all font-mono text-[13px]">
+                <div className="break-all text-[13px]">
                   {item.subject}
                 </div>
                 <p className="muted mt-1 text-[13px]">Source: {item.source}</p>

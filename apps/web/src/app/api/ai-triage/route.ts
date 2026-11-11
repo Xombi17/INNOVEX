@@ -1,28 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server.js";
+import { readBoundedText } from "../../../lib/boundedBody.ts";
 import {
   applyFactOrder,
   localTriage,
   validateTriageRequest,
-} from "@/lib/triage";
+} from "../../../lib/triage.ts";
 export const runtime = "nodejs";
-export async function POST(req: NextRequest) {
-  if (Number(req.headers.get("content-length")) > 4000)
-    return NextResponse.json(
-      { error: "Summary request too large." },
-      { status: 413 },
-    );
+export async function POST(req: Request) {
   let body: unknown;
   try {
-    const text = await req.text();
-    if (text.length > 4000)
-      return NextResponse.json(
-        { error: "Summary request too large." },
-        { status: 413 },
-      );
-    body = JSON.parse(text);
+    body = JSON.parse(await readBoundedText(req, 4000));
   } catch {
     return NextResponse.json(
-      { error: "Supply summary counts as JSON." },
+      { error: "Supply bounded summary counts as JSON (maximum 4000 bytes)." },
       { status: 400 },
     );
   }
@@ -44,6 +34,7 @@ export async function POST(req: NextRequest) {
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
         {
           method: "POST",
+          redirect: "error",
           headers: {
             ...jsonHeaders,
             "x-goog-api-key": process.env.GEMINI_API_KEY,
@@ -59,7 +50,7 @@ export async function POST(req: NextRequest) {
         },
       );
       if (response.ok) {
-        const value = await response.json();
+        const value = JSON.parse(await readBoundedText(response, 32768));
         const result = applyFactOrder(
           base,
           JSON.parse(value.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}")
@@ -81,6 +72,7 @@ export async function POST(req: NextRequest) {
         "https://api.openai.com/v1/chat/completions",
         {
           method: "POST",
+          redirect: "error",
           headers: {
             ...jsonHeaders,
             Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -95,7 +87,7 @@ export async function POST(req: NextRequest) {
         },
       );
       if (response.ok) {
-        const value = await response.json();
+        const value = JSON.parse(await readBoundedText(response, 32768));
         const result = applyFactOrder(
           base,
           JSON.parse(value.choices?.[0]?.message?.content ?? "{}").order,

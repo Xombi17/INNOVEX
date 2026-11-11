@@ -30,11 +30,11 @@ export function PreConsentPreview({ report }: Props) {
         <ul className="divide-y divide-[#e8eaec]">
           {guard.flagged_scopes.map((scope) => (
             <li key={scope.scope_id} className="py-3">
-              <p className="break-all font-mono text-[13px]">
+              <p className="break-all text-[13px]">
                 Requested: {scope.scope_id}
               </p>
               <p className="muted mt-1 text-[13px]">{scope.reason}</p>
-              <p className="mt-2 break-all font-mono text-[13px]">
+              <p className="mt-2 break-all text-[13px]">
                 Review alternative: {scope.recommended_scope_id}
               </p>
             </li>

@@ -48,19 +48,19 @@ export function HowItWorksModal({ open, onClose, onOpenSimulator }: Props) {
               website sandbox does not install or activate it.
             </p>
             <p className="muted">
-              For an offline project scan, clone the source repository, install
+              For an offline project scan, use a source checkout, install
               Node 24, then run this from the project root:
             </p>
             <code className="block break-all rounded-md bg-[#f4f6f8] p-3 text-[13px]">
               node packages/engine/cli.ts /path/to/project --json
             </code>
             <a
-              href="https://github.com/Xombi17/INNOVEX#quick-start"
+              href="/downloads/scopebomb-mv3-extension.zip"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#1b6c80] underline"
             >
-              Read installation instructions
+              Download Chrome extension (.zip)
             </a>
           </div>
         </details>
