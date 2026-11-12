@@ -17,9 +17,9 @@ import { GuidedWalkthrough } from "./GuidedWalkthrough";
 
 const presets = getIncidentPresets();
 
-function AgentChipSvg({ className }: { className?: string }) {
+function AgentChipSvg({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="4" width="16" height="16" rx="2" />
       <rect x="9" y="9" width="6" height="6" />
       <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
@@ -27,9 +27,9 @@ function AgentChipSvg({ className }: { className?: string }) {
   );
 }
 
-function FolderSearchSvg({ className }: { className?: string }) {
+function FolderSearchSvg({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
       <circle cx="12" cy="13" r="2" />
       <path d="m14 15 2 2" />
@@ -37,35 +37,27 @@ function FolderSearchSvg({ className }: { className?: string }) {
   );
 }
 
-function KeySvg({ className }: { className?: string }) {
+function KeySvg({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="7.5" cy="15.5" r="5.5" />
       <path d="m21 2-9.6 9.6M15.5 7.5l3 3M18.5 4.5l3 3" />
     </svg>
   );
 }
 
-function CloudTakeoverSvg({ className }: { className?: string }) {
+function CloudTakeoverSvg({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
       <path d="M12 12v6M9 15l3-3 3 3" />
     </svg>
   );
 }
 
-function FlowArrowSvg({ className }: { className?: string }) {
+function ScopeBombLogo({ className = "h-5 w-5" }: { className?: string }) {
   return (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14M12 5l7 7-7 7" />
-    </svg>
-  );
-}
-
-function ScopeBombLogo({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
       <circle cx="12" cy="12" r="3" fill="#00d2b4" stroke="#00d2b4" />
       <path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24" />
@@ -267,6 +259,7 @@ export function ScopeBombArena({
       }}
     />
   ) : null;
+
   return (
     <div
       className="workbench"
@@ -279,11 +272,19 @@ export function ScopeBombArena({
       </a>
       <div className="workbench__surface">
         <header className="workbench__header">
-          <a href="/" className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-white hover:text-teal-300 transition-colors">
-            <ScopeBombLogo />
-            <span>ScopeBomb</span>
-          </a>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <a href="/" className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-white hover:text-teal-300 transition-colors">
+              <ScopeBombLogo />
+              <span>ScopeBomb</span>
+            </a>
+            <span className="hidden sm:inline-block h-3.5 w-px bg-white/10" />
+            <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[11px] text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
+              Non-Human Identity Firewall
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               className="control"
@@ -320,6 +321,7 @@ export function ScopeBombArena({
             )}
           </div>
         </header>
+
         {entry !== "welcome" && (
           <StepStepper
             activeStep={step}
@@ -327,107 +329,107 @@ export function ScopeBombArena({
             onChangeStep={go}
           />
         )}
-        <main id="main-content" ref={main} tabIndex={-1}>
+
+        <main id="main-content" ref={main} tabIndex={-1} className="flex-1">
           {entry === "welcome" ? (
-            <div className="px-5 py-5 sm:px-9 sm:py-6">
-              <div className="max-w-[780px]">
-                <div className="mb-2.5 inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 font-mono text-[11px] font-semibold text-teal-300">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-500" />
-                  </span>
-                  AI Security &amp; Non-Human Identity Firewall
-                </div>
+            <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
+              {/* Hero */}
+              <div className="max-w-2xl">
                 <h1
                   tabIndex={-1}
-                  className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-[30px]"
+                  className="text-2xl font-bold tracking-tight text-white sm:text-3xl sm:leading-tight"
                 >
                   One rogue AI permission can compromise your entire stack.
                 </h1>
-                <p className="mt-2 max-w-[68ch] text-[14.5px] leading-relaxed text-slate-300">
-                  When you click <span className="font-semibold text-white">“Allow”</span> on an AI bot or paste an API token, you aren't just granting one permission. You could be opening a backdoor from Google Drive straight into GitHub repositories and production cloud infrastructure.
+                <p className="mt-3 text-sm leading-relaxed text-slate-400 sm:text-[15px]">
+                  When you click <span className="font-semibold text-white">“Allow”</span> on an AI bot or paste an API token, permissions cascade across trust boundaries into repositories and production cloud infrastructure.
                 </p>
               </div>
 
-              {/* Visual Domino Chain Preview */}
-              <div className="mt-4 rounded-xl border border-white/10 bg-[#090d14]/90 p-3 sm:p-3.5 shadow-inner">
+              {/* The Domino Pipeline (Open Architectural Bus) */}
+              <div className="my-6 border-y border-white/[0.08] py-5">
                 <div className="flex items-center justify-between">
-                  <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400">
+                  <div className="text-[11px] font-mono font-medium uppercase tracking-wider text-slate-400">
                     The OAuth Domino Effect · Cascading Non-Human Identity Exposure
                   </div>
-                  <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-mono text-rose-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
+                  <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[10px] text-rose-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
                     Cascading Risk
                   </span>
                 </div>
-                <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center text-center">
-                  <div className="rounded-lg border border-teal-500/30 bg-teal-950/20 p-2 shadow-sm transition hover:border-teal-500/50">
-                    <div className="mx-auto flex h-6 w-6 items-center justify-center rounded-md bg-teal-500/15 text-[#00d2b4]">
+
+                <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-4 items-center">
+                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-teal-500/10 text-teal-400">
                       <AgentChipSvg />
                     </div>
-                    <div className="mt-1 text-xs font-bold text-slate-200">1. Rogue AI Agent</div>
-                    <div className="text-[11px] text-slate-400">Requests Drive scope</div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold text-white">1. Rogue AI Agent</div>
+                      <div className="truncate text-[11px] text-slate-400">Requests Drive scope</div>
+                    </div>
                   </div>
-                  <div className="hidden sm:flex justify-center text-slate-500">
-                    <FlowArrowSvg className="text-teal-400/60" />
-                  </div>
-                  <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-2 shadow-sm transition hover:border-amber-500/50">
-                    <div className="mx-auto flex h-6 w-6 items-center justify-center rounded-md bg-amber-500/15 text-amber-400">
+
+                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-amber-500/10 text-amber-400">
                       <FolderSearchSvg />
                     </div>
-                    <div className="mt-1 text-xs font-bold text-amber-200">2. Drive Search</div>
-                    <div className="text-[11px] text-amber-300/70">Finds backup / .env key</div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold text-white">2. Drive Search</div>
+                      <div className="truncate text-[11px] text-slate-400">Finds backup / .env key</div>
+                    </div>
                   </div>
-                  <div className="hidden sm:flex justify-center text-slate-500">
-                    <FlowArrowSvg className="text-amber-400/60" />
-                  </div>
-                  <div className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-2 shadow-sm transition hover:border-rose-500/50">
-                    <div className="mx-auto flex h-6 w-6 items-center justify-center rounded-md bg-rose-500/15 text-rose-400">
+
+                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-rose-500/10 text-rose-400">
                       <KeySvg />
                     </div>
-                    <div className="mt-1 text-xs font-bold text-rose-200">3. GitHub Token</div>
-                    <div className="text-[11px] text-rose-300/70">Accesses private repos</div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold text-white">3. GitHub Token</div>
+                      <div className="truncate text-[11px] text-slate-400">Accesses private repos</div>
+                    </div>
                   </div>
-                  <div className="hidden sm:flex justify-center text-slate-500">
-                    <FlowArrowSvg className="text-rose-400/60" />
-                  </div>
-                  <div className="rounded-lg border border-red-500/40 bg-red-950/30 p-2 shadow-sm transition hover:border-red-500/60">
-                    <div className="mx-auto flex h-6 w-6 items-center justify-center rounded-md bg-red-500/20 text-red-400">
+
+                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-red-500/10 text-red-400">
                       <CloudTakeoverSvg />
                     </div>
-                    <div className="mt-1 text-xs font-bold text-red-200">4. Cloud Takeover</div>
-                    <div className="text-[11px] text-red-300/70">Deploys malicious code</div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold text-white">4. Cloud Takeover</div>
+                      <div className="truncate text-[11px] text-slate-400">Deploys malicious code</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-3.5 sm:grid-cols-2">
-                <div className="rounded-xl border border-teal-500/40 bg-gradient-to-b from-[#141926] to-[#0e121a] p-4 sm:p-5 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-[0_0_24px_rgba(0,210,180,0.15)]">
-                  <div className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-500/15 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-teal-300">
-                    Fastest Start (30s)
+              {/* Start Options */}
+              <div className="grid gap-3.5 sm:grid-cols-2">
+                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5 transition hover:border-teal-500/40">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-white sm:text-base">Take an interactive tour</h2>
+                    <span className="rounded bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 font-mono text-[10px] text-teal-300">Fastest (30s)</span>
                   </div>
-                  <h2 className="mt-2 text-base font-bold text-white">Take an interactive tour</h2>
-                  <p className="mb-4 mt-1 text-[13px] leading-relaxed text-slate-300">
+                  <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
                     Simulate a realistic AI app compromise in under 30 seconds. Watch the live domino effect unfold and learn why naive “disconnect” buttons fail to contain attackers.
                   </p>
                   <button
-                    className="control control-primary w-full py-2.5 text-center text-sm font-semibold"
+                    className="control control-primary w-full py-2.5 text-center text-xs font-semibold sm:text-sm"
                     type="button"
                     onClick={() => sample()}
                   >
                     Start guided tour
                   </button>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-[#111520] p-4 sm:p-5 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20">
-                  <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-slate-300">
-                    Live Audit
+
+                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5 transition hover:border-white/[0.18]">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-white sm:text-base">Review your input</h2>
+                    <span className="rounded bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 font-mono text-[10px] text-slate-400">Live Audit</span>
                   </div>
-                  <h2 className="mt-2 text-base font-bold text-white">Review your input</h2>
-                  <p className="mb-4 mt-1 text-[13px] leading-relaxed text-slate-300">
+                  <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
                     Paste your own OAuth consent URL, drop an .mcp.json or .env config, or scan any public GitHub repository. Parsed 100% locally with zero secret leakage.
                   </p>
                   <button
-                    className="control w-full py-2.5 text-center text-sm font-semibold"
+                    className="control w-full py-2.5 text-center text-xs font-semibold sm:text-sm"
                     type="button"
                     onClick={startInput}
                   >
@@ -435,17 +437,18 @@ export function ScopeBombArena({
                   </button>
                 </div>
               </div>
-              <p className="muted mt-4 max-w-[78ch] text-[12px]">
+
+              <p className="muted mt-4 text-[12px] text-slate-500">
                 No sign-in required. ScopeBomb models possible exposure; it does
                 not scan your accounts, prove compromise, or revoke access.
                 Local configuration parsing stays in your browser.
               </p>
             </div>
           ) : (
-            <>
+            <div className="mx-auto max-w-4xl px-5 py-6 sm:px-8">
               {analysis && (
-                <div className="analysis-context">
-                  <span className="break-all">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3 text-xs">
+                  <span className="break-all text-slate-300">
                     <strong className="text-white">
                       {analysis.context.kind === "sample"
                         ? "Sample simulation"
@@ -453,37 +456,41 @@ export function ScopeBombArena({
                     </strong>{" "}
                     · {analysis.context.label}
                   </span>
-                  <span className="font-mono text-xs text-slate-400">
+                  <span className="font-mono text-slate-500">
                     {analysis.context.kind === "sample"
                       ? "Illustrative data; not your accounts"
                       : "Remediation not verified"}
                   </span>
                 </div>
               )}
+
               <div
                 role="status"
-                className={notice ? "px-5 py-3 text-amber-300 bg-amber-950/30 border-b border-amber-900/50" : "sr-only"}
+                className={notice ? "mb-4 rounded-md border border-amber-900/40 bg-amber-950/20 px-4 py-2.5 text-xs text-amber-300" : "sr-only"}
               >
                 {notice}
               </div>
+
               <section
                 data-step="1"
                 hidden={step !== 1}
-                className="space-y-6 p-5 sm:p-7"
+                className="space-y-6"
               >
                 <div>
-                  <h1 tabIndex={-1} className="text-2xl font-semibold text-white">
+                  <h1 tabIndex={-1} className="text-xl font-bold text-white sm:text-2xl">
                     {entry === "sample"
                       ? "Explore the sample input"
                       : "Check your input"}
                   </h1>
-                  <p className="muted mt-2">
+                  <p className="muted mt-1 text-xs text-slate-400 sm:text-sm">
                     {entry === "sample"
                       ? "These scenarios illustrate possible exposure. They are not forensic reconstructions or findings about your accounts."
                       : "Choose one input. We’ll separate evidence in it from possible consequences."}
                   </p>
                 </div>
+
                 {step === 1 && guidance}
+
                 {entry === "input" ? (
                   <ScanInput
                     initialUrl={initialUrl}
@@ -493,9 +500,9 @@ export function ScopeBombArena({
                   />
                 ) : (
                   <>
-                    <details open={walkthrough !== "active"} className="border-t border-[#1f2838] pt-2">
-                      <summary className="cursor-pointer font-medium text-white hover:text-teal-300 transition-colors">Choose a different scenario</summary>
-                      <div className="mt-3">
+                    <details open={walkthrough !== "active"} className="border-t border-white/[0.08] pt-2">
+                      <summary className="cursor-pointer text-xs font-medium text-slate-300 hover:text-white">Choose a different scenario</summary>
+                      <div className="mt-2">
                         <PresetStrip
                           presets={presets}
                           activePresetId={analysis?.report.preset_id ?? null}
@@ -504,7 +511,7 @@ export function ScopeBombArena({
                       </div>
                     </details>
                     <button
-                      className="control"
+                      className="control mt-2"
                       type="button"
                       onClick={startInput}
                     >
@@ -512,6 +519,7 @@ export function ScopeBombArena({
                     </button>
                   </>
                 )}
+
                 {analysis && (
                   <Step1ScanVerdict
                     key={session}
@@ -520,12 +528,13 @@ export function ScopeBombArena({
                   />
                 )}
               </section>
+
               {analysis && (
                 <>
                   <section
                     hidden={step !== 2}
                     data-step="2"
-                    className="p-5 sm:p-7"
+                    className="space-y-6"
                   >
                     <Step2AttackPath
                       key={session}
@@ -540,7 +549,7 @@ export function ScopeBombArena({
                   <section
                     hidden={step !== 3}
                     data-step="3"
-                    className="p-5 sm:p-7"
+                    className="space-y-6"
                   >
                     <Step3FixBlocker
                       key={session}
@@ -570,10 +579,11 @@ export function ScopeBombArena({
                   </section>
                 </>
               )}
-            </>
+            </div>
           )}
         </main>
-        <footer className="flex flex-wrap justify-between gap-3 border-t border-[#1e2636] px-5 py-4 text-[13px] text-slate-400 sm:px-7">
+
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] px-6 py-3.5 text-xs text-slate-500">
           <span>
             v1.1 · Local parsing · Rule-based analysis · No live account changes
           </span>
@@ -587,6 +597,7 @@ export function ScopeBombArena({
           </a>
         </footer>
       </div>
+
       <HowItWorksModal
         open={helpOpen}
         onClose={() => setHelpOpen(false)}

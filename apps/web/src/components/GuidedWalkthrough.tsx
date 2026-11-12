@@ -82,7 +82,7 @@ export function GuidedWalkthrough({
           aria-valuemax={3}
           aria-valuenow={step}
         >
-          <span style={{ width: `${(step / steps.length) * 100}%` }} />
+          <span style={{ transform: `scaleX(${step / steps.length})` }} />
         </div>
       )}
       <div className="mt-4 flex flex-wrap items-center gap-2">
