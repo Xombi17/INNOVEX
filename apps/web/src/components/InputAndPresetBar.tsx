@@ -512,7 +512,11 @@ export function InputAndPresetBar({
               </button>
             </div>
             {repoMsg && (
-              <div className="mt-2.5 rounded-[6px] bg-[#f4f6f8] px-3 py-2 text-[13px] text-[#5d5f60]">
+              <div
+                role="status"
+                aria-live="polite"
+                className="mt-2.5 rounded-[6px] bg-[#f4f6f8] px-3 py-2 text-[13px] text-[#5d5f60]"
+              >
                 <div>{repoMsg}</div>
                 {repoWarnings.length > 0 && (
                   <ul className="mt-1.5 space-y-1 text-[13px] text-[#92400e]">

@@ -220,4 +220,13 @@ test("remediation preserves issuer mechanics and independent credential verifica
   assert.match(anthropic.verificationProbe, /v1\/models/);
   const gcp = enrichContainmentStep({ ...step, issuer: "Google Cloud", action_type: "rotate_downstream_key" });
   assert.match(gcp.rfcNote!, /does not revoke short-lived/);
+  const aws = enrichContainmentStep({ ...step, issuer: "AWS Cognito", action_type: "rfc7009_revoke" });
+  assert.match(aws.copyableCommand, /cognito-idp revoke-token/);
+  assert.match(aws.verificationProbe, /AWSCognitoIdentityProviderService\.GetUser/);
+  const gitlab = enrichContainmentStep({ ...step, issuer: "GitLab", action_type: "rfc7009_revoke" });
+  assert.match(gitlab.copyableCommand, /gitlab\.com\/oauth\/revoke/);
+  assert.match(gitlab.verificationProbe, /api\/v4\/user/);
+  const atlassian = enrichContainmentStep({ ...step, issuer: "Atlassian Jira", action_type: "rfc7009_revoke" });
+  assert.match(atlassian.copyableCommand, /auth\.atlassian\.com\/oauth\/token\/revoke/);
+  assert.match(atlassian.verificationProbe, /api\.atlassian\.com\/me/);
 });
