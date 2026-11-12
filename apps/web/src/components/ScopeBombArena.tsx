@@ -273,47 +273,82 @@ export function ScopeBombArena({
         )}
         <main id="main-content" ref={main} tabIndex={-1}>
           {entry === "welcome" ? (
-            <div className="px-5 py-10 sm:px-10 sm:py-16">
-              <div className="max-w-[740px]">
-                <p className="mb-4 text-sm font-medium text-[#1b6c80]">
-                  App permissions and credential review
-                </p>
+            <div className="px-5 py-6 sm:px-10 sm:py-8">
+              <div className="max-w-[780px]">
+                <div className="mb-2.5 inline-flex items-center gap-2 rounded-full bg-[#e6f2f5] px-3 py-0.5 text-xs font-semibold text-[#155768]">
+                  <span className="inline-block h-2 w-2 rounded-full bg-[#1b6c80] animate-pulse" />
+                  AI Security &amp; Non-Human Identity Firewall
+                </div>
                 <h1
                   tabIndex={-1}
-                  className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]"
+                  className="text-[26px] font-bold leading-tight tracking-tight text-[#131416] sm:text-[32px]"
                 >
-                  Review app access.
+                  One rogue AI permission can compromise your entire stack.
                 </h1>
-                <p className="muted mt-5 max-w-[65ch] text-lg">
-                  Check what access an app or exposed credential could provide,
-                  and learn what to review. Start with an example or check your
-                  own project configuration.
+                <p className="mt-2.5 max-w-[68ch] text-[15px] leading-relaxed text-[#45474a]">
+                  When you click <span className="font-semibold text-[#131416]">“Allow”</span> on an AI bot or paste an API token, you aren't just granting one permission. You could be opening a backdoor from Google Drive straight into GitHub repositories and production cloud infrastructure.
                 </p>
               </div>
-              <div className="mt-9 grid gap-4 sm:grid-cols-2">
-                <div className="border-t border-[#e8eaec] py-5 sm:pr-6">
-                  <h2 className="text-lg font-semibold">Take an interactive tour</h2>
-                  <p className="muted mb-5 mt-2">
-                    Follow one example from evidence to possible exposure and
-                    provider review actions. A guide card stays on screen while
-                    you inspect each step.
+
+              {/* Visual Domino Chain Preview */}
+              <div className="mt-5 rounded-lg border border-[#dce0e3] bg-[#f9fbfc] p-3.5">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-[#5d5f60]">
+                  The OAuth Domino Effect (How breaches cascade)
+                </div>
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center text-center">
+                  <div className="rounded border border-[#e8eaec] bg-white p-2 shadow-sm">
+                    <div className="text-base">🤖</div>
+                    <div className="text-xs font-bold text-[#131416]">1. Rogue AI Bot</div>
+                    <div className="text-[11px] text-[#5d5f60]">Requests Drive scope</div>
+                  </div>
+                  <div className="hidden sm:block text-xs font-bold text-[#8a8d91]">➔</div>
+                  <div className="rounded border border-[#fcd34d] bg-[#fefce8] p-2 shadow-sm">
+                    <div className="text-base">📂</div>
+                    <div className="text-xs font-bold text-[#92400e]">2. Drive Search</div>
+                    <div className="text-[11px] text-[#78350f]">Finds backup / .env key</div>
+                  </div>
+                  <div className="hidden sm:block text-xs font-bold text-[#8a8d91]">➔</div>
+                  <div className="rounded border border-[#fca5a5] bg-[#fef2f2] p-2 shadow-sm">
+                    <div className="text-base">🔑</div>
+                    <div className="text-xs font-bold text-[#991b1b]">3. GitHub Token</div>
+                    <div className="text-[11px] text-[#7f1d1d]">Accesses private repos</div>
+                  </div>
+                  <div className="hidden sm:block text-xs font-bold text-[#8a8d91]">➔</div>
+                  <div className="rounded border border-[#f87171] bg-[#fee2e2] p-2 shadow-sm">
+                    <div className="text-base">☁️</div>
+                    <div className="text-xs font-bold text-[#b91c1c]">4. Cloud Host Takeover</div>
+                    <div className="text-[11px] text-[#991b1b]">Deploys malicious code</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-lg border-2 border-[#131416] bg-white p-4 sm:p-5 shadow-sm">
+                  <div className="inline-block rounded bg-[#131416] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">
+                    Fastest Start (30s)
+                  </div>
+                  <h2 className="mt-1.5 text-base font-bold text-[#131416]">Take an interactive tour</h2>
+                  <p className="mb-4 mt-1 text-[13px] text-[#45474a] leading-normal">
+                    Simulate a realistic AI app compromise in under 30 seconds. Watch the live domino effect unfold and learn why naive “disconnect” buttons fail to contain attackers.
                   </p>
                   <button
-                    className="control control-primary"
+                    className="control control-primary w-full py-2 text-center text-sm font-semibold"
                     type="button"
                     onClick={() => sample()}
                   >
                     Start guided tour
                   </button>
                 </div>
-                <div className="border-t border-[#e8eaec] py-5 sm:pl-6">
-                  <h2 className="text-lg font-semibold">Review your input</h2>
-                  <p className="muted mb-5 mt-2">
-                    Paste a configuration, inspect an app permission link, or
-                    check selected files in a public repository.
+                <div className="rounded-lg border border-[#dce0e3] bg-white p-4 sm:p-5 shadow-sm">
+                  <div className="inline-block rounded bg-[#e8eaec] px-2 py-0.5 text-[10px] font-bold text-[#5d5f60] uppercase tracking-wide">
+                    Live Audit
+                  </div>
+                  <h2 className="mt-1.5 text-base font-bold text-[#131416]">Review your input</h2>
+                  <p className="mb-4 mt-1 text-[13px] text-[#45474a] leading-normal">
+                    Paste your own OAuth consent URL, drop an .mcp.json or .env config, or scan any public GitHub repository. Parsed 100% locally with zero secret leakage.
                   </p>
                   <button
-                    className="control"
+                    className="control w-full py-2 text-center text-sm font-semibold"
                     type="button"
                     onClick={startInput}
                   >
@@ -321,7 +356,7 @@ export function ScopeBombArena({
                   </button>
                 </div>
               </div>
-              <p className="muted mt-7 max-w-[78ch] text-[13px]">
+              <p className="muted mt-5 max-w-[78ch] text-[12px]">
                 No sign-in required. ScopeBomb models possible exposure; it does
                 not scan your accounts, prove compromise, or revoke access.
                 Local configuration parsing stays in your browser.
