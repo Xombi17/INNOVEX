@@ -7,6 +7,7 @@ import type {
 } from "@contracts/index";
 import { enrichContainmentStep } from "@/lib/remediationTemplates";
 import { humanizeNodeLabel } from "./uiTokens";
+
 interface Progress {
   done: boolean;
   evidence: string;
@@ -18,6 +19,7 @@ interface Props {
   onChangeSimulationMode: (mode: SimulationMode) => void;
   showFullTableByDefault?: boolean;
 }
+
 export function ContainmentComparison({
   report,
   simulationMode,
@@ -62,11 +64,11 @@ export function ContainmentComparison({
         key={step.priority}
         data-guide-target={step.priority === steps[0]?.priority ? "actions" : undefined}
         tabIndex={step.priority === steps[0]?.priority ? -1 : undefined}
-        className="space-y-3 border-t border-[#e8eaec] py-4"
+        className="space-y-3 border-t border-[#1e2636] py-4"
       >
-        <h3 className="font-semibold">{target}</h3>
-        <p>{details.guidance}</p>
-        <p className="muted text-[13px]">Who can do this: {details.actor}.</p>
+        <h3 className="font-semibold text-white">{target}</h3>
+        <p className="text-slate-300">{details.guidance}</p>
+        <p className="muted text-[13px] text-slate-400">Who can do this: {details.actor}.</p>
         {details.consoleUrl && (
           <a
             className="control"
@@ -77,14 +79,14 @@ export function ContainmentComparison({
             Open {details.providerLabel} settings
           </a>
         )}
-        <p className="muted text-[13px]">
+        <p className="muted text-[13px] text-slate-400">
           If this is a conditional consequence, confirm the credential or
           artifact exists before taking action.
         </p>
         <label className="flex min-h-11 cursor-pointer items-center gap-3">
           <input
             type="checkbox"
-            className="h-5 w-5"
+            className="h-5 w-5 rounded border-[#2b3548] bg-[#0c1018] text-teal-400 focus:ring-teal-400"
             checked={status?.done ?? false}
             onChange={(event) =>
               change(step.priority, {
@@ -93,22 +95,22 @@ export function ContainmentComparison({
               })
             }
           />
-          <span>
+          <span className="text-slate-200">
             {status?.done
               ? "Marked done by you"
               : "Mark this review action done"}
           </span>
         </label>
         <details>
-          <summary className="cursor-pointer text-[#1b6c80]">
+          <summary className="cursor-pointer text-teal-400 hover:text-teal-300">
             Technical instructions and verification
           </summary>
           <div className="mt-3 space-y-3">
-            <p className="muted text-[13px]">
+            <p className="muted text-[13px] text-slate-400">
               Templates require the correct account, credential and privileges.
               ScopeBomb never runs these commands.
             </p>
-            <pre className="whitespace-pre-wrap break-all rounded-md bg-[#f4f6f8] p-3 text-[13px]">
+            <pre className="whitespace-pre-wrap break-all rounded-md border border-[#1e2636] bg-[#090c13] p-3 text-[13px] font-mono text-teal-300">
               {details.copyableCommand}
             </pre>
             <button
@@ -118,10 +120,10 @@ export function ContainmentComparison({
             >
               Copy instructions
             </button>
-            <p className="font-medium">How to check</p>
-            <p className="muted">{details.verificationProbe}</p>
-            <p className="muted text-[13px]">{details.expectedStatus}</p>
-            <p className="muted text-[13px]">{details.rfcNote}</p>
+            <p className="font-medium text-white">How to check</p>
+            <p className="muted text-slate-300">{details.verificationProbe}</p>
+            <p className="muted text-[13px] text-slate-400">{details.expectedStatus}</p>
+            <p className="muted text-[13px] text-slate-400">{details.rfcNote}</p>
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -141,7 +143,7 @@ export function ContainmentComparison({
             >
               <label
                 htmlFor={`evidence-${step.priority}`}
-                className="block font-medium"
+                className="block font-medium text-white"
               >
                 Verification note (kept only in this tab)
               </label>
@@ -163,7 +165,7 @@ export function ContainmentComparison({
               />
               <p
                 id={`note-help-${step.priority}`}
-                className="muted text-[13px]"
+                className="muted text-[13px] text-slate-400"
               >
                 Record the outcome, not tokens or passwords. This is your
                 evidence; ScopeBomb does not validate it.
@@ -175,7 +177,7 @@ export function ContainmentComparison({
                 <p
                   role="alert"
                   id={`note-error-${step.priority}`}
-                  className="text-[#831c1e]"
+                  className="text-rose-400"
                 >
                   {errors[step.priority]}
                 </p>
@@ -183,7 +185,7 @@ export function ContainmentComparison({
             </form>
           </div>
         </details>
-        <p role="status" className="text-[13px] font-medium">
+        <p role="status" className="text-[13px] font-medium text-teal-300">
           {status?.recorded
             ? "Verification evidence recorded by you; not independently verified"
             : status?.done
@@ -195,34 +197,34 @@ export function ContainmentComparison({
   };
   return (
     <section aria-label="Recommended cleanup checklist" className="space-y-5">
-      <div className="bg-[#fffbeb] p-4">
-        <h2 className="font-semibold text-[#855306]">
+      <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-4">
+        <h2 className="font-semibold text-amber-300">
           Remediation not verified
         </h2>
-        <p className="mt-2">
+        <p className="mt-2 text-slate-200">
           These are recommended reviews for the modeled exposure. Checking a box
           records your progress only. ScopeBomb has not changed or tested an
           account.
         </p>
-        <p className="muted mt-2 text-[13px]">
+        <p className="muted mt-2 text-[13px] text-slate-400">
           Progress and evidence notes are kept in memory for this analysis and
           clear on a new analysis, reset or page refresh.
         </p>
       </div>
       {steps.length ? (
         <>
-          <p className="muted">
+          <p className="muted text-slate-300">
             Start with confirmed exposure at known issuers. Then investigate
             conditional downstream credentials.{" "}
-            {Object.values(progress).filter((item) => item.done).length} of{" "}
-            {steps.length} review actions marked done by you.
+            <span className="font-mono text-teal-400">{Object.values(progress).filter((item) => item.done).length} of{" "}
+            {steps.length}</span> review actions marked done by you.
           </p>
           {groups.map((issuer) => (
             <details
               key={issuer}
-              className="border-t border-[#e8eaec]"
+              className="border-t border-[#1e2636]"
             >
-              <summary className="cursor-pointer py-4 font-semibold">
+              <summary className="cursor-pointer py-4 font-semibold text-white hover:text-teal-300 transition-colors">
                 {issuer} —{" "}
                 {steps.filter((step) => step.issuer === issuer).length} review
                 actions
@@ -234,17 +236,17 @@ export function ContainmentComparison({
           ))}
         </>
       ) : (
-        <p className="muted">
+        <p className="muted text-slate-400">
           No credential cleanup steps were generated. Review scan coverage and
           unsupported data before deciding whether further inspection is needed.
         </p>
       )}
-      <details>
-        <summary className="cursor-pointer text-[#1b6c80]">
+      <details className="border-t border-[#1e2636] pt-2">
+        <summary className="cursor-pointer text-teal-400 hover:text-teal-300">
           Preview the modeled outcome
         </summary>
         <div className="mt-3 space-y-3">
-          <p className="muted">
+          <p className="muted text-slate-400">
             This preview assumes every applicable action, issuer discovery and
             authentication-rejection check succeeds. It is not a measured
             security status.
@@ -264,14 +266,14 @@ export function ContainmentComparison({
               ? "Return to one-provider model"
               : "Preview expected outcome"}
           </button>
-          <p>
+          <p className="text-slate-300">
             {simulationMode === "full_multi_issuer"
               ? "Projected coverage of modeled resources: 100%, conditional on successful cleanup and verification. Actual remediation remains unverified."
               : `${report.naive_containment.persisting_node_ids.length} modeled nodes may need additional review after one-provider cleanup. This is not a count of confirmed attacks.`}
           </p>
         </div>
       </details>
-      <p role="status" className="muted text-[13px]">
+      <p role="status" className="muted text-[13px] text-teal-300">
         {copyStatus}
       </p>
     </section>

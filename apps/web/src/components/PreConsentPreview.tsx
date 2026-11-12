@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { AuditReport } from "@contracts/index";
 import { PROVIDER_LABELS } from "./uiTokens";
+
 interface Props {
   report: AuditReport;
   activeOAuthUrl: string | null;
@@ -12,13 +13,13 @@ export function PreConsentPreview({ report }: Props) {
   const guard = report.pre_consent_guard;
   return (
     <section
-      className="space-y-4 border-t border-[#e8eaec] pt-4"
+      className="space-y-4 border-t border-[#1e2636] pt-4"
       aria-label="Permission review preview"
     >
-      <h2 className="font-semibold">
+      <h2 className="font-semibold text-white">
         Permission review for {PROVIDER_LABELS[guard.provider]}
       </h2>
-      <p className="muted">
+      <p className="muted text-slate-300">
         {guard.action === "BLOCK_PRE_CONSENT"
           ? "The catalog recommends blocking this request for scope review in a supported extension flow."
           : guard.action === "WARN"
@@ -27,30 +28,30 @@ export function PreConsentPreview({ report }: Props) {
         This website has not blocked or modified an authorization request.
       </p>
       {guard.flagged_scopes.length > 0 && (
-        <ul className="divide-y divide-[#e8eaec]">
+        <ul className="divide-y divide-[#182030]">
           {guard.flagged_scopes.map((scope) => (
             <li key={scope.scope_id} className="py-3">
-              <p className="break-all text-[13px]">
+              <p className="break-all font-mono text-[13px] text-rose-300">
                 Requested: {scope.scope_id}
               </p>
-              <p className="muted mt-1 text-[13px]">{scope.reason}</p>
-              <p className="mt-2 break-all text-[13px]">
+              <p className="muted mt-1 text-[13px] text-slate-400">{scope.reason}</p>
+              <p className="mt-2 break-all font-mono text-[13px] text-teal-300">
                 Review alternative: {scope.recommended_scope_id}
               </p>
             </li>
           ))}
         </ul>
       )}
-      <p className="muted text-[13px]">
+      <p className="muted text-[13px] text-slate-400">
         An alternative must still fit the app’s job. Read-only email exposes
         message contents; narrower scopes can break features and do not
         guarantee safety.
       </p>
-      <details>
-        <summary className="cursor-pointer">
+      <details className="border-t border-[#1e2636] pt-2">
+        <summary className="cursor-pointer text-slate-300 hover:text-white">
           Authorization transaction details
         </summary>
-        <p className="muted mt-3">
+        <p className="muted mt-3 text-slate-400">
           {guard.pkce_protected
             ? "PKCE parameters were detected, not cryptographically verified. "
             : "No PKCE parameters were detected in this input. "}
@@ -59,7 +60,7 @@ export function PreConsentPreview({ report }: Props) {
           app must restart with reviewed scopes, fresh state and appropriate
           verifier/challenge values.
         </p>
-        <p className="muted mt-2">
+        <p className="muted mt-2 text-slate-400">
           ScopeBomb provides scope recommendations, not a replacement login URL.
           Copying a URL with security parameters removed is not a secure client
           restart.
@@ -87,7 +88,7 @@ export function PreConsentPreview({ report }: Props) {
           Copy scope recommendations
         </button>
       )}
-      <p role="status" className="muted text-[13px]">
+      <p role="status" className="muted text-[13px] text-teal-300">
         {status}
       </p>
     </section>

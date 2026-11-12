@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { AuditReport } from "@contracts/index";
 import type { AITriageResponse } from "@/lib/aiTriageTypes";
 import { localTriage, triageRequest } from "@/lib/triage";
+
 export function AITriageCard({ report }: { report: AuditReport }) {
   const payload = useMemo(() => triageRequest(report), [report]);
   const local = useMemo(() => localTriage(payload), [payload]);
@@ -49,28 +50,28 @@ export function AITriageCard({ report }: { report: AuditReport }) {
   };
   const summary = remote ?? local;
   return (
-    <details className="border-t border-[#e8eaec] pt-3">
-      <summary className="cursor-pointer font-medium">
+    <details className="border-t border-[#1e2636] pt-3">
+      <summary className="cursor-pointer font-medium text-white hover:text-teal-300 transition-colors">
         Plain-English review summary
       </summary>
       <section aria-label="Review summary" className="mt-4 space-y-4">
-        <p className="muted text-[13px]">
-          {summary.modelBadge}. This summary explains the supplied input; it is
+        <p className="muted text-[13px] text-slate-400">
+          <span className="font-mono text-teal-400">{summary.modelBadge}</span>. This summary explains the supplied input; it is
           not an independent security diagnosis.
         </p>
         <div className="grid gap-5 md:grid-cols-3">
           {summary.items.map((item) => (
-            <div key={item.title}>
-              <h3 className="font-semibold">{item.title}</h3>
-              <p className="muted mt-2">{item.body}</p>
+            <div key={item.title} className="rounded-lg border border-[#1e2636] bg-[#0c1018] p-4">
+              <h3 className="font-semibold text-white">{item.title}</h3>
+              <p className="muted mt-2 text-xs text-slate-300 leading-relaxed">{item.body}</p>
             </div>
           ))}
         </div>
-        <details>
-          <summary className="cursor-pointer text-[#1b6c80]">
+        <details className="border-t border-[#1e2636] pt-2">
+          <summary className="cursor-pointer text-teal-400 hover:text-teal-300 font-medium">
             Optional AI prioritization
           </summary>
-          <p className="muted my-3 text-[13px]">
+          <p className="muted my-3 text-[13px] text-slate-400">
             On request, provider names and counts go to our server and a
             configured AI provider. No input text, file contents, keys, URLs,
             scopes or evidence notes are sent. The model can reorder vetted
@@ -85,7 +86,7 @@ export function AITriageCard({ report }: { report: AuditReport }) {
             {loading ? "Prioritizing…" : "Ask AI to prioritize this summary"}
           </button>
         </details>
-        <p role="status" className="muted text-[13px]">
+        <p role="status" className="muted text-[13px] text-teal-300">
           {status}
         </p>
       </section>

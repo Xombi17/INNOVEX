@@ -6,36 +6,37 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
-  --ground: #f9fbfc;
-  --surface: #ffffff;
-  --raised: #f4f6f8;
-  --active: #ebedee;
-  --border: #e8eaec;
-  --rule: #f0f1f2;
-  --control: #cdced1;
-  --control-strong: #8c9297;
-  --text: #131416;
-  --muted: #5d5f60;
-  --accent: #1b6c80;
-  --accent-tint: #e6f2f5;
-  --positive: #1e7b4f;
-  --negative: #c4242a;
-  --warning: #92400e;
-  --accent-ink: #155768;
-  --chart-1: #1b6c80;
-  --chart-2: #2f70bb;
-  --chart-3: #a86f0c;
-  --pill-positive-bg: #dcfae5;
-  --pill-positive-ink: #04250e;
-  --pill-negative-bg: #ffedea;
-  --pill-negative-ink: #831c1e;
-  --pill-warning-bg: #fffbeb;
-  --pill-warning-ink: #92400e;
-  --pill-neutral-bg: #ebedee;
-  --pill-neutral-ink: #353736;
-  --radius-card: 8px;
-  --radius-control: 6px;
+  color-scheme: dark;
+  --ground: #07090e;
+  --surface: #0e121a;
+  --raised: #141924;
+  --active: #1c2333;
+  --border: #222a3a;
+  --rule: #19202e;
+  --control: #2b3548;
+  --control-strong: #3f4e6b;
+  --text: #f0f4f8;
+  --muted: #94a3b8;
+  --accent: #00d2b4;
+  --accent-tint: rgba(0, 210, 180, 0.12);
+  --accent-ink: #5eead4;
+  --positive: #10b981;
+  --negative: #f43f5e;
+  --warning: #f59e0b;
+  --accent-ink-hover: #99f6e4;
+  --chart-1: #00d2b4;
+  --chart-2: #38bdf8;
+  --chart-3: #fbbf24;
+  --pill-positive-bg: rgba(16, 185, 129, 0.15);
+  --pill-positive-ink: #6ee7b7;
+  --pill-negative-bg: rgba(244, 63, 94, 0.15);
+  --pill-negative-ink: #fda4af;
+  --pill-warning-bg: rgba(245, 158, 11, 0.15);
+  --pill-warning-ink: #fde68a;
+  --pill-neutral-bg: #1e2636;
+  --pill-neutral-ink: #cbd5e1;
+  --radius-card: 10px;
+  --radius-control: 8px;
   --radius-sheet: 16px;
   --control-height: 44px;
   --gap-control: 8px;
@@ -67,8 +68,8 @@ body {
 }
 
 ::selection {
-  background-color: var(--accent-tint);
-  color: var(--text);
+  background-color: var(--accent);
+  color: #03211b;
 }
 
 code,
@@ -93,7 +94,11 @@ a {
 .workbench {
   min-height: 100vh;
   padding: 12px;
-  background: var(--ground);
+  background-color: var(--ground);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 210, 180, 0.05) 0px, transparent 45%),
+    radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.04) 0px, transparent 45%),
+    radial-gradient(at 50% 50%, rgba(14, 18, 26, 0.4) 0px, transparent 100%);
   color: var(--text);
 }
 .workbench__surface {
@@ -103,6 +108,7 @@ a {
   border: 1px solid var(--border);
   border-radius: var(--radius-sheet);
   background: var(--surface);
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 .workbench__header {
   display: flex;
@@ -111,7 +117,9 @@ a {
   justify-content: space-between;
   gap: 12px;
   border-bottom: 1px solid var(--border);
-  padding: 16px 20px;
+  padding: 14px 20px;
+  background: rgba(14, 18, 26, 0.85);
+  backdrop-filter: blur(8px);
 }
 .analysis-context {
   display: flex;
@@ -123,14 +131,15 @@ a {
   padding: 12px 20px;
   background: var(--raised);
   font-size: 13px;
+  color: var(--muted);
 }
 @media (min-width: 640px) {
-  .workbench { padding: 24px; }
+  .workbench { padding: 20px; }
   .workbench__header,
   .analysis-context { padding-inline: 28px; }
 }
 
-/* Custom thin scrollbars inside the light workbench */
+/* Custom thin scrollbars inside the dark workbench */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -141,13 +150,13 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d8dce0;
+  background: #2b3548;
   border-radius: 999px;
   border: 2px solid var(--ground);
 }
 
 @media (hover: hover) {
-  ::-webkit-scrollbar-thumb:hover { background: #b6bcc2; }
+  ::-webkit-scrollbar-thumb:hover { background: #3f4e6b; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -173,18 +182,20 @@ a {
   font-weight: 500;
   line-height: 1.4;
   cursor: pointer;
-  background: var(--surface);
+  background: var(--raised);
   color: var(--text);
   -webkit-tap-highlight-color: transparent;
+  transition: transform var(--motion-press) ease-out, background-color var(--motion-quick) var(--ease-out), border-color var(--motion-quick) var(--ease-out), box-shadow var(--motion-quick) var(--ease-out);
 }
 .control:disabled {
   cursor: default;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 .control-primary {
-  background: var(--text);
-  border-color: var(--text);
-  color: white;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #03211b;
+  font-weight: 600;
 }
 .control-active,
 .control[aria-pressed="true"] {
@@ -194,7 +205,8 @@ a {
 }
 .workflow-stepper {
   border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
+  padding: 10px 16px;
+  background: rgba(14, 18, 26, 0.6);
 }
 .workflow-steps {
   display: grid;
@@ -210,26 +222,28 @@ a {
   min-height: var(--control-height);
   align-items: center;
   gap: var(--gap-control);
-  border: 0;
+  border: 1px solid transparent;
   border-radius: var(--radius-control);
-  padding: 8px;
+  padding: 8px 12px;
   background: transparent;
   color: var(--muted);
   text-align: left;
   font-size: 13px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--motion-quick) var(--ease-out), border-color var(--motion-quick) var(--ease-out), color var(--motion-quick) var(--ease-out);
 }
 .workflow-step:disabled {
   cursor: default;
-  opacity: .6;
+  opacity: .5;
 }
 .workflow-step[aria-current="step"] {
   background: var(--accent-tint);
+  border-color: rgba(0, 210, 180, 0.3);
   color: var(--accent-ink);
-  font-weight: 500;
+  font-weight: 600;
 }
-.workflow-step__number { flex: none; }
+.workflow-step__number { flex: none; font-family: "IBM Plex Mono", monospace; }
 .workflow-step__label { min-width: 0; }
 .field {
   display: block;
@@ -238,10 +252,16 @@ a {
   padding: 12px;
   border: 1px solid var(--control-strong);
   border-radius: var(--radius-control);
-  background: var(--surface);
+  background: #0b0f17;
   color: var(--text);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.5;
+  transition: border-color var(--motion-quick) var(--ease-out), box-shadow var(--motion-quick) var(--ease-out);
+}
+.field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  outline: none;
 }
 .field[aria-invalid="true"] {
   border-color: var(--negative);
@@ -256,14 +276,16 @@ a {
   width: min(640px, calc(100% - 24px));
   max-height: calc(100dvh - 32px);
   padding: 0;
-  border: 1px solid var(--control);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sheet);
   color: var(--text);
-  background: var(--surface);
+  background: #0f131c;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
   overflow-y: auto;
 }
 .scope-dialog::backdrop {
-  background: rgb(19 20 22 / 45%);
+  background: rgba(5, 7, 12, 0.8);
+  backdrop-filter: blur(6px);
 }
 .skip-link {
   position: fixed;
@@ -272,9 +294,10 @@ a {
   z-index: 100;
   transform: translateY(-180%);
   padding: 12px;
-  background: white;
+  background: #0f131c;
   color: var(--accent);
   border: 2px solid var(--accent);
+  border-radius: 6px;
 }
 .skip-link:focus {
   left: 8px;
@@ -305,15 +328,15 @@ summary {
   padding: 20px;
   border: 1px solid var(--accent);
   border-radius: var(--radius-sheet);
-  background: var(--surface);
-  box-shadow: 0 18px 48px rgb(19 20 22 / 18%);
+  background: #0f131c;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 24px rgba(0, 210, 180, 0.2);
 }
 .walkthrough-progress {
   height: 4px;
   margin-top: 16px;
   overflow: hidden;
   border-radius: 99px;
-  background: var(--accent-tint);
+  background: rgba(0, 210, 180, 0.15);
 }
 .walkthrough-progress span {
   display: block;
@@ -363,26 +386,27 @@ summary {
   width: 28px;
   height: 28px;
   place-items: center;
-  border: 1px solid var(--control);
+  border: 1px solid var(--control-strong);
   border-radius: 50%;
-  background: var(--surface);
+  background: var(--raised);
   color: var(--accent);
   font-size: 13px;
+  font-weight: 600;
+  font-family: "IBM Plex Mono", monospace;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .control { transition: transform var(--motion-press) ease-out; }
+  .control { transition: transform var(--motion-press) ease-out, background-color var(--motion-quick) var(--ease-out), border-color var(--motion-quick) var(--ease-out); }
   .control:not(:disabled):active,
-  .workflow-step:not(:disabled):not(:focus-visible):active { transform: scale(.96); }
-  .workflow-step:not(:focus-visible) { transition: background-color var(--motion-quick) var(--ease-out), transform var(--motion-press) ease-out; }
+  .workflow-step:not(:disabled):not(:focus-visible):active { transform: scale(.97); }
 }
 @media (hover: hover) and (pointer: fine) {
   .control:not(:focus-visible) {
-    transition: background-color var(--motion-quick) var(--ease-out), border-color var(--motion-quick) var(--ease-out), transform var(--motion-press) ease-out;
+    transition: background-color var(--motion-quick) var(--ease-out), border-color var(--motion-quick) var(--ease-out), transform var(--motion-press) ease-out, box-shadow var(--motion-quick) var(--ease-out);
   }
-  .control:not(:disabled):hover { background: var(--raised); }
-  .control-primary:not(:disabled):hover { background: #303438; }
+  .control:not(:disabled):hover { background: var(--active); border-color: var(--control-strong); }
+  .control-primary:not(:disabled):hover { background: #2dd4bf; border-color: #2dd4bf; box-shadow: 0 0 16px rgba(0, 210, 180, 0.35); }
   .walkthrough-exit:hover { color: var(--text); }
-  .workflow-step:not(:disabled):not([aria-current="step"]):hover { background: var(--raised); }
+  .workflow-step:not(:disabled):not([aria-current="step"]):hover { background: var(--raised); color: var(--text); }
 }
 @media (prefers-reduced-motion: reduce) {
   .control,

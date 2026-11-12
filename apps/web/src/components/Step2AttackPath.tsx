@@ -4,6 +4,7 @@ import type { AuditReport, SimulationMode } from "@contracts/index";
 import { DominoGraph } from "./DominoGraph";
 import { humanizeNodeLabel } from "./uiTokens";
 import { AgentSwarmCenter } from "./AgentSwarmCenter";
+
 export function Step2AttackPath({
   report,
   guidance,
@@ -37,19 +38,19 @@ export function Step2AttackPath({
   return (
     <div className="space-y-6">
       <div>
-        <h1 tabIndex={-1} className="text-2xl font-semibold">
+        <h1 tabIndex={-1} className="text-2xl font-semibold text-white">
           Understand possible exposure
         </h1>
-        <p className="muted mt-2 max-w-[75ch]">
+        <p className="muted mt-2 max-w-[75ch] text-slate-300">
           {hasExposure
             ? "Follow one conditional chain from the supplied input. Each link depends on real permissions, resource contents and credential validity."
             : "No downstream exposure is modeled for this input. The catalog is limited, so this does not prove your accounts or project are safe."}
         </p>
       </div>
       {guidance}
-      <div className="rounded-lg bg-[#f4f6f8] p-4">
-        <strong>Possible consequence, not an observed attack</strong>
-        <p className="muted mt-2">
+      <div className="rounded-lg border border-white/5 bg-[#121622] p-4">
+        <strong className="text-white">Possible consequence, not an observed attack</strong>
+        <p className="muted mt-2 text-slate-400">
           For example, if an app can read a file containing another service’s
           valid API key, that copied key may need separate revocation.
           Disconnecting the original app does not revoke a credential issued by
@@ -65,20 +66,20 @@ export function Step2AttackPath({
             >
               <span className="exposure-number" aria-hidden="true">{index + 1}</span>
               <div>
-                <div className="font-medium">{humanizeNodeLabel(node)}</div>
-                <p className="muted mt-1 text-[13px]">{node.notes}</p>
+                <div className="font-medium text-white">{humanizeNodeLabel(node)}</div>
+                <p className="muted mt-1 text-[13px] text-slate-400">{node.notes}</p>
               </div>
             </li>
           ))}
         </ol>
       )}
       <details onToggle={(event) => setExpanded(event.currentTarget.open)}>
-        <summary className="cursor-pointer font-medium text-[#1b6c80]">
+        <summary className="cursor-pointer font-medium text-teal-400 hover:text-teal-300">
           Explore the full model and technical assumptions
         </summary>
         {expanded && (
           <div className="mt-5 space-y-4">
-            <p className="muted text-[13px]">
+            <p className="muted text-[13px] text-slate-400">
               Model contains {report.graph.nodes.length} nodes. Node counts are
               not counts of confirmed attacks or distinct exploitable paths.
               Severity {report.summary.max_risk_score}/100 is a rule-based
@@ -106,7 +107,7 @@ export function Step2AttackPath({
                 Preview expected outcome
               </button>
             </div>
-            <p className="text-[#855306]">
+            <p className="text-amber-300 text-xs">
               Simulation only. The full-plan preview assumes every required
               action and verification succeeds. No remediation has been
               performed or verified.
@@ -118,7 +119,7 @@ export function Step2AttackPath({
               hideHeaderToggle
             />
             {report.naive_containment.rfc7009_http_status_returned > 0 && (
-              <p className="muted text-[13px]">
+              <p className="muted text-[13px] text-slate-400">
                 RFC 7009 permits HTTP 200 for invalid tokens; related-token
                 revocation depends on provider policy. Google documents
                 project-token invalidation with possible propagation delay.
@@ -134,7 +135,7 @@ export function Step2AttackPath({
       {/* Autonomous Defensive Agent Swarm */}
       <AgentSwarmCenter report={report} />
 
-      <div className="flex flex-wrap justify-between gap-3">
+      <div className="flex flex-wrap justify-between gap-3 pt-2">
         <button type="button" className="control" onClick={onBack}>
           Back to input
         </button>

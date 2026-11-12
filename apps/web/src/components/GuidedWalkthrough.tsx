@@ -58,17 +58,17 @@ export function GuidedWalkthrough({
       data-ui="tour-coachmark"
     >
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[13px]">
-        <span aria-live="polite" aria-atomic="true" className="font-medium text-[#155768]">
+        <span aria-live="polite" aria-atomic="true" className="font-mono font-medium text-teal-300">
           {complete ? "Walkthrough complete" : `Guided example · ${step} of 3`}
         </span>
-        <button type="button" className="walkthrough-exit" onClick={onExit}>
+        <button type="button" className="walkthrough-exit text-slate-400 hover:text-white" onClick={onExit}>
           Explore without guidance
         </button>
       </div>
-      <h2 ref={heading} tabIndex={-1} className="mt-3 text-lg font-semibold">
+      <h2 ref={heading} tabIndex={-1} className="mt-3 text-lg font-semibold text-white">
         {complete ? "Your next step is a real review." : current.title}
       </h2>
-      <p className="muted mt-2 max-w-[80ch]">
+      <p className="muted mt-2 max-w-[80ch] text-slate-300">
         {complete
           ? "You’ve seen the evidence, a possible exposure chain and a provider review action. No account was changed or verified. Try your own input when you’re ready."
           : current.body}

@@ -151,22 +151,22 @@ export function DominoGraph({
   return (
     <section
       aria-label="Blast-radius domino escalation map"
-      className="border-t border-[#e8eaec] px-5 pb-6 pt-6"
+      className="border-t border-[#1e2636] px-5 pb-6 pt-6"
     >
       {/* Header row */}
       <div className="flex flex-col justify-between gap-3 pb-4 lg:flex-row lg:items-center">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h2 className="text-[16px] font-semibold leading-[1.4] text-[#131416]">
+            <h2 className="text-[16px] font-semibold leading-[1.4] text-white">
               Full conditional exposure model
             </h2>
             <span
               className="inline-flex h-6 items-center rounded-full px-2.5 text-[13px] font-medium tabular-nums"
               style={{
                 backgroundColor:
-                  isNaive && persistingCount > 0 ? "#ffedea" : "#dcfae5",
+                  isNaive && persistingCount > 0 ? "rgba(244, 63, 94, 0.18)" : "rgba(16, 185, 129, 0.18)",
                 color:
-                  isNaive && persistingCount > 0 ? "#831c1e" : "#04250e",
+                  isNaive && persistingCount > 0 ? "#fda4af" : "#6ee7b7",
               }}
             >
               {isNaive
@@ -176,7 +176,7 @@ export function DominoGraph({
                 : `${containedCount} modeled nodes: projected cleanup only`}
             </span>
           </div>
-          <p className="mt-1 text-[14px] leading-[1.5] text-[#5d5f60]">
+          <p className="mt-1 text-[14px] leading-[1.5] text-slate-400">
             Explore conditional consequences across
             trust boundaries. Select a node to inspect its assumptions. No account activity is measured.
           </p>
@@ -194,8 +194,8 @@ export function DominoGraph({
                 onClick={() => onChangeSimulationMode("naive_single_revoke")}
                 className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
                   isNaive
-                    ? "border-[#131416] bg-[#131416] text-[#ffffff]"
-                    : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+                    ? "border-teal-500 bg-teal-500 text-[#03211b] font-semibold shadow-sm shadow-teal-500/20"
+                    : "border-[#2b3548] bg-[#141924] text-slate-300 hover:text-white hover:border-slate-600"
                 }`}
               >
                 Naive single revoke
@@ -205,8 +205,8 @@ export function DominoGraph({
                 onClick={() => onChangeSimulationMode("full_multi_issuer")}
                 className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
                   !isNaive
-                    ? "border-[#1e7b4f] bg-[#1e7b4f] text-[#ffffff]"
-                    : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:text-[#131416]"
+                    ? "border-emerald-500 bg-emerald-500 text-[#04250e] font-semibold shadow-sm shadow-emerald-500/20"
+                    : "border-[#2b3548] bg-[#141924] text-slate-300 hover:text-white hover:border-slate-600"
                 }`}
               >
                 Full multi-issuer plan
@@ -218,7 +218,7 @@ export function DominoGraph({
             <button
               type="button"
               onClick={() => setShowAllNodes((v) => !v)}
-              className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#cdced1] bg-[#ffffff] px-3 text-[13px] font-medium text-[#131416] transition hover:bg-[#f4f6f8]"
+              className="inline-flex h-8 items-center gap-1 rounded-[6px] border border-[#2b3548] bg-[#141924] px-3 text-[13px] font-medium text-slate-200 transition hover:bg-[#1b2332]"
             >
               {showAllNodes ? (
                 <>
@@ -236,9 +236,9 @@ export function DominoGraph({
         </div>
       </div>
 
-      {/* Boundary Filter Strip (unboxed horizontal rule band) */}
-      <div className="flex flex-wrap items-center gap-2 border-y border-[#f0f1f2] py-2.5">
-        <span className="text-[13px] font-medium text-[#5d5f60]">
+      {/* Boundary Filter Strip */}
+      <div className="flex flex-wrap items-center gap-2 border-y border-[#1e2636] py-2.5">
+        <span className="text-[13px] font-medium text-slate-400">
           Trust boundaries crossed:
         </span>
         {report.summary.trust_boundary_crossings.map((tb) => {
@@ -251,14 +251,14 @@ export function DominoGraph({
               onClick={() => setHighlightedBoundary(active ? null : tb)}
               className="inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium transition"
               style={{
-                backgroundColor: active ? "#131416" : meta.tagBg,
-                color: active ? "#ffffff" : meta.tagInk,
+                backgroundColor: active ? "#ffffff" : meta.tagBg,
+                color: active ? "#000000" : meta.tagInk,
               }}
             >
               <span
                 className="h-2 w-2 rounded-full"
                 style={{
-                  backgroundColor: active ? "#ffffff" : meta.colorHex,
+                  backgroundColor: active ? "#000000" : meta.colorHex,
                 }}
               />
               {meta.label}
@@ -269,16 +269,16 @@ export function DominoGraph({
           <button
             type="button"
             onClick={() => setHighlightedBoundary(null)}
-            className="ml-1 text-[13px] font-medium text-[#1b6c80] hover:underline"
+            className="ml-1 text-[13px] font-medium text-teal-400 hover:underline"
           >
             Reset filter
           </button>
         )}
       </div>
 
-      {/* 4-Stage Escalation Transit Columns (unboxed horizontal flow with vertical stage dividers) */}
+      {/* 4-Stage Escalation Transit Columns */}
       {report.graph.nodes.length === 0 ? (
-        <div className="py-12 text-center text-[14px] leading-[1.5] text-[#5d5f60]">
+        <div className="py-12 text-center text-[14px] leading-[1.5] text-slate-400">
           No escalation chain built for this input. Choose an incident on the
           left or paste an OAuth authorize URL.
         </div>
@@ -303,19 +303,19 @@ export function DominoGraph({
               return (
                 <div
                   key={stage}
-                  className="relative flex min-w-0 flex-col xl:border-l xl:border-[#f0f1f2] xl:pl-4 xl:first:border-l-0 xl:first:pl-0"
+                  className="relative flex min-w-0 flex-col xl:border-l xl:border-[#1e2636] xl:pl-4 xl:first:border-l-0 xl:first:pl-0"
                 >
                   {/* Stage Column Header */}
-                  <div className="mb-2.5 flex items-baseline justify-between gap-2 border-b border-[#e8eaec] pb-2">
+                  <div className="mb-2.5 flex items-baseline justify-between gap-2 border-b border-[#1e2636] pb-2">
                     <div>
-                      <div className="text-[14px] font-semibold leading-[1.4] text-[#131416]">
+                      <div className="text-[14px] font-semibold leading-[1.4] text-white">
                         {title}
                       </div>
-                      <div className="text-[13px] leading-[1.4] text-[#5d5f60]">
+                      <div className="text-[13px] leading-[1.4] text-slate-400">
                         {hint}
                       </div>
                     </div>
-                    <span className="shrink-0 text-[13px] font-medium text-[#5d5f60] tabular-nums">
+                    <span className="shrink-0 text-[13px] font-medium text-slate-400 tabular-nums">
                       {stagePersisting > 0 && isNaive
                         ? `${stagePersisting} modeled`
                         : `${allStageNodes.length}`}
@@ -326,21 +326,21 @@ export function DominoGraph({
                   {colIdx < 3 && (
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none absolute -right-4 top-2.5 hidden text-[#9ca3af] xl:block"
+                      className="pointer-events-none absolute -right-4 top-2.5 hidden text-slate-600 xl:block"
                     >
                       <ArrowRight size={14} weight="bold" />
                     </div>
                   )}
 
-                  {/* Stage Node Rows (clean hairline rows with inline semantic status) */}
+                  {/* Stage Node Rows */}
                   {allStageNodes.length === 0 ? (
-                    <div className="py-3 text-[13px] leading-[1.45] text-[#5d5f60]">
+                    <div className="py-3 text-[13px] leading-[1.45] text-slate-400">
                       {report.summary.max_hops <= 3 && stage === 3
                         ? "Chain stays inside 3 hops."
                         : "Chain terminates before this hop."}
                     </div>
                   ) : (
-                    <div className="divide-y divide-[#f0f1f2]">
+                    <div className="divide-y divide-[#182030]">
                       {visibleNodes.map((node) => {
                         const isPersisting =
                           isNaive &&
@@ -359,16 +359,16 @@ export function DominoGraph({
                             key={node.id}
                             type="button"
                             onClick={() => setSelectedNodeId(node.id)}
-                            className={`w-full py-2.5 px-2 text-left transition hover:bg-[#f9fbfc] ${
-                              isSelected ? "bg-[#f4f6f8]" : ""
-                            } ${dimmed ? "opacity-35" : "opacity-100"}`}
+                            className={`w-full py-2.5 px-2 text-left transition hover:bg-[#141a28] rounded-md ${
+                              isSelected ? "bg-[#162030] border-l-2 border-teal-400" : ""
+                            } ${dimmed ? "opacity-30" : "opacity-100"}`}
                           >
                             <div className="flex items-start justify-between gap-2">
                               <span
                                 className={`text-[14px] leading-[1.4] ${
                                   isSelected
-                                    ? "font-semibold text-[#1b6c80]"
-                                    : "font-medium text-[#131416]"
+                                    ? "font-semibold text-teal-300"
+                                    : "font-medium text-slate-200"
                                 }`}
                               >
                                 {humanizeNodeLabel(node)}
@@ -378,30 +378,30 @@ export function DominoGraph({
                                   <WarningCircle
                                     size={16}
                                     weight="fill"
-                                    className="text-[#c4242a]"
+                                    className="text-rose-400"
                                   />
                                 ) : isContained ? (
                                   <CheckCircle
                                     size={16}
                                     weight="fill"
-                                    className="text-[#1e7b4f]"
+                                    className="text-emerald-400"
                                   />
                                 ) : null}
                               </span>
                             </div>
 
                             <div className="mt-1 flex flex-wrap items-center justify-between gap-2 text-[13px] leading-[1.4]">
-                              <span className="text-[#5d5f60]">
+                              <span className="text-slate-400">
                                 {PROVIDER_LABELS[node.provider]} · {tbMeta.short}
                               </span>
                               <span
                                 className="font-medium tabular-nums"
                                 style={{
                                   color: isPersisting
-                                    ? "#831c1e"
+                                    ? "#fda4af"
                                     : !isNaive
-                                      ? "#04250e"
-                                      : "#5d5f60",
+                                      ? "#6ee7b7"
+                                      : "#94a3b8",
                                 }}
                               >
                                 {isPersisting
@@ -421,7 +421,7 @@ export function DominoGraph({
                         <button
                           type="button"
                           onClick={() => setShowAllNodes(true)}
-                          className="w-full py-2.5 text-left text-[13px] font-medium text-[#1b6c80] hover:underline"
+                          className="w-full py-2.5 text-left text-[13px] font-medium text-teal-400 hover:underline"
                         >
                           Show {hiddenCount} additional target
                           {hiddenCount === 1 ? "" : "s"} in stage {stage + 1}
@@ -436,13 +436,13 @@ export function DominoGraph({
         </div>
       )}
 
-      {/* Selected Step Forensic Inspector (clean top hairline, zero side tab or boxed card) */}
+      {/* Selected Step Forensic Inspector */}
       {activeNode && (
-        <div className="mt-5 border-t border-[#e8eaec] pt-4">
+        <div className="mt-5 border-t border-[#1e2636] pt-4">
           <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
             <div className="max-w-[74ch]">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[14px] font-semibold leading-[1.4] text-[#131416]">
+                <span className="text-[14px] font-semibold leading-[1.4] text-white">
                   Selected node: {humanizeNodeLabel(activeNode)}
                 </span>
                 <span
@@ -465,21 +465,21 @@ export function DominoGraph({
                   {TRUST_BOUNDARY_META[activeNode.trust_boundary].label}
                 </span>
               </div>
-              <p className="mt-1.5 text-[14px] leading-[1.5] text-[#5d5f60]">
+              <p className="mt-1.5 text-[14px] leading-[1.5] text-slate-300">
                 {activeNode.notes}
               </p>
               {activeNodeIncoming.length > 0 && (
-                <div className="mt-1.5 text-[13px] leading-[1.45] text-[#5d5f60]">
+                <div className="mt-1.5 text-[13px] leading-[1.45] text-slate-400">
                   Escalation trigger:{" "}
-                  <span className="font-medium text-[#131416]">
+                  <span className="font-medium text-white">
                     {activeNodeIncoming[0].mechanism}
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="shrink-0 text-[13px] text-[#5d5f60]">
-              Raw key: <code>{activeNode.label}</code>
+            <div className="shrink-0 font-mono text-[12px] text-slate-400">
+              Raw key: <code className="rounded bg-[#141924] px-1.5 py-0.5 text-slate-300">{activeNode.label}</code>
             </div>
           </div>
         </div>

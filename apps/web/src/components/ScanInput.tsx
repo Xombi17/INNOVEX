@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { analyzeInput, type Analysis } from "@/lib/analysis";
 import type { RepositoryResult } from "@/lib/repositoryScan";
+
 type InputType = "mcp_config" | "oauth_url" | "github_repo" | "takeout_grant";
 const INPUTS: { id: InputType; label: string }[] = [
   { id: "mcp_config", label: "Configuration file" },
@@ -183,7 +184,7 @@ export function ScanInput({
         aria-busy={busy}
         className="space-y-3"
       >
-        <label htmlFor="scan-input" className="block font-medium">
+        <label htmlFor="scan-input" className="block font-medium text-white">
           {type === "mcp_config"
             ? "Paste .env assignments or MCP JSON"
             : type === "oauth_url"
@@ -192,7 +193,7 @@ export function ScanInput({
                 ? "GitHub repository URL or owner/repo"
                 : "Paste a grant export as JSON"}
         </label>
-        <p id="input-help" className="muted max-w-[75ch]">
+        <p id="input-help" className="muted max-w-[75ch] text-slate-400">
           {type === "mcp_config"
             ? "Find .env or .mcp.json in your project folder. Environment references and example placeholders are listed separately from credential-like values."
             : type === "oauth_url"
@@ -215,7 +216,7 @@ export function ScanInput({
             if (type === "mcp_config")
               void readFile(event.dataTransfer.files[0]);
           }}
-          className={dragging ? "rounded-lg bg-[#e6f2f5] p-2" : ""}
+          className={dragging ? "rounded-lg border-2 border-dashed border-teal-400 bg-teal-500/10 p-2" : ""}
         >
           {type === "mcp_config" || type === "takeout_grant" ? (
             <textarea
@@ -227,7 +228,7 @@ export function ScanInput({
               spellCheck={false}
               aria-invalid={!!error}
               aria-describedby={`input-help input-privacy${error ? " input-error" : ""}`}
-              className="field"
+              className="field font-mono text-xs"
               placeholder={
                 type === "mcp_config"
                   ? "OPENAI_API_KEY=${OPENAI_API_KEY}"
@@ -245,7 +246,7 @@ export function ScanInput({
               aria-describedby={`input-help input-privacy${error ? " input-error" : ""}`}
               autoComplete="off"
               spellCheck={false}
-              className="field"
+              className="field font-mono text-xs"
               placeholder={
                 type === "oauth_url"
                   ? "https://accounts.google.com/o/oauth2/v2/auth?…"
@@ -254,7 +255,7 @@ export function ScanInput({
             />
           )}
         </div>
-        <p id="input-privacy" className="muted text-[13px]">
+        <p id="input-privacy" className="muted text-[13px] text-slate-400">
           {type === "github_repo"
             ? "Our server retrieves files from GitHub and returns only redacted findings and coverage. File contents are not sent to an AI service."
             : "Parsed in this browser. File contents and credential values are not uploaded. An optional AI summary uses only provider names and counts, after you request it."}
@@ -281,7 +282,7 @@ export function ScanInput({
               >
                 Choose file
               </button>
-              <span className="muted text-[13px]">or drop a text file</span>
+              <span className="muted text-[13px] text-slate-400">or drop a text file</span>
             </>
           )}
           <button
@@ -303,17 +304,17 @@ export function ScanInput({
             </button>
           )}
         </div>
-        <p role="status" className="muted text-[13px]">
+        <p role="status" className="muted text-[13px] text-teal-300">
           {status}
         </p>
         {error && (
-          <p role="alert" id="input-error" className="text-[#831c1e]">
+          <p role="alert" id="input-error" className="text-rose-400">
             {error} Results from earlier input have been cleared.
           </p>
         )}
       </form>
-      <details className="border-t border-[#e8eaec] pt-3">
-        <summary className="cursor-pointer text-[#1b6c80]">
+      <details className="border-t border-[#1e2636] pt-3">
+        <summary className="cursor-pointer text-teal-400 hover:text-teal-300">
           Advanced input
         </summary>
         <button

@@ -4,6 +4,7 @@ import type { AuditReport, SimulationMode } from "@contracts/index";
 import { ContainmentComparison } from "./ContainmentComparison";
 import { PreConsentPreview } from "./PreConsentPreview";
 import { ConsentTrapSandbox } from "./ConsentTrapSandbox";
+
 interface Props {
   report: AuditReport;
   guidance?: ReactNode;
@@ -13,6 +14,7 @@ interface Props {
   onInspectUrl: (url: string) => void;
   onBack: () => void;
 }
+
 export function Step3FixBlocker({
   report,
   guidance,
@@ -26,10 +28,10 @@ export function Step3FixBlocker({
   return (
     <div className="space-y-6">
       <div>
-        <h1 tabIndex={-1} className="text-2xl font-semibold">
+        <h1 tabIndex={-1} className="text-2xl font-semibold text-white">
           Review recommended actions
         </h1>
-        <p className="muted mt-2">
+        <p className="muted mt-2 text-slate-300">
           Use provider settings to investigate and clean up confirmed exposure.
           Open technical details when you need them.
         </p>
@@ -40,12 +42,12 @@ export function Step3FixBlocker({
         simulationMode={simulationMode}
         onChangeSimulationMode={onChangeSimulationMode}
       />
-      <details className="border-t border-[#e8eaec] pt-3">
-        <summary className="cursor-pointer font-semibold">
+      <details className="border-t border-[#1e2636] pt-3">
+        <summary className="cursor-pointer font-semibold text-white hover:text-teal-300 transition-colors">
           Prevent future overbroad app access
         </summary>
         <div className="mt-4 space-y-5">
-          <p className="muted">
+          <p className="muted text-slate-400">
             The website demonstration does not enable browser protection. The
             extension must be installed separately in desktop Chrome, and
             supports specific Google, GitHub and Microsoft authorization pages.
@@ -66,9 +68,9 @@ export function Step3FixBlocker({
           )}
           <section
             aria-label="Install browser extension"
-            className="space-y-3 border-t border-[#e8eaec] pt-4"
+            className="space-y-3 border-t border-[#1e2636] pt-4"
           >
-            <h2 className="font-semibold">Install the Chrome extension</h2>
+            <h2 className="font-semibold text-white">Install the Chrome extension</h2>
             <a
               className="control"
               href="/downloads/scopebomb-mv3-extension.zip"
@@ -76,10 +78,10 @@ export function Step3FixBlocker({
             >
               Download extension (.zip)
             </a>
-            <ol className="list-decimal space-y-2 pl-5">
+            <ol className="list-decimal space-y-2 pl-5 text-slate-300">
               <li>Download and extract the archive.</li>
               <li>
-                On desktop Chrome, open <code>chrome://extensions</code> and
+                On desktop Chrome, open <code className="rounded bg-[#141924] px-1.5 py-0.5 text-teal-300">chrome://extensions</code> and
                 enable Developer mode.
               </li>
               <li>
@@ -87,7 +89,7 @@ export function Step3FixBlocker({
                 ScopeBomb appears enabled.
               </li>
             </ol>
-            <p className="muted text-[13px]">
+            <p className="muted text-[13px] text-slate-400">
               Then use the extension popup to inspect a supported authorization
               URL. Downloading the archive or using this sandbox does not
               install protection. This website cannot confirm extension

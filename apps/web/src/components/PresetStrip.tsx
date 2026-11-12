@@ -22,8 +22,8 @@ export function PresetStrip({
   onSelectPreset,
 }: PresetStripProps) {
   return (
-    <div className="border-t border-[#f0f1f2] px-5 py-3.5">
-      <div className="mb-2 text-[13px] font-medium text-[#5d5f60]">
+    <div className="border-t border-[#1e2636] px-5 py-3.5">
+      <div className="mb-2 text-[13px] font-medium text-slate-400">
         Choose an illustrative scenario (not a forensic reconstruction):
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -35,10 +35,10 @@ export function PresetStrip({
               type="button"
               onClick={() => onSelectPreset(preset)}
               aria-pressed={isActive}
-              className={`inline-flex min-h-11 shrink-0 items-center rounded-[9999px] border px-3 text-[13px] whitespace-nowrap transition ${
+              className={`inline-flex min-h-11 shrink-0 items-center rounded-full border px-3.5 text-[13px] whitespace-nowrap transition-all duration-150 ${
                 isActive
-                  ? "border-[#131416] bg-[#131416] text-[#ffffff]"
-                  : "border-[#cdced1] bg-[#ffffff] text-[#5d5f60] hover:bg-[#f4f6f8] hover:text-[#131416]"
+                  ? "border-teal-400 bg-teal-500 text-[#03211b] font-semibold shadow-sm shadow-teal-500/25"
+                  : "border-[#2b3548] bg-[#141924] text-slate-300 hover:border-slate-600 hover:bg-[#1a2130] hover:text-white"
               }`}
             >
               {PRESET_SHORT_NAMES[preset.preset_id] ?? preset.title} ·{" "}
