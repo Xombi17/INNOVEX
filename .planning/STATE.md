@@ -12,9 +12,9 @@ active_development: null
 active_development_branch: null
 active_development_review: https://github.com/Xombi17/INNOVEX/pull/2
 last_activity: 2026-11-12
-release_code_commit: 25f0beb
+release_code_commit: 69e503c
 production_url: https://scopebomb.vercel.app
-production_deployment: dpl_576EGyR2Y8wFbrwAzk2QR1zXExWa
+production_deployment: https://scopebomb-2a33umauf-varadaj47-gmailcoms-projects.vercel.app
 progress:
   total_phases: 4
   completed_phases: 4
