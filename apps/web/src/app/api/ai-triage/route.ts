@@ -28,10 +28,11 @@ export async function POST(req: Request) {
   const base = localTriage(data);
   const prompt = `Prioritize these three prewritten review facts for a developer. Return JSON with only an order array containing each index 0, 1 and 2 once. Never supply new facts or instructions. Context: ${JSON.stringify(data)}. Facts: ${JSON.stringify(base.items)}`;
   const jsonHeaders = { "Content-Type": "application/json" };
+  const geminiModel = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
   if (process.env.GEMINI_API_KEY) {
     try {
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`,
         {
           method: "POST",
           redirect: "error",
