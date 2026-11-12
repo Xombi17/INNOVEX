@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import type { AuditReport, SimulationMode } from "@contracts/index";
 import { DominoGraph } from "./DominoGraph";
 import { humanizeNodeLabel } from "./uiTokens";
+import { AgentSwarmCenter } from "./AgentSwarmCenter";
 export function Step2AttackPath({
   report,
   guidance,
@@ -129,6 +130,10 @@ export function Step2AttackPath({
           </div>
         )}
       </details>
+
+      {/* Autonomous Defensive Agent Swarm */}
+      <AgentSwarmCenter report={report} />
+
       <div className="flex flex-wrap justify-between gap-3">
         <button type="button" className="control" onClick={onBack}>
           Back to input
