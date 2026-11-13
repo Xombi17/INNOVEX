@@ -99,11 +99,6 @@ export function ScopeBombArena({
 
   const setTab = (newTab: AppTab) => {
     setActiveTab(newTab);
-    const address = new URL(window.location.href);
-    address.searchParams.set("tab", newTab);
-    if (address.href !== window.location.href) {
-      window.history.pushState(null, "", address);
-    }
   };
 
   const clearGuideLink = () => {
@@ -131,6 +126,7 @@ export function ScopeBombArena({
     if (suppliedUrl) {
       setInitialUrl(suppliedUrl);
       setEntry("input");
+      setActiveTab("arena");
       try {
         const result = analyzeInput(
           {
@@ -204,6 +200,7 @@ export function ScopeBombArena({
   const sample = (preset: IncidentPresetSummary = presets[0]) => {
     if (!preset) return;
     setEntry("sample");
+    setActiveTab("arena");
     setBusy(false);
     const result =
       preset.preset_id === initialReport.preset_id
@@ -236,6 +233,7 @@ export function ScopeBombArena({
   const startInput = () => {
     setWalkthrough("off");
     setEntry("input");
+    setActiveTab("arena");
     setAnalysis(null);
     setUrl(null);
     setNotice("");
@@ -312,7 +310,7 @@ export function ScopeBombArena({
           </div>
 
           {/* DeepSeek & Harness Style Multi-Tab Navigation Bar */}
-          <nav className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto text-xs font-medium">
+          <div role="tablist" aria-label="Sections" className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto text-xs font-medium">
             <button
               type="button"
               onClick={() => setTab("overview")}
@@ -379,7 +377,7 @@ export function ScopeBombArena({
             >
               CLI & Extension
             </button>
-          </nav>
+          </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -409,7 +407,7 @@ export function ScopeBombArena({
                   go(1);
                 }}
               >
-                Walkthrough
+                Resume walkthrough
               </button>
             )}
             {activeTab === "arena" && entry !== "welcome" && (
@@ -424,7 +422,7 @@ export function ScopeBombArena({
                   navigating.current = true;
                 }}
               >
-                Reset
+                Start over
               </button>
             )}
           </div>

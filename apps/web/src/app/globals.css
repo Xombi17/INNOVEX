@@ -339,6 +339,12 @@ a {
   line-height: 1.6;
 }
 
+/* Prevent background scrollbar from offsetting modal centering */
+html:has(dialog[open]),
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
 /* Centered accessible dialog */
 .scope-dialog {
   margin: auto;
