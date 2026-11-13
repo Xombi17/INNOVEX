@@ -57,14 +57,79 @@ export function enrichContainmentStep(step: ContainmentStep, _report?: AuditRepo
   if (step.action_type === "invalidate_sessions" && !issuer.includes("microsoft")) return { ...base,
     expectedStatus: "Provider session inventory and affected account access checked; no verification was performed by ScopeBomb.",
   };
-  if (issuer.includes("google")) return { ...base, providerLabel: "Google Identity",
-    copyableCommand: 'curl -sS -X POST https://oauth2.googleapis.com/revoke --data-urlencode "token=$OLD_TOKEN"',
-    verificationProbe: 'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" https://www.googleapis.com/drive/v3/about?fields=user',
-    expectedStatus: "Old access token rejected as invalid (normally 401); use an API this grant could access before revocation.",
-    consoleUrl: "https://myaccount.google.com/connections",
-    rfcNote: "RFC 7009 returns 200 for invalid tokens too, and access-token cascading is SHOULD. Google documents its own revocation behavior; confirm rejection after propagation and inspect other issuers separately.",
-    documentationUrl: "https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke",
-  };
+  if (issuer.includes("google")) {
+    const target = step.target_resource.toLowerCase();
+    if (
+      target.includes("gmail") ||
+      target.includes("mail") ||
+      target.includes("filter") ||
+      target.includes("forward")
+    ) {
+      return {
+        ...base,
+        providerLabel: "Gmail Forwarding & Filter Security",
+        copyableCommand:
+          "# Review and delete unauthorized mail forwarding rules & filters:\n# Open Gmail Settings -> Forwarding and POP/IMAP",
+        verificationProbe:
+          'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" https://gmail.googleapis.com/gmail/v1/users/me/settings/forwardingAddresses',
+        expectedStatus:
+          "Forwarding addresses removed; old token rejected with 401.",
+        consoleUrl: "https://mail.google.com/mail/u/0/#settings/fwdandpop",
+        rfcNote:
+          "OAuth revocation alone does NOT delete Gmail forwarding filters previously planted by an attacker.",
+        documentationUrl: "https://support.google.com/mail/answer/10957",
+      };
+    }
+    if (target.includes("drive")) {
+      return {
+        ...base,
+        providerLabel: "Google Drive File Access",
+        copyableCommand:
+          "# Review shared files and external permissions in Google Drive:\n# Inspect recently modified/shared sensitive files",
+        verificationProbe:
+          'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" https://www.googleapis.com/drive/v3/about?fields=user',
+        expectedStatus: "Old access token rejected with 401 Unauthorized.",
+        consoleUrl: "https://drive.google.com/drive/u/0/my-drive",
+        rfcNote:
+          "Files exported or downloaded by the app remain outside Google Drive; revoking access does not recover copied data.",
+        documentationUrl: "https://support.google.com/drive/answer/2494886",
+      };
+    }
+    if (
+      target.includes("session") ||
+      step.action_type === "invalidate_sessions"
+    ) {
+      return {
+        ...base,
+        providerLabel: "Google Account Active Sessions",
+        copyableCommand:
+          '# Terminate all active Google sessions and revoke app passwords:\n# Check "Your devices" in Google Security',
+        verificationProbe:
+          'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" https://www.googleapis.com/oauth2/v3/userinfo',
+        expectedStatus:
+          "All active sessions terminated and device tokens invalidated (401).",
+        consoleUrl: "https://myaccount.google.com/security",
+        rfcNote:
+          "Disconnecting an app does not sign out active attacker browser sessions or revoke minted app passwords.",
+        documentationUrl: "https://support.google.com/accounts/answer/3067630",
+      };
+    }
+    return {
+      ...base,
+      providerLabel: "Google Connected Applications",
+      copyableCommand:
+        'curl -sS -X POST https://oauth2.googleapis.com/revoke --data-urlencode "token=$OLD_TOKEN"',
+      verificationProbe:
+        'curl -sS -i -H "Authorization: Bearer $OLD_ACCESS_TOKEN" https://www.googleapis.com/drive/v3/about?fields=user',
+      expectedStatus:
+        "Old access token rejected as invalid (normally 401); use an API this grant could access before revocation.",
+      consoleUrl: "https://myaccount.google.com/connections",
+      rfcNote:
+        "RFC 7009 returns 200 for invalid tokens too, and access-token cascading is SHOULD. Google documents its own revocation behavior; confirm rejection after propagation and inspect other issuers separately.",
+      documentationUrl:
+        "https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke",
+    };
+  }
   if (issuer.includes("github")) {
     if (step.action_type === "github_grant_delete") return { ...base, providerLabel: "GitHub OAuth Applications",
       copyableCommand: 'curl -sS -i -X DELETE -u "$CLIENT_ID:$CLIENT_SECRET" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" "https://api.github.com/applications/$CLIENT_ID/grant" --data "{\\"access_token\\":\\"$OLD_TOKEN\\"}"',
