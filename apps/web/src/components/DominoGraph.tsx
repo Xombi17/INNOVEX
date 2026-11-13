@@ -90,6 +90,9 @@ export function DominoGraph({
   const [highlightedBoundary, setHighlightedBoundary] =
     useState<TrustBoundary | null>(null);
   const [showAllNodes, setShowAllNodes] = useState(false);
+  const [detonating, setDetonating] = useState(false);
+  const [detonationStage, setDetonationStage] = useState<number | null>(null);
+  const [detonationDone, setDetonationDone] = useState(false);
 
   const outcome =
     simulationMode === "naive_single_revoke"
@@ -125,6 +128,37 @@ export function DominoGraph({
     }
     return buckets;
   }, [report.graph.nodes, report.graph.edges, persistingNodeSet]);
+
+  const detonateSimulation = () => {
+    if (detonating) return;
+    setDetonating(true);
+    setDetonationDone(false);
+    setSelectedNodeId(null);
+    onChangeSimulationMode("naive_single_revoke");
+
+    let current = 0;
+    setDetonationStage(0);
+    const firstNode = stageBuckets[0]?.[0];
+    if (firstNode) setSelectedNodeId(firstNode.id);
+
+    const interval = setInterval(() => {
+      current += 1;
+      if (current <= 3) {
+        setDetonationStage(current);
+        const node = stageBuckets[current]?.[0];
+        if (node) setSelectedNodeId(node.id);
+      } else {
+        clearInterval(interval);
+        setDetonating(false);
+        setDetonationDone(true);
+        setDetonationStage(null);
+        const deepestPersisting =
+          report.graph.nodes.find((n) => persistingNodeSet.has(n.id)) ??
+          stageBuckets[3]?.[0];
+        if (deepestPersisting) setSelectedNodeId(deepestPersisting.id);
+      }
+    }, 700);
+  };
 
   const activeNode: BlastNode | null = useMemo(() => {
     if (selectedNodeId) {
@@ -183,6 +217,21 @@ export function DominoGraph({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled={detonating}
+            onClick={detonateSimulation}
+            className="inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-rose-500/50 bg-rose-500/15 px-3 text-[13px] font-semibold text-rose-300 shadow-sm transition hover:bg-rose-500/25 hover:border-rose-400 disabled:opacity-60"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
+            </span>
+            {detonating
+              ? `Detonating Hop ${(detonationStage ?? 0) + 1}/4…`
+              : "Detonate Attack Simulation"}
+          </button>
+
           {!hideHeaderToggle && (
             <div
               className="inline-flex items-center gap-1.5"
@@ -276,6 +325,28 @@ export function DominoGraph({
         )}
       </div>
 
+      {/* Detonation Banner */}
+      {detonationDone && (
+        <div className="my-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rose-500/40 bg-rose-950/40 px-4 py-3 text-xs text-rose-200">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-rose-400">💥 DETONATION COMPLETE:</span>
+            <span>Attacker leaped trust boundaries from initial OAuth grant into cloud infrastructure in 4 hops.</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[11px] text-rose-300">
+              Under standard disconnect: <strong>{persistingCount} tokens survive</strong>
+            </span>
+            <button
+              type="button"
+              onClick={() => onChangeSimulationMode("full_multi_issuer")}
+              className="rounded bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/30"
+            >
+              Test Surgical Containment ➔
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 4-Stage Escalation Transit Columns */}
       {report.graph.nodes.length === 0 ? (
         <div className="py-12 text-center text-[14px] leading-[1.5] text-slate-400">
@@ -303,13 +374,22 @@ export function DominoGraph({
               return (
                 <div
                   key={stage}
-                  className="relative flex min-w-0 flex-col xl:border-l xl:border-[#1e2636] xl:pl-4 xl:first:border-l-0 xl:first:pl-0"
+                  className={`relative flex min-w-0 flex-col rounded-lg p-2 transition-all duration-300 xl:border-l xl:border-[#1e2636] xl:pl-4 xl:first:border-l-0 xl:first:pl-0 ${
+                    detonationStage === stage
+                      ? "ring-2 ring-rose-500 bg-rose-500/[0.08] shadow-lg shadow-rose-500/20"
+                      : ""
+                  }`}
                 >
                   {/* Stage Column Header */}
                   <div className="mb-2.5 flex items-baseline justify-between gap-2 border-b border-[#1e2636] pb-2">
                     <div>
-                      <div className="text-[14px] font-semibold leading-[1.4] text-white">
-                        {title}
+                      <div className="flex items-center gap-1.5 text-[14px] font-semibold leading-[1.4] text-white">
+                        <span>{title}</span>
+                        {detonationStage === stage && (
+                          <span className="rounded bg-rose-500 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white animate-pulse">
+                            BREACH
+                          </span>
+                        )}
                       </div>
                       <div className="text-[13px] leading-[1.4] text-slate-400">
                         {hint}

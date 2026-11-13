@@ -4,6 +4,7 @@
 
 - ✅ **v1.0 MVP** - Phases 0–3: Core Engine, Web Arena, Chrome MV3 Guard & Initial Vercel Deploy (shipped 2026-11-10)
 - ✅ **v1.1 New-User UX, AI Triage & Sandbox** - Phases 4–7: Guided 3-Step Flow, Live GitHub Scanner, AI Threat Triage, Concrete Kill Switches, Chrome Extension Sandbox & Production Ship (shipped 2026-11-10)
+- 🚀 **v1.2 Enterprise Security Platform & Hackathon Flagship** - Phases 8–12: Instant Attack Detonator, Live Swarm Streaming, Multi-Cloud Active Revocation, CI/CD Gate CLI & Distributed Tracing (IN PROGRESS)
 
 ## Phases
 
@@ -78,10 +79,65 @@ See full archive: `.planning/milestones/v1.1-roadmap.md`
   3. `PRODUCT.md`, `DESIGN.md`, `README.md`, Graphify, git branches, and production deployment updated.
 **Status**: Complete (commit `90a288c`)
 
+### Phase 8: Instant Attack Detonator & High-Impact Cockpit UI
+**Goal**: Deliver an immediate "Aha!" moment within 5 seconds of landing. Un-box the `DominoGraph` from the accordion onto the primary hero view, add a real-time animated "Detonate Scope Bomb" attack scrubber, and replace defensive text with punchy developer storytelling.
+**Depends on**: Phase 7
+**Requirements**: [HERO-01, HERO-02, HERO-03]
+**UI hint**: yes
+**Success Criteria**:
+  1. Visitors see the interactive Domino Graph immediately above the fold without clicking a collapsed accordion.
+  2. A pulsing **"Detonate Scope Bomb"** button triggers an animated sequence highlighting nodes sequentially from initial grant to multi-cloud takeover.
+  3. Interactive toggle between **"Naive Disconnect"** (exposing surviving breach nodes) and **"Surgical Multi-Issuer Containment"** is prominent and responsive.
+**Status**: Ready
+
+### Phase 9: Live 4-Agent Defense Swarm Streaming & Interactive Triage Mesh
+**Goal**: Convert the passive Agent Operations Center into a real-time collaborative defense mesh where Sentinel, Threat Modeler, Red Team, and Containment Commander stream structured security deliberation with one-click quick-action chips.
+**Depends on**: Phase 8
+**Requirements**: [SWARM-01, SWARM-02, SWARM-03]
+**UI hint**: yes
+**Success Criteria**:
+  1. 4 agent personas auto-stream concise, role-specific reasoning cards when a scenario is loaded or analyzed.
+  2. One-click quick-action pills allow instant evaluation of worst-case exploit paths, CISO reporting, and persistence probes.
+  3. Graceful fallback ensures instant offline response even if external LLM gateways throttle.
+**Status**: Planned
+
+### Phase 10: Multi-Cloud Token Revocation Engine & Active Containment API
+**Goal**: Elevate ScopeBomb from passive modeling to an active security remediation platform. Implement backend API endpoints that orchestrate real cloud revocation payloads across AWS (STS/IAM), GitHub (OAuth App grants/PATs), and Google.
+**Depends on**: Phase 9
+**Requirements**: [REMED-01, REMED-02, REMED-03]
+**UI hint**: no
+**Success Criteria**:
+  1. API routes `/api/remediate/aws` and `/api/remediate/github` generate syntactically valid, copy-ready or runnable API containment payloads.
+  2. Post-revocation verification probes test for exact HTTP 401/403 status codes.
+  3. A tamper-evident remediation ledger records completed containment actions with ISO timestamps.
+**Status**: Planned
+
+### Phase 11: Enterprise CI/CD Pipeline Gate & Standalone CLI Scanner (`scopebomb-cli`)
+**Goal**: Package the scanner into a standalone Node.js CLI and GitHub Action that developers and security teams can run in CI pipelines to block PRs introducing dangerous cascading scopes or uncontained MCP configs.
+**Depends on**: Phase 10
+**Requirements**: [CLI-01, CLI-02, CI-01]
+**UI hint**: no
+**Success Criteria**:
+  1. Standalone command `npx scopebomb scan .` or local executable parses local `.env`, `.mcp.json`, and manifests, outputting structured JSON and formatted terminal blast radiuses.
+  2. GitHub Action workflow runs on pull requests, detecting overbroad scopes and posting an automated blast radius PR comment.
+  3. Non-zero exit code on critical blast-radius thresholds to gate deployments.
+**Status**: Planned
+
+### Phase 12: OpenTelemetry Distributed Tracing, Verification Suite & Live Production Ship
+**Goal**: Instrument the full ingestion, graph traversal, and agent mesh with OpenTelemetry distributed tracing for deep enterprise observability, run complete CDP browser verification, update Graphify, and ship to live production.
+**Depends on**: Phase 11
+**Requirements**: [OTEL-01, VERIFY-01, SHIP-01]
+**UI hint**: yes
+**Success Criteria**:
+  1. OpenTelemetry trace spans emitted for input parsing, blast radius graph computation, and swarm consensus.
+  2. All automated tests (engine, web, extension, contracts, and headless Chrome browser CDP) pass with 0 errors.
+  3. Production deployment updated at `https://scopebomb.vercel.app` and knowledge graph refreshed with `graphify update .`.
+**Status**: Planned
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 4 -> 5 -> 6 -> 7
+Phases execute in numeric order: 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -93,3 +149,8 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7
 | 5. Live Repo Scanner & AI Triage | v1.1 | 1/1 | Complete | 2026-11-10 |
 | 6. Kill-Switches & Extension Sandbox | v1.1 | 1/1 | Complete | 2026-11-10 |
 | 7. E2E Audit, Doc Sync & Live Ship | v1.1 | 1/1 | Complete | 2026-11-10 |
+| 8. Instant Attack Detonator & UI Hero | v1.2 | 1/1 | Complete | 2026-11-13 |
+| 9. Live 4-Agent Defense Swarm Mesh | v1.2 | 0/1 | Ready | - |
+| 10. Multi-Cloud Active Revocation Engine | v1.2 | 0/1 | Planned | - |
+| 11. CI/CD Scanner & ScopeBomb CLI | v1.2 | 0/1 | Planned | - |
+| 12. OpenTelemetry Tracing & Live Ship | v1.2 | 0/1 | Planned | - |

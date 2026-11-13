@@ -73,63 +73,31 @@ export function Step2AttackPath({
           ))}
         </ol>
       )}
+      {/* Un-boxed Hero Domino Blast Radius Graph */}
+      <div className="rounded-xl border border-white/10 bg-[#0a0d15] shadow-2xl overflow-hidden">
+        <DominoGraph
+          report={report}
+          simulationMode={simulationMode}
+          onChangeSimulationMode={onChangeSimulationMode}
+        />
+      </div>
+
       <details onToggle={(event) => setExpanded(event.currentTarget.open)}>
-        <summary className="cursor-pointer font-medium text-teal-400 hover:text-teal-300">
-          Explore the full model and technical assumptions
+        <summary className="cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors">
+          View RFC 7009 protocol specifications and model assumptions
         </summary>
-        {expanded && (
-          <div className="mt-5 space-y-4">
-            <p className="muted text-[13px] text-slate-400">
-              Model contains {report.graph.nodes.length} nodes. Node counts are
-              not counts of confirmed attacks or distinct exploitable paths.
-              Severity {report.summary.max_risk_score}/100 is a rule-based
-              rating, not a probability.
+        <div className="mt-3 space-y-2 text-xs text-slate-400">
+          <p>
+            Model contains {report.graph.nodes.length} nodes across {report.summary.trust_boundary_crossings.length} trust boundaries.
+            Severity rating {report.summary.max_risk_score}/100 is rule-based.
+          </p>
+          {report.naive_containment.rfc7009_http_status_returned > 0 && (
+            <p>
+              RFC 7009 permits HTTP 200 for invalid tokens; downstream token cascading is only a SHOULD recommendation in the RFC.
+              Google project-level revocation may carry propagation delays.
             </p>
-            <div
-              role="group"
-              aria-label="Expected outcome preview"
-              className="flex flex-wrap gap-2"
-            >
-              <button
-                type="button"
-                className="control"
-                aria-pressed={simulationMode === "naive_single_revoke"}
-                onClick={() => onChangeSimulationMode("naive_single_revoke")}
-              >
-                Model one-provider cleanup
-              </button>
-              <button
-                type="button"
-                className="control"
-                aria-pressed={simulationMode === "full_multi_issuer"}
-                onClick={() => onChangeSimulationMode("full_multi_issuer")}
-              >
-                Preview expected outcome
-              </button>
-            </div>
-            <p className="text-amber-300 text-xs">
-              Simulation only. The full-plan preview assumes every required
-              action and verification succeeds. No remediation has been
-              performed or verified.
-            </p>
-            <DominoGraph
-              report={report}
-              simulationMode={simulationMode}
-              onChangeSimulationMode={onChangeSimulationMode}
-              hideHeaderToggle
-            />
-            {report.naive_containment.rfc7009_http_status_returned > 0 && (
-              <p className="muted text-[13px] text-slate-400">
-                RFC 7009 permits HTTP 200 for invalid tokens; related-token
-                revocation depends on provider policy. Google documents
-                project-token invalidation with possible propagation delay.
-                Independent keys, sessions and copied data require separate
-                review. Token lifetimes in this model are illustrative, not
-                measured.
-              </p>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </details>
 
       {/* Autonomous Defensive Agent Swarm */}

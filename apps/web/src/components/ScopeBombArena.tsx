@@ -335,14 +335,21 @@ export function ScopeBombArena({
             <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
               {/* Hero */}
               <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1 font-mono text-[11px] font-semibold text-rose-300 mb-3">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
+                  </span>
+                  RFC 7009 Security Blindspot · Zero Downstream Containment
+                </div>
                 <h1
                   tabIndex={-1}
                   className="text-2xl font-bold tracking-tight text-white sm:text-3xl sm:leading-tight"
                 >
-                  One rogue AI permission can compromise your entire stack.
+                  One rogue AI permission can compromise your entire cloud stack.
                 </h1>
-                <p className="mt-3 text-sm leading-relaxed text-slate-400 sm:text-[15px]">
-                  When you click <span className="font-semibold text-white">“Allow”</span> on an AI bot or paste an API token, permissions cascade across trust boundaries into repositories and production cloud infrastructure.
+                <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-[15px]">
+                  When you click <span className="font-semibold text-white">“Allow”</span> on an AI bot or paste an API token, permissions cascade across trust boundaries into repositories and production infrastructure. Standard “Disconnect” buttons only revoke the front door—leaving stolen cloud keys 100% active.
                 </p>
               </div>
 
@@ -403,20 +410,23 @@ export function ScopeBombArena({
 
               {/* Start Options */}
               <div className="grid gap-3.5 sm:grid-cols-2">
-                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5 transition hover:border-teal-500/40">
+                <div className="rounded-xl border border-rose-500/30 bg-rose-500/[0.02] p-4 sm:p-5 transition hover:border-rose-500/60 shadow-lg shadow-rose-500/5">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-semibold text-white sm:text-base">Take an interactive tour</h2>
-                    <span className="rounded bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 font-mono text-[10px] text-teal-300">Fastest (30s)</span>
+                    <h2 className="text-sm font-semibold text-white sm:text-base">Detonate Attack Simulation</h2>
+                    <span className="rounded bg-rose-500/20 border border-rose-500/40 px-2 py-0.5 font-mono text-[10px] text-rose-300 font-semibold">Live Exploit Demo</span>
                   </div>
                   <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
-                    Simulate a realistic AI app compromise in under 30 seconds. Watch the live domino effect unfold and learn why naive “disconnect” buttons fail to contain attackers.
+                    Watch a rogue AI agent escalate from an innocent Google Drive grant into an AWS production takeover in under 5 seconds. See why clicking “Disconnect” fails to contain the attacker.
                   </p>
                   <button
-                    className="control control-primary w-full py-2.5 text-center text-xs font-semibold sm:text-sm"
+                    className="control control-primary w-full py-2.5 text-center text-xs font-semibold sm:text-sm bg-gradient-to-r from-teal-500 to-emerald-500 text-black shadow-lg shadow-teal-500/20"
                     type="button"
-                    onClick={() => sample()}
+                    onClick={() => {
+                      sample();
+                      go(2);
+                    }}
                   >
-                    Start guided tour
+                    💥 Detonate Attack Simulation
                   </button>
                 </div>
 

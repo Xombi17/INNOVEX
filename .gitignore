@@ -34,3 +34,4 @@ graphify-out/
 *.log
 .vercel
 .env*
+.agents/
