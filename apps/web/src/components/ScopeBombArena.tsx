@@ -398,7 +398,7 @@ export function ScopeBombArena({
               className="control"
               onClick={() => setHelpOpen(true)}
             >
-              About
+              About this tool
             </button>
             {activeTab === "arena" && entry === "sample" && walkthrough === "off" && (
               <button
@@ -460,6 +460,10 @@ export function ScopeBombArena({
               }}
               onOpenTools={() => {
                 setTab("tools");
+              }}
+              onCheckConfiguration={() => {
+                startInput();
+                setTab("arena");
               }}
             />
           )}

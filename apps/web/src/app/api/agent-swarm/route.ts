@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server.js";
 import { readBoundedText } from "../../../lib/boundedBody.ts";
 import type { SwarmRequestPayload, SwarmMessage } from "../../../lib/agentSwarmTypes.ts";
+import { withTraceSpan, parseTraceParent } from "../../../lib/telemetry.ts";
 
 export const runtime = "nodejs";
 
@@ -123,10 +124,39 @@ Keep each agent's response direct, authoritative, and under 60 words. Never outp
     messages = generateFallbackSwarm(payload);
   }
 
-  return NextResponse.json({
-    ok: true,
-    provider: process.env.GEMINI_API_KEY ? "gemini-3.x" : "deterministic-swarm",
-    messages,
-    timestamp: new Date().toISOString(),
-  });
+  const incomingParent = parseTraceParent(req.headers.get("traceparent"));
+
+  return await withTraceSpan(
+    "scopebomb.swarm.consensus",
+    async (span) => {
+      span.setAttribute("swarm.provider_count", payload.providers?.length ?? 0);
+      span.setAttribute("swarm.credential_count", payload.credentialCount ?? 0);
+      span.setAttribute("swarm.scope_count", payload.scopeCount ?? 0);
+      span.setAttribute("swarm.max_hops", payload.maxHops ?? 1);
+      span.setAttribute("swarm.model", process.env.GEMINI_API_KEY ? geminiModel : "deterministic-fallback");
+      span.addEvent("consensus_synthesized", { agent_count: messages.length });
+
+      return NextResponse.json(
+        {
+          ok: true,
+          provider: process.env.GEMINI_API_KEY ? "gemini-3.x" : "deterministic-swarm",
+          messages,
+          timestamp: new Date().toISOString(),
+          traceId: span.traceId,
+          traceParent: span.traceParent,
+        },
+        {
+          headers: {
+            "traceparent": span.traceParent,
+            "X-ScopeBomb-Trace-Id": span.traceId,
+          },
+        },
+      );
+    },
+    {
+      traceId: incomingParent?.traceId,
+      parentSpanId: incomingParent?.spanId,
+      kind: "SERVER",
+    },
+  );
 }

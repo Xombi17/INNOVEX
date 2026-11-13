@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { readBoundedText } from "../../../lib/boundedBody";
+import { withTraceSpan, parseTraceParent } from "../../../lib/telemetry";
 
 export const runtime = "nodejs";
 
@@ -61,16 +62,45 @@ export async function POST(req: Request) {
   const receiptHash = createHash("sha256").update(receiptRaw).digest("hex").slice(0, 16);
   const receiptId = `SCOPEBOMB-REMED-${receiptHash.toUpperCase()}`;
 
-  return NextResponse.json({
-    ok: true,
-    receiptId,
-    timestamp: now,
-    issuer: payload.issuer,
-    targetResource: payload.targetResource,
-    actionType: payload.actionType,
-    executedStatus,
-    probeOutput,
-    auditLog,
-    contained: true,
-  });
+  const incomingParent = parseTraceParent(req.headers.get("traceparent"));
+
+  return await withTraceSpan(
+    "scopebomb.containment.rfc7009",
+    async (span) => {
+      span.setAttribute("remediation.issuer", payload.issuer);
+      span.setAttribute("remediation.action_type", payload.actionType);
+      span.setAttribute("remediation.step_priority", payload.stepPriority);
+      span.setAttribute("remediation.executed_status", executedStatus);
+      span.setAttribute("remediation.receipt_id", receiptId);
+      span.addEvent("remediation_executed", { receipt_id: receiptId });
+
+      return NextResponse.json(
+        {
+          ok: true,
+          receiptId,
+          timestamp: now,
+          issuer: payload.issuer,
+          targetResource: payload.targetResource,
+          actionType: payload.actionType,
+          executedStatus,
+          probeOutput,
+          auditLog,
+          contained: true,
+          traceId: span.traceId,
+          traceParent: span.traceParent,
+        },
+        {
+          headers: {
+            "traceparent": span.traceParent,
+            "X-ScopeBomb-Trace-Id": span.traceId,
+          },
+        },
+      );
+    },
+    {
+      traceId: incomingParent?.traceId,
+      parentSpanId: incomingParent?.spanId,
+      kind: "SERVER",
+    },
+  );
 }

@@ -7,6 +7,7 @@ interface LandingPageProps {
   onOpenSwarm: () => void;
   onOpenRemediation: () => void;
   onOpenTools: () => void;
+  onCheckConfiguration?: () => void;
 }
 
 export function LandingPage({
@@ -15,6 +16,7 @@ export function LandingPage({
   onOpenSwarm,
   onOpenRemediation,
   onOpenTools,
+  onCheckConfiguration,
 }: LandingPageProps) {
   const [copiedCli, setCopiedCli] = useState(false);
   const [activeTabPreview, setActiveTabPreview] = useState<"domino" | "swarm" | "rfc7009">("domino");
@@ -60,10 +62,18 @@ export function LandingPage({
               onClick={onLaunchCockpit}
               className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-500 to-teal-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110 active:scale-[0.98]"
             >
-              <span>🚀 Launch Security Cockpit</span>
+              <span>Start guided tour</span>
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
+            </button>
+
+            <button
+              type="button"
+              onClick={onCheckConfiguration ?? onLaunchCockpit}
+              className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/10 active:scale-[0.98]"
+            >
+              <span>Check my configuration</span>
             </button>
 
             <button
