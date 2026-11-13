@@ -163,6 +163,6 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 ->
 | 8. Instant Attack Detonator & UI Hero | v1.2 | 1/1 | Complete | 2026-11-13 |
 | 9. Live 4-Agent Defense Swarm Mesh | v1.2 | 1/1 | Complete | 2026-11-13 |
 | 10. Multi-Cloud Active Revocation Engine | v1.2 | 1/1 | Complete | 2026-11-13 |
-| 11. CI/CD Scanner & ScopeBomb CLI | v1.2 | 0/1 | Ready | - |
-| 12. Landing Page & Multi-Tab Web Redesign | v1.2 | 0/1 | Planned | - |
+| 11. CI/CD Scanner & ScopeBomb CLI | v1.2 | 1/1 | Complete | 2026-11-13 |
+| 12. Landing Page & Multi-Tab Web Redesign | v1.2 | 0/1 | Ready | - |
 | 13. OpenTelemetry Tracing & Live Ship | v1.2 | 0/1 | Planned | - |

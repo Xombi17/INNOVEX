@@ -1,0 +1,22 @@
+{
+  "name": "scopebomb",
+  "version": "1.2.0",
+  "description": "Non-Human Identity Firewall & CI/CD Pipeline Gate",
+  "type": "module",
+  "bin": {
+    "scopebomb": "./bin/scopebomb.mjs"
+  },
+  "scripts": {
+    "scan": "node ./bin/scopebomb.mjs scan ."
+  },
+  "keywords": [
+    "security",
+    "oauth",
+    "mcp",
+    "non-human-identity",
+    "firewall",
+    "ci-cd"
+  ],
+  "author": "ScopeBomb Team",
+  "license": "MIT"
+}

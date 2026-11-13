@@ -1,0 +1,29 @@
+name: 'ScopeBomb Non-Human Identity Guard'
+description: 'Intercepts cascading OAuth permissions, leaked MCP credentials, and overbroad scopes in CI/CD'
+author: 'ScopeBomb'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  path:
+    description: 'Path to scan for .mcp.json and .env files'
+    required: false
+    default: '.'
+  fail-on-risk:
+    description: 'Max acceptable risk score before blocking the pipeline (0-100)'
+    required: false
+    default: '80'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Run ScopeBomb Audit
+      shell: bash
+      run: |
+        node ${{ github.action_path }}/bin/scopebomb.mjs scan "${{ inputs.path }}" --fail-on-risk "${{ inputs.fail-on-risk }}" --markdown >> $GITHUB_STEP_SUMMARY
