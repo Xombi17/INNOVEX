@@ -123,9 +123,20 @@ See full archive: `.planning/milestones/v1.1-roadmap.md`
   3. Non-zero exit code on critical blast-radius thresholds to gate deployments.
 **Status**: Planned
 
-### Phase 12: OpenTelemetry Distributed Tracing, Verification Suite & Live Production Ship
-**Goal**: Instrument the full ingestion, graph traversal, and agent mesh with OpenTelemetry distributed tracing for deep enterprise observability, run complete CDP browser verification, update Graphify, and ship to live production.
+### Phase 12: High-Conversion Product Landing Page & Multi-Tab Web Architecture
+**Goal**: Transform ScopeBomb from a single cluttered workbench into a clean, modular SaaS website featuring a high-conversion public Landing Page (`/`), a dedicated Threat Arena & Cockpit tab (`/arena`), an Autonomous SOC tab (`/swarm`), and dedicated pages for the Chrome Extension and Documentation.
 **Depends on**: Phase 11
+**Requirements**: [SITE-01, SITE-02, SITE-03]
+**UI hint**: yes
+**Success Criteria**:
+  1. High-impact public landing page with compelling problem visualization, 90-second video hero, and direct CTA to launch the interactive cockpit.
+  2. Multi-tab navigation architecture replacing cluttered single-view vertical stacking.
+  3. Clean responsive layout across desktop and mobile with zero visual clutter.
+**Status**: Planned
+
+### Phase 13: OpenTelemetry Distributed Tracing, Verification Suite & Live Production Ship
+**Goal**: Instrument the full ingestion, graph traversal, and agent mesh with OpenTelemetry distributed tracing for deep enterprise observability, run complete CDP browser verification, update Graphify, and ship to live production.
+**Depends on**: Phase 12
 **Requirements**: [OTEL-01, VERIFY-01, SHIP-01]
 **UI hint**: yes
 **Success Criteria**:
@@ -137,7 +148,7 @@ See full archive: `.planning/milestones/v1.1-roadmap.md`
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
+Phases execute in numeric order: 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -150,7 +161,8 @@ Phases execute in numeric order: 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 | 6. Kill-Switches & Extension Sandbox | v1.1 | 1/1 | Complete | 2026-11-10 |
 | 7. E2E Audit, Doc Sync & Live Ship | v1.1 | 1/1 | Complete | 2026-11-10 |
 | 8. Instant Attack Detonator & UI Hero | v1.2 | 1/1 | Complete | 2026-11-13 |
-| 9. Live 4-Agent Defense Swarm Mesh | v1.2 | 0/1 | Ready | - |
-| 10. Multi-Cloud Active Revocation Engine | v1.2 | 0/1 | Planned | - |
+| 9. Live 4-Agent Defense Swarm Mesh | v1.2 | 1/1 | Complete | 2026-11-13 |
+| 10. Multi-Cloud Active Revocation Engine | v1.2 | 0/1 | Ready | - |
 | 11. CI/CD Scanner & ScopeBomb CLI | v1.2 | 0/1 | Planned | - |
-| 12. OpenTelemetry Tracing & Live Ship | v1.2 | 0/1 | Planned | - |
+| 12. Landing Page & Multi-Tab Web Redesign | v1.2 | 0/1 | Planned | - |
+| 13. OpenTelemetry Tracing & Live Ship | v1.2 | 0/1 | Planned | - |

@@ -65,15 +65,44 @@ function LightningSvg({ className = "h-3.5 w-3.5" }: { className?: string }) {
 
 export function AgentSwarmCenter({ report }: AgentSwarmCenterProps) {
   const [messages, setMessages] = useState<SwarmMessage[]>([]);
+  const [displayedMessages, setDisplayedMessages] = useState<SwarmMessage[]>([]);
+  const [streamingAgent, setStreamingAgent] = useState<AgentRole | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [customQuestion, setCustomQuestion] = useState<string>("");
   const [activeTab, setActiveTab] = useState<AgentRole | "all">("all");
   const [providerBadge, setProviderBadge] = useState<string>("gemini-3.x");
+  const [copiedBrief, setCopiedBrief] = useState(false);
+
+  const progressiveReveal = (allMessages: SwarmMessage[]) => {
+    setDisplayedMessages([]);
+    if (!allMessages.length) return;
+
+    let idx = 0;
+    setStreamingAgent(allMessages[0].agent);
+
+    const interval = setInterval(() => {
+      if (idx < allMessages.length) {
+        const nextMessage = allMessages[idx];
+        setDisplayedMessages((prev) => [...prev, nextMessage]);
+        idx += 1;
+        if (idx < allMessages.length) {
+          setStreamingAgent(allMessages[idx].agent);
+        } else {
+          setStreamingAgent(null);
+          clearInterval(interval);
+        }
+      } else {
+        setStreamingAgent(null);
+        clearInterval(interval);
+      }
+    }, 450);
+  };
 
   const runSwarmAnalysis = async (userPrompt?: string) => {
     setLoading(true);
     setError(null);
+    setStreamingAgent(null);
 
     const nodes = report.graph?.nodes ?? [];
     const trustBoundaries = Array.from(
@@ -105,8 +134,10 @@ export function AgentSwarmCenter({ report }: AgentSwarmCenterProps) {
         throw new Error(data.error ?? "Swarm consultation failed");
       }
 
-      setMessages(data.messages ?? []);
+      const returnedMessages = data.messages ?? [];
+      setMessages(returnedMessages);
       setProviderBadge(data.provider ?? "gemini-3.x");
+      progressiveReveal(returnedMessages);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Network error";
       setError(msg);
@@ -116,15 +147,38 @@ export function AgentSwarmCenter({ report }: AgentSwarmCenterProps) {
   };
 
   useEffect(() => {
-    // Reset swarm state on report change
+    // Auto-initiate Swarm consultation upon report change
     setMessages([]);
+    setDisplayedMessages([]);
     setError(null);
-  }, [report]);
+    runSwarmAnalysis();
+  }, [report.preset_id, report.summary?.headline]);
 
+  const copyIncidentBrief = () => {
+    const text = `# ScopeBomb Autonomous SOC Incident Brief
+**Target:** ${report.summary?.headline ?? "OAuth Security Inspection"}
+**Trust Boundaries Crossed:** ${report.summary?.trust_boundary_crossings?.join(", ") || "None"}
+**Max Exploit Depth:** ${report.summary?.max_hops ?? 1} hops
+
+${messages
+  .map(
+    (m) =>
+      `### ${AGENT_PERSONAS[m.agent].name} (${AGENT_PERSONAS[m.agent].badge})\n${m.content}`,
+  )
+  .join("\n\n")}
+
+---
+*Verified against RFC 7009 & OWASP Top 10 for LLMs*`;
+    navigator.clipboard.writeText(text);
+    setCopiedBrief(true);
+    setTimeout(() => setCopiedBrief(false), 2500);
+  };
+
+  const activeMessages = displayedMessages.length > 0 ? displayedMessages : messages;
   const filteredMessages =
     activeTab === "all"
-      ? messages
-      : messages.filter((m) => m.agent === activeTab);
+      ? activeMessages
+      : activeMessages.filter((m) => m.agent === activeTab);
 
   return (
     <div className="mt-6 rounded-xl border border-white/10 bg-[#0e121b] p-5 shadow-xl sm:p-6">
@@ -146,15 +200,26 @@ export function AgentSwarmCenter({ report }: AgentSwarmCenterProps) {
           </p>
         </div>
 
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => runSwarmAnalysis()}
-          className="control control-primary shrink-0 gap-1.5 px-4 py-2 text-xs font-semibold disabled:opacity-60"
-        >
-          <LightningSvg />
-          {loading ? "Swarm Conferring…" : "Convene Defensive Swarm"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={copyIncidentBrief}
+              className="control gap-1.5 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+            >
+              {copiedBrief ? "✔ Brief Copied" : "📋 Copy Incident Brief"}
+            </button>
+          )}
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => runSwarmAnalysis()}
+            className="control control-primary shrink-0 gap-1.5 px-4 py-2 text-xs font-semibold disabled:opacity-60"
+          >
+            <LightningSvg />
+            {loading ? "Swarm Conferring…" : "Re-Convene Swarm"}
+          </button>
+        </div>
       </div>
 
       {/* 4 Agent Personas Pill Bar */}
@@ -163,14 +228,17 @@ export function AgentSwarmCenter({ report }: AgentSwarmCenterProps) {
           const p = AGENT_PERSONAS[role];
           const hasMessage = messages.some((m) => m.agent === role);
           const isSelected = activeTab === role;
+          const isStreaming = streamingAgent === role;
           return (
             <div
               key={role}
               onClick={() => messages.length > 0 && setActiveTab(isSelected ? "all" : role)}
               className={`cursor-pointer rounded-lg border p-3 transition-all duration-150 ${
-                isSelected
-                  ? "border-teal-500/60 bg-[#16202f] shadow-md shadow-teal-500/10"
-                  : "border-[#1e2636] bg-[#121622] hover:border-slate-700 hover:bg-[#151a28]"
+                isStreaming
+                  ? "border-teal-400 bg-teal-500/10 ring-2 ring-teal-400/50 shadow-lg shadow-teal-500/20"
+                  : isSelected
+                    ? "border-teal-500/60 bg-[#16202f] shadow-md shadow-teal-500/10"
+                    : "border-[#1e2636] bg-[#121622] hover:border-slate-700 hover:bg-[#151a28]"
               }`}
             >
               <div className="flex items-center gap-2 text-xs font-bold text-white">
@@ -185,12 +253,17 @@ export function AgentSwarmCenter({ report }: AgentSwarmCenterProps) {
               <div className="mt-1 truncate text-[11px] text-slate-400 font-mono">
                 {p.badge}
               </div>
-              {hasMessage && (
+              {isStreaming ? (
+                <div className="mt-1.5 inline-flex items-center gap-1 rounded bg-teal-500/15 border border-teal-500/30 px-1.5 py-0.5 text-[10px] font-mono font-medium text-teal-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-ping" />
+                  Formulating…
+                </div>
+              ) : hasMessage ? (
                 <div className="mt-1.5 inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-mono font-medium text-emerald-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   Deliberated
                 </div>
-              )}
+              ) : null}
             </div>
           );
         })}
