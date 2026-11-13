@@ -14,6 +14,12 @@ import { HowItWorksModal } from "./HowItWorksModal";
 import { ScanInput } from "./ScanInput";
 import { PresetStrip } from "./PresetStrip";
 import { GuidedWalkthrough } from "./GuidedWalkthrough";
+import { LandingPage } from "./LandingPage";
+import { ToolsCenter } from "./ToolsCenter";
+import { AgentSwarmCenter } from "./AgentSwarmCenter";
+import { ContainmentComparison } from "./ContainmentComparison";
+
+export type AppTab = "overview" | "arena" | "swarm" | "remediation" | "tools";
 
 const presets = getIncidentPresets();
 
@@ -70,6 +76,7 @@ export function ScopeBombArena({
 }: {
   initialReport: AuditReport;
 }) {
+  const [activeTab, setActiveTab] = useState<AppTab>("overview");
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [entry, setEntry] = useState<"welcome" | "input" | "sample">("welcome");
   const [walkthrough, setWalkthrough] = useState<"active" | "complete" | "off">("off");
@@ -87,6 +94,18 @@ export function ScopeBombArena({
   const analysisRef = useRef<Analysis | null>(null);
   const navigating = useRef(false);
   analysisRef.current = analysis;
+
+  const currentReport = analysis?.report ?? initialReport;
+
+  const setTab = (newTab: AppTab) => {
+    setActiveTab(newTab);
+    const address = new URL(window.location.href);
+    address.searchParams.set("tab", newTab);
+    if (address.href !== window.location.href) {
+      window.history.pushState(null, "", address);
+    }
+  };
+
   const clearGuideLink = () => {
     main.current
       ?.querySelectorAll('[aria-describedby="walkthrough-guide"]')
@@ -104,6 +123,10 @@ export function ScopeBombArena({
   };
   useEffect(() => {
     const address = new URL(window.location.href);
+    const tabParam = address.searchParams.get("tab") as AppTab | null;
+    if (tabParam && ["overview", "arena", "swarm", "remediation", "tools"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
     const suppliedUrl = address.searchParams.get("oauth_url");
     if (suppliedUrl) {
       setInitialUrl(suppliedUrl);
@@ -273,26 +296,111 @@ export function ScopeBombArena({
       <div className="workbench__surface">
         <header className="workbench__header">
           <div className="flex items-center gap-3">
-            <a href="/" className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-white hover:text-teal-300 transition-colors">
+            <button
+              type="button"
+              onClick={() => setTab("overview")}
+              className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-white hover:text-blue-400 transition-colors"
+            >
               <ScopeBombLogo />
               <span>ScopeBomb</span>
-            </a>
+            </button>
             <span className="hidden sm:inline-block h-3.5 w-px bg-white/10" />
-            <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[11px] text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
+            <span className="hidden lg:inline-flex items-center gap-1.5 font-mono text-[11px] text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
               Non-Human Identity Firewall
             </span>
           </div>
 
+          {/* DeepSeek & Harness Style Multi-Tab Navigation Bar */}
+          <nav className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto text-xs font-medium">
+            <button
+              type="button"
+              onClick={() => setTab("overview")}
+              className={`rounded-lg px-3 py-1.5 transition-all ${
+                activeTab === "overview"
+                  ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!analysis) sample();
+                setTab("arena");
+              }}
+              className={`rounded-lg px-3 py-1.5 transition-all flex items-center gap-1.5 ${
+                activeTab === "arena"
+                  ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+              }`}
+            >
+              <span>Threat Cockpit</span>
+              <span className="rounded bg-rose-500/20 px-1 py-0.2 text-[9px] font-mono text-rose-300">Live</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!analysis) sample();
+                setTab("swarm");
+              }}
+              className={`rounded-lg px-3 py-1.5 transition-all flex items-center gap-1.5 ${
+                activeTab === "swarm"
+                  ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+              }`}
+            >
+              <span>4-Agent SOC</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!analysis) sample();
+                setTab("remediation");
+              }}
+              className={`rounded-lg px-3 py-1.5 transition-all ${
+                activeTab === "remediation"
+                  ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+              }`}
+            >
+              Containment
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("tools")}
+              className={`rounded-lg px-3 py-1.5 transition-all ${
+                activeTab === "tools"
+                  ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+              }`}
+            >
+              CLI & Extension
+            </button>
+          </nav>
+
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                sample();
+                setTab("arena");
+                go(2);
+              }}
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition active:scale-95"
+            >
+              <span>💥 Detonate</span>
+            </button>
             <button
               type="button"
               className="control"
               onClick={() => setHelpOpen(true)}
             >
-              About this tool
+              About
             </button>
-            {entry === "sample" && walkthrough === "off" && (
+            {activeTab === "arena" && entry === "sample" && walkthrough === "off" && (
               <button
                 type="button"
                 className="control"
@@ -301,10 +409,10 @@ export function ScopeBombArena({
                   go(1);
                 }}
               >
-                Resume walkthrough
+                Walkthrough
               </button>
             )}
-            {entry !== "welcome" && (
+            {activeTab === "arena" && entry !== "welcome" && (
               <button
                 type="button"
                 className="control"
@@ -316,13 +424,13 @@ export function ScopeBombArena({
                   navigating.current = true;
                 }}
               >
-                Start over
+                Reset
               </button>
             )}
           </div>
         </header>
 
-        {entry !== "welcome" && (
+        {activeTab === "arena" && entry !== "welcome" && (
           <StepStepper
             activeStep={step}
             hasAnalysis={!!analysis && !busy}
@@ -331,7 +439,109 @@ export function ScopeBombArena({
         )}
 
         <main id="main-content" ref={main} tabIndex={-1} className="flex-1">
-          {entry === "welcome" ? (
+          {activeTab === "overview" && (
+            <LandingPage
+              onLaunchCockpit={() => {
+                if (!analysis) sample();
+                setTab("arena");
+              }}
+              onDetonateSimulation={() => {
+                sample();
+                setTab("arena");
+                go(2);
+              }}
+              onOpenSwarm={() => {
+                if (!analysis) sample();
+                setTab("swarm");
+              }}
+              onOpenRemediation={() => {
+                if (!analysis) sample();
+                setTab("remediation");
+              }}
+              onOpenTools={() => {
+                setTab("tools");
+              }}
+            />
+          )}
+
+          {activeTab === "swarm" && (
+            <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+              <div className="mb-6 flex flex-col gap-2">
+                <div className="inline-flex items-center gap-2 self-start rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-0.5 text-xs font-medium text-blue-400">
+                  <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+                  <span>Gemini 3.x Flash Defense Swarm</span>
+                  <span className="font-mono text-[10px] text-blue-300">Live SOC Mesh</span>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                      Autonomous Defensive Agent Swarm SOC
+                    </h1>
+                    <p className="mt-1 text-xs text-slate-400 max-w-2xl">
+                      Four autonomous agents deliberate in parallel across IAM scope risks, MITRE tactics, RFC 7009 cascade validity, and incident synthesis.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sample();
+                      setTab("arena");
+                      go(2);
+                    }}
+                    className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition active:scale-95"
+                  >
+                    💥 Detonate Blast Attack
+                  </button>
+                </div>
+              </div>
+              <AgentSwarmCenter report={currentReport} />
+            </div>
+          )}
+
+          {activeTab === "remediation" && (
+            <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+              <div className="mb-6 flex flex-col gap-2">
+                <div className="inline-flex items-center gap-2 self-start rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-0.5 text-xs font-medium text-teal-400">
+                  <span className="h-2 w-2 rounded-full bg-teal-400" />
+                  <span>RFC 7009 Multi-Cloud Containment Engine</span>
+                  <span className="font-mono text-[10px] text-teal-300">Tamper-Proof Receipts</span>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                      Downstream Token Destruction & Active Verification Probes
+                    </h1>
+                    <p className="mt-1 text-xs text-slate-400 max-w-2xl">
+                      Revoking initial OAuth returns HTTP 200 OK without cascading. Execute true downstream invalidation across AWS and GitHub, and run live verification probes.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!analysis) sample();
+                      setTab("arena");
+                    }}
+                    className="rounded-lg border border-blue-500/40 bg-blue-500/10 px-3.5 py-1.5 text-xs font-semibold text-blue-300 hover:bg-blue-500/20 transition"
+                  >
+                    View Threat Cockpit →
+                  </button>
+                </div>
+              </div>
+              <ContainmentComparison
+                report={currentReport}
+                simulationMode={simulation}
+                onChangeSimulationMode={setSimulation}
+              />
+            </div>
+          )}
+
+          {activeTab === "tools" && (
+            <ToolsCenter />
+          )}
+
+          {activeTab === "arena" && (
+            <>
+              {entry === "welcome" ? (
             <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
               {/* Hero */}
               <div className="max-w-2xl">
@@ -591,20 +801,34 @@ export function ScopeBombArena({
               )}
             </div>
           )}
+            </>
+          )}
         </main>
 
-        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] px-6 py-3.5 text-xs text-slate-500">
-          <span>
-            v1.1 · Local parsing · Rule-based analysis · No live account changes
-          </span>
-          <a
-            href="/downloads/scopebomb-mv3-extension.zip"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-teal-400 hover:text-teal-300 underline"
-          >
-            Download Chrome extension
-          </a>
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] px-6 py-4 text-xs text-slate-400 bg-slate-950/40">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <span className="font-medium text-slate-300">ScopeBomb v1.2 Enterprise</span>
+            <span>·</span>
+            <span className="font-mono text-[11px] text-slate-500">RFC 7009 Strict · Zero Secret Leakage · Pure Zero-Dependency Core</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setTab("tools")}
+              className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
+            >
+              CLI & Actions
+            </button>
+            <a
+              href="/downloads/scopebomb-mv3-extension.zip"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-teal-400 hover:text-teal-300 underline underline-offset-2"
+            >
+              Download MV3 Extension
+            </a>
+          </div>
         </footer>
       </div>
 

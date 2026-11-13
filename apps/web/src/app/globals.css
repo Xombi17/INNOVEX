@@ -7,25 +7,27 @@
 
 :root {
   color-scheme: dark;
-  --ground: #08090d;
-  --surface: #0c0e14;
-  --raised: #12151e;
-  --active: #181d2a;
+  --ground: #07090e;
+  --surface: #0c101a;
+  --raised: #111726;
+  --active: #172036;
   --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.15);
   --rule: rgba(255, 255, 255, 0.05);
   --control: rgba(255, 255, 255, 0.12);
   --control-strong: rgba(255, 255, 255, 0.2);
-  --text: #f1f5f9;
+  --text: #f8fafc;
   --muted: #94a3b8;
-  --accent: #00d2b4;
-  --accent-tint: rgba(0, 210, 180, 0.1);
-  --accent-ink: #5eead4;
+  --accent: #3b82f6;
+  --accent-tint: rgba(59, 130, 246, 0.12);
+  --accent-ink: #60a5fa;
+  --brand-cyan: #00d2b4;
+  --brand-cyan-tint: rgba(0, 210, 180, 0.1);
   --positive: #10b981;
   --negative: #f43f5e;
   --warning: #f59e0b;
-  --chart-1: #00d2b4;
-  --chart-2: #38bdf8;
+  --chart-1: #3b82f6;
+  --chart-2: #00d2b4;
   --chart-3: #fbbf24;
   --pill-positive-bg: rgba(16, 185, 129, 0.12);
   --pill-positive-ink: #6ee7b7;
@@ -91,16 +93,47 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
-/* Full-bleed workbench architecture */
+/* Full-bleed workbench architecture with DeepSeek & Harness faint ambient gradients */
 .workbench {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--ground);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 210, 180, 0.08), transparent 70%),
-    linear-gradient(to bottom, #08090d, #0b0d13);
+    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(59, 130, 246, 0.09), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 15%, rgba(0, 210, 180, 0.05), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 15% 25%, rgba(99, 102, 241, 0.04), transparent 50%),
+    linear-gradient(to bottom, #07090e, #0c101a);
   color: var(--text);
+}
+
+/* DeepSeek / Harness faint grid pattern */
+.bg-deepseek-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* Ambient glow card */
+.glow-card-blue {
+  background: rgba(13, 17, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease-in-out;
+}
+.glow-card-blue:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 0 24px -4px rgba(59, 130, 246, 0.12);
+}
+
+.glow-card-cyan {
+  background: rgba(13, 17, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease-in-out;
+}
+.glow-card-cyan:hover {
+  border-color: rgba(0, 210, 180, 0.35);
+  box-shadow: 0 0 24px -4px rgba(0, 210, 180, 0.12);
 }
 
 .workbench__surface {
