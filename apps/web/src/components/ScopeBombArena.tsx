@@ -440,7 +440,8 @@ export function ScopeBombArena({
           {activeTab === "overview" && (
             <LandingPage
               onLaunchCockpit={() => {
-                if (!analysis) sample();
+                sample();
+                setWalkthrough("active");
                 setTab("arena");
               }}
               onDetonateSimulation={() => {

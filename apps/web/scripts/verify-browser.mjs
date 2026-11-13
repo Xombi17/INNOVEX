@@ -630,6 +630,10 @@ try {
   );
   await click("Mark this review action done");
   await click("Explore without guidance");
+  await until(
+    '!document.querySelector("[data-walkthrough-step]") && document.querySelector("[data-guide-target=actions] input[type=checkbox]")?.checked',
+    "guidance exit",
+  );
   check(
     "Exiting guidance preserves the analysis and self-reported action progress",
     await js('!document.querySelector("[data-walkthrough-step]") && document.querySelector("[data-guide-target=actions] input[type=checkbox]").checked && document.body.innerText.includes("Sample simulation")'),
@@ -642,6 +646,10 @@ try {
     await js('document.querySelector("[data-guide-target=actions] input[type=checkbox]").checked'),
   );
   await click("Finish walkthrough");
+  await until(
+    '!!document.querySelector("[data-walkthrough-step=complete]")',
+    "walkthrough complete",
+  );
   check(
     "Walkthrough completion focuses the recap and leaves remediation unverified",
     await js('!!document.querySelector("[data-walkthrough-step=complete]") && document.activeElement.tagName === "H2" && document.body.innerText.includes("No account was changed or verified")'),
