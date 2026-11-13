@@ -13,6 +13,15 @@ interface Progress {
   evidence: string;
   recorded: boolean;
 }
+
+interface ProbeReceipt {
+  receiptId: string;
+  timestamp: string;
+  executedStatus: number;
+  probeOutput: string;
+  auditLog: string;
+}
+
 interface Props {
   report: AuditReport;
   simulationMode: SimulationMode;
@@ -26,10 +35,42 @@ export function ContainmentComparison({
   onChangeSimulationMode,
 }: Props) {
   const [progress, setProgress] = useState<Record<number, Progress>>({});
+  const [probeResults, setProbeResults] = useState<Record<number, ProbeReceipt>>({});
+  const [probing, setProbing] = useState<Record<number, boolean>>({});
   const [copyStatus, setCopyStatus] = useState("");
   const [errors, setErrors] = useState<Record<number, string>>({});
   const steps = report.full_containment.ordered_steps;
   const groups = [...new Set(steps.map((step) => step.issuer))];
+
+  const runProbe = async (step: ContainmentStep, details: ReturnType<typeof enrichContainmentStep>) => {
+    setProbing((prev) => ({ ...prev, [step.priority]: true }));
+    try {
+      const res = await fetch("/api/remediate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          stepPriority: step.priority,
+          issuer: step.issuer,
+          targetResource: step.target_resource,
+          actionType: step.action_type,
+          command: details.copyableCommand,
+          verificationProbe: details.verificationProbe,
+        }),
+      });
+      if (!res.ok) throw new Error("Probe call failed");
+      const data = await res.json();
+      setProbeResults((prev) => ({ ...prev, [step.priority]: data }));
+      change(step.priority, {
+        done: true,
+        recorded: true,
+        evidence: `Automated probe confirmed: ${data.receiptId}`,
+      });
+    } catch {
+      setCopyStatus("Probe failed to execute. Use manual verification.");
+    } finally {
+      setProbing((prev) => ({ ...prev, [step.priority]: false }));
+    }
+  };
   const change = (priority: number, update: Partial<Progress>) =>
     setProgress((previous) => ({
       ...previous,
@@ -69,15 +110,50 @@ export function ContainmentComparison({
         <h3 className="font-semibold text-white">{target}</h3>
         <p className="text-slate-300">{details.guidance}</p>
         <p className="muted text-[13px] text-slate-400">Who can do this: {details.actor}.</p>
-        {details.consoleUrl && (
-          <a
-            className="control"
-            href={details.consoleUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+        <div className="flex flex-wrap items-center gap-2">
+          {details.consoleUrl && (
+            <a
+              className="control"
+              href={details.consoleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {details.providerLabel.startsWith("Open")
+                ? details.providerLabel
+                : `Open ${details.providerLabel} settings`}
+            </a>
+          )}
+          <button
+            type="button"
+            disabled={probing[step.priority]}
+            onClick={() => runProbe(step, details)}
+            className="control control-primary inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
           >
-            Open {details.providerLabel} settings
-          </a>
+            <span>⚡</span>
+            {probing[step.priority]
+              ? "Probing Issuer…"
+              : "Execute Active Verification Probe"}
+          </button>
+        </div>
+
+        {probeResults[step.priority] && (
+          <div className="rounded-lg border border-emerald-500/40 bg-[#090d14] p-3 text-xs font-mono shadow-md">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-900/40 pb-2 mb-2 text-emerald-400">
+              <span className="font-bold flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                PROBE VERIFIED · HTTP {probeResults[step.priority].executedStatus}
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono">
+                {probeResults[step.priority].receiptId}
+              </span>
+            </div>
+            <p className="text-slate-300 text-[11px] mb-2">
+              {probeResults[step.priority].auditLog}
+            </p>
+            <div className="rounded bg-black/60 p-2 text-slate-400 text-[10px] whitespace-pre-wrap font-mono border border-white/5">
+              {probeResults[step.priority].probeOutput}
+            </div>
+          </div>
         )}
         <p className="muted text-[13px] text-slate-400">
           If this is a conditional consequence, confirm the credential or
