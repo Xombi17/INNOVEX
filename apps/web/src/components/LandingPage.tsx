@@ -721,47 +721,47 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* Expanding capabilities section matching DeepSeek Harness Inspiration (Image 1) */}
+      {/* Expanding capabilities section: 100% Authentic ScopeBomb Security Engineering */}
       <section className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 border-t border-white/10">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-medium tracking-tight text-white leading-tight">
-            Expanding capabilities.<br />
-            Work on your terms.
+            Deterministic defense.<br />
+            Secured across every trust boundary.
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-xl mx-auto font-normal">
-            Everything an agent touches becomes part of your non-human identity mesh. Inspect, simulate, and contain cross-issuer exposure with composable defense plugins.
+            Every credential an AI agent touches expands your blast radius. ScopeBomb provides composable, zero-dependency tools to audit, simulate, and contain non-human identity exposure.
           </p>
         </div>
 
-        {/* 2x2 Large Feature Cards with Visual Vignettes (Image 1) */}
+        {/* 2x2 Large Feature Cards with Authentic ScopeBomb Security Vignettes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Card 1: Everything is a plugin */}
+          {/* Card 1: Composable Blast Radius Traversal */}
           <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
             <div>
-              <h3 className="text-xl font-semibold text-white">Everything is a plugin</h3>
+              <h3 className="text-xl font-semibold text-white">Deterministic DAG Traversal</h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
-                Install plugins, or create them through chat in “Creator mode”, to extend tools, skills, and the interface.
+                Model multi-hop trust boundaries across Google, GitHub, and AWS with zero external database dependencies in under 15ms.
               </p>
             </div>
 
-            {/* Vignette: Creator Mode Interactive Pill & Chat Input Box */}
+            {/* Vignette: Detonation Mode Interactive Pill & Simulation Input */}
             <div className="mt-8 pt-6 border-t border-white/5 space-y-3">
               <div className="inline-flex items-center gap-1.5 text-xs text-slate-300">
-                <span className="h-2.5 w-2.5 rounded-sm bg-blue-500/80 inline-block" />
-                <span className="font-medium">Creator mode</span>
+                <span className="h-2.5 w-2.5 rounded-sm bg-rose-500/80 inline-block" />
+                <span className="font-medium">Detonation mode</span>
                 <span className="text-slate-500 text-[10px]">▾</span>
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-[#1b1f2b] p-3 sm:p-4 flex items-center justify-between gap-3 shadow-inner">
                 <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-300 truncate">
                   <span className="text-slate-500 font-light text-base">+</span>
-                  <span className="truncate">Write a Pomodoro timer plugin for me.</span>
+                  <span className="truncate">Simulate pivot: Google Drive OAuth → GitHub PAT → AWS STS admin</span>
                 </div>
                 <button
                   type="button"
                   onClick={onDetonateSimulation}
-                  aria-label="Send prompt in creator mode"
-                  className="h-8 w-8 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                  aria-label="Detonate breach simulation"
+                  className="h-8 w-8 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                 >
                   <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
@@ -771,46 +771,46 @@ export function LandingPage({
             </div>
           </div>
 
-          {/* Card 2: Complete a range of tasks (Files + Overlaid Code Review Diff) */}
+          {/* Card 2: RFC 7009 Cascading Invalidation (Authentic Token Stack + Real Diff) */}
           <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
             <div>
-              <h3 className="text-xl font-semibold text-white">Complete a range of tasks</h3>
+              <h3 className="text-xl font-semibold text-white">RFC 7009 Cascading Invalidation</h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
-                Organize documents, analyze spreadsheets, and write code. Preview the results directly and refine them through conversation.
+                Standard OAuth revocation returns HTTP 200 OK while downstream JWTs and AWS sessions persist. ScopeBomb proves and executes cascading destruction.
               </p>
             </div>
 
-            {/* Vignette: Stacked Files with Overlaid Code Diff Review */}
+            {/* Vignette: Stacked Identity Tokens with Real RFC 7009 Code Diff */}
             <div className="mt-8 pt-6 border-t border-white/5 relative min-h-[160px] flex items-center">
-              {/* Stacked Files */}
+              {/* Stacked Real Identity Tokens */}
               <div className="w-1/2 space-y-2 pr-2">
                 <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#181b24] border border-white/5 text-xs">
-                  <span className="h-6 w-6 rounded bg-emerald-500/20 text-emerald-400 font-semibold flex items-center justify-center text-[10px]">
-                    XLS
+                  <span className="h-6 w-8 rounded bg-amber-500/20 text-amber-300 font-mono font-semibold flex items-center justify-center text-[9px]">
+                    ENV
                   </span>
                   <div className="truncate">
-                    <div className="text-white text-xs truncate">Data.xlsx</div>
-                    <div className="text-[10px] text-slate-400 truncate">Excel spreadsheet</div>
+                    <div className="text-white text-xs truncate">.env.backup</div>
+                    <div className="text-[10px] text-slate-400 truncate">Developer PAT token</div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#181b24] border border-white/5 text-xs">
-                  <span className="h-6 w-6 rounded bg-blue-500/20 text-blue-400 font-semibold flex items-center justify-center text-[10px]">
-                    HTML
+                  <span className="h-6 w-8 rounded bg-teal-500/20 text-teal-300 font-mono font-semibold flex items-center justify-center text-[9px]">
+                    AUTH
                   </span>
                   <div className="truncate">
-                    <div className="text-white text-xs truncate">index.html</div>
-                    <div className="text-[10px] text-slate-400 truncate">HTML page</div>
+                    <div className="text-white text-xs truncate">google.drive</div>
+                    <div className="text-[10px] text-slate-400 truncate">OAuth refresh token</div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#181b24] border border-white/5 text-xs">
-                  <span className="h-6 w-6 rounded bg-indigo-500/20 text-indigo-400 font-semibold flex items-center justify-center text-[10px]">
-                    TS
+                  <span className="h-6 w-8 rounded bg-rose-500/20 text-rose-300 font-mono font-semibold flex items-center justify-center text-[9px]">
+                    STS
                   </span>
                   <div className="truncate">
-                    <div className="text-white text-xs truncate">label.ts</div>
-                    <div className="text-[10px] text-slate-400 truncate">TypeScript code</div>
+                    <div className="text-white text-xs truncate">aws.sts.role</div>
+                    <div className="text-[10px] text-slate-400 truncate">Production admin IAM</div>
                   </div>
                 </div>
               </div>
@@ -819,31 +819,31 @@ export function LandingPage({
               <div className="w-1/2 pl-1">
                 <div className="rounded-xl border border-white/15 bg-[#0e1017] p-3 font-mono text-[11px] text-slate-300 shadow-2xl shadow-black/80">
                   <div className="flex items-center justify-between border-b border-white/10 pb-1.5 mb-1.5">
-                    <span className="text-slate-400 text-[10px]">Review · turn 1</span>
+                    <span className="text-slate-400 text-[10px]">Review · RFC 7009</span>
                     <div className="flex items-center gap-1.5 text-[9px]">
                       <span className="rounded bg-blue-500/20 px-1 text-blue-300">TS</span>
-                      <span className="text-slate-400">src/label.ts</span>
+                      <span className="text-slate-400">engine/containment.ts</span>
                       <span className="text-emerald-400">+2</span>
                       <span className="text-rose-400">-1</span>
                     </div>
                   </div>
-                  <div className="text-[9px] text-slate-500">@@ -8,3 +8,4 @@</div>
-                  <div className="text-[10px] text-slate-400">8  8  function label(name: string) &#123;</div>
-                  <div className="text-[10px] bg-rose-950/40 text-rose-300 px-1 rounded">- 9     return name;</div>
-                  <div className="text-[10px] bg-emerald-950/40 text-emerald-300 px-1 rounded">+ 9     const text = name.trim();</div>
-                  <div className="text-[10px] bg-emerald-950/40 text-emerald-300 px-1 rounded">+ 10    return text || &apos;Untitled&apos;;</div>
-                  <div className="text-[10px] text-slate-400">11 11 &#125;</div>
+                  <div className="text-[9px] text-slate-500">@@ -14,3 +14,4 @@</div>
+                  <div className="text-[10px] text-slate-400">14 14  async function containGrant(token) &#123;</div>
+                  <div className="text-[10px] bg-rose-950/40 text-rose-300 px-1 rounded">- 15     return oauth.revoke(token); // naive 200</div>
+                  <div className="text-[10px] bg-emerald-950/40 text-emerald-300 px-1 rounded">+ 15     await invalidateDownstreamJwt(token);</div>
+                  <div className="text-[10px] bg-emerald-950/40 text-emerald-300 px-1 rounded">+ 16     return cascadeRevoke([&apos;github&apos;, &apos;aws&apos;]);</div>
+                  <div className="text-[10px] text-slate-400">17 17 &#125;</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Card 3: Adapt to your workflow */}
+          {/* Card 3: Autonomous 4-Agent Consensus Swarm */}
           <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
             <div>
-              <h3 className="text-xl font-semibold text-white">Adapt to your workflow</h3>
+              <h3 className="text-xl font-semibold text-white">Autonomous 4-Agent Consensus</h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
-                Autonomous 4-agent consensus triage across IAM scopes, MITRE attack patterns, and cryptographic invalidation.
+                Parallel Gemini 3.x Flash agents simultaneously audit permissions, model MITRE attack vectors, check RFC 7009 compliance, and synthesize remediation.
               </p>
             </div>
 
@@ -861,21 +861,21 @@ export function LandingPage({
 
               <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-400">
                 <div className="p-2 rounded bg-black/30 border border-white/5">
-                  <span className="text-teal-400 font-medium">IAM Auditor</span>: drive.readonly flagged
+                  <span className="text-teal-400 font-medium">IAM Auditor</span>: drive.readonly overbroad scope flagged
                 </div>
                 <div className="p-2 rounded bg-black/30 border border-white/5">
-                  <span className="text-amber-400 font-medium">Threat Modeler</span>: MITRE T1566 mapped
+                  <span className="text-amber-400 font-medium">Threat Modeler</span>: MITRE ATT&CK T1566 & T1552 mapped
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Card 4: Developer tools */}
+          {/* Card 4: Developer-First CLI & CI/CD Gate */}
           <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
             <div>
-              <h3 className="text-xl font-semibold text-white">Developer tools</h3>
+              <h3 className="text-xl font-semibold text-white">Developer-First CLI & CI/CD Gate</h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
-                Automate scans in CI/CD, run local zero-dependency audits via CLI, and block over-scoped pull requests before merge.
+                Scan local repositories for exposed credentials and block over-scoped pull requests before merge with pure TypeScript zero-dependency contracts.
               </p>
             </div>
 
@@ -887,7 +887,7 @@ export function LandingPage({
                   <span>npx @scopebomb/cli scan . --fail-on-risk 80</span>
                 </div>
                 <div className="text-emerald-400 text-[11px] pt-1">
-                  ✓ 0 secrets leaked, 30 AST nodes verified, PASSED
+                  ✓ 0 raw secrets reflected, 30 AST nodes verified, PASSED
                 </div>
               </div>
             </div>
