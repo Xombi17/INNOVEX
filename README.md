@@ -2,8 +2,22 @@
 
 Review app permissions and project credentials, understand possible exposure, and plan provider-specific cleanup.
 
-**Published demo:** https://scopebomb.vercel.app
-**Track:** INNOVEX 2026 — PS 05 (AI-Powered Cybersecurity)
+**Published demo:** https://scopebomb.vercel.app  
+**Track:** INNOVEX 2026 — PS 05 (AI-Powered Cybersecurity)  
+**Video Walkthrough:** [🎬 Watch Full Showcase Video with Audio (MP4)](assets/scopebomb_motion_launch.mp4) · [Stream on Web](https://scopebomb.vercel.app/scopebomb_motion_launch.mp4)
+
+---
+
+<p align="center">
+  <a href="assets/scopebomb_motion_launch.mp4">
+    <img src="assets/scopebomb_demo.gif" alt="ScopeBomb Launch Demo & Walkthrough" width="100%" />
+  </a>
+</p>
+<p align="center">
+  <em>Click the preview above or <a href="assets/scopebomb_motion_launch.mp4">open the full 64s HD video with narration (MP4)</a>.</em>
+</p>
+
+---
 
 ## Start with one task
 
