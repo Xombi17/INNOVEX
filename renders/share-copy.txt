@@ -1,0 +1,66 @@
+# ScopeBomb — Launch Share Copy & Hackathon Submission Package
+Track: INNOVEX 2026 — Track PS 05 (OAuth Blast-Radius Analyzer & Pre-Consent Guard)
+Live App: https://scopebomb.vercel.app
+Repository: https://github.com/scopebomb/scopebomb
+Video: renders/scopebomb_90s_showcase.mp4
+Poster: videos/scopebomb-launch/renders/poster.jpg
+
+================================================================================
+X / TWITTER LAUNCH THREAD
+================================================================================
+
+Every day, developers click "Allow" on new AI agents and OAuth prompts.
+
+Behind that single click? A hidden domino chain spanning local IDEs, cloud infra, and production data.
+
+And when tokens leak, RFC 7009 revocation returns HTTP 200 OK—even while secondary grants survive.
+
+Introducing ScopeBomb 💣
+
+See the reach. Review the response. Stop the cascade. 🧵👇
+[ATTACH: scopebomb_90s_showcase.mp4]
+
+1/ The Shadow AI Blindspot
+You connect a new MCP server or agentic tool. It asks for "read-only" Google Drive and GitHub repo metadata.
+Minutes later, secondary refresh tokens bridge local `.mcp.json` configs into AWS environments and SaaS APIs.
+Single-token revocation leaves 75% of your cascade uncontained.
+
+2/ The RFC 7009 Paradox
+RFC 7009 Section 2.2 explicitly allows authorization servers to return HTTP 200 OK for already-invalid tokens.
+A status code is NOT proof of containment.
+ScopeBomb models true multi-issuer containment, replacing naive single revokes with surgical provider playbooks.
+
+3/ How ScopeBomb Protects You
+💥 Domino Attack Graph: Real-time multi-hop escalation simulation across 5 trust boundaries.
+🛡️ Pre-Consent Guard: Intercepts over-scoped OAuth URLs in Chrome *before* consent is granted—with strict PKCE protection.
+🔒 Zero-Trust Local Core: 100% deterministic TypeScript engine running in your browser. 0 KB ever leaves your machine.
+
+4/ Triple Surface
+• Next.js Web Arena (interactive threat triage & attack simulation)
+• Chrome MV3 Pre-Consent Guard (proactive browser protection)
+• Local Developer CLI (`npx scopebomb audit .`)
+
+Built for INNOVEX 2026.
+Try the live demo now: https://scopebomb.vercel.app
+
+================================================================================
+LINKEDIN / DEVPOST SUBMISSION
+================================================================================
+
+🚀 Excited to unveil ScopeBomb for INNOVEX 2026!
+
+In the era of autonomous agents and shadow AI tools, credential management has hit a critical crisis: the Domino Cascade.
+
+When developers grant OAuth permissions to AI agents, they frequently bridge multiple trust boundaries—connecting local configuration files (`.mcp.json`, `.env`), identity providers (Google, GitHub, Slack), and production cloud infrastructure. When a leak occurs, security teams rely on RFC 7009 revocation endpoints, assuming an HTTP 200 OK status means containment. In reality, secondary refresh tokens, app grants, and independent service sessions frequently remain active and uncontained.
+
+ScopeBomb is the first Zero-Trust Blast-Radius Analyzer & Pre-Consent Guard designed specifically for the developer security lifecycle:
+
+🔹 Real-Time Domino Attack Graph: Models multi-hop privilege escalation across 5 distinct trust boundaries with interactive real-time detonation.
+🔹 Protocol-Accurate Containment: Distinguishes naive single revokes from comprehensive multi-issuer kill switches (including GitHub 204 grant deletion).
+🔹 Proactive Pre-Consent Interception: MV3 extension sandbox blocks over-scoped permissions before consent is granted, preserving PKCE cryptographic hashes without corrupting state.
+🔹 100% Client-Side Privacy: Zero backend databases, zero telemetry exfiltration, sub-100ms deterministic execution.
+
+Check out our 90-second launch showcase and test the live application:
+🔗 Live Web Arena: https://scopebomb.vercel.app
+🎥 Showcase Film: videos/scopebomb-launch/renders/scopebomb_90s_showcase.mp4
+

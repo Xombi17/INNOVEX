@@ -28,6 +28,7 @@ graphify-out/
 .impeccable/review/
 .impeccable/build/
 .vercel/
+.hyperframes/
 
 # OS / Editor
 .DS_Store
