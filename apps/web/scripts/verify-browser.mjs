@@ -629,9 +629,13 @@ try {
     await js('document.activeElement.dataset.guideTarget === "actions" && document.activeElement.closest("details").open && document.body.innerText.includes("Remediation not verified")'),
   );
   await click("Mark this review action done");
+  await until(
+    'document.querySelector("[data-guide-target=actions] input[type=checkbox]")?.checked',
+    "review action checked",
+  );
   await click("Explore without guidance");
   await until(
-    '!document.querySelector("[data-walkthrough-step]") && document.querySelector("[data-guide-target=actions] input[type=checkbox]")?.checked',
+    '!document.querySelector("[data-walkthrough-step]")',
     "guidance exit",
   );
   check(

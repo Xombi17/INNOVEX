@@ -393,7 +393,7 @@ summary {
 .walkthrough-guide {
   position: fixed;
   z-index: 80;
-  inset: auto auto 24px 24px;
+  inset: auto 24px 24px auto;
   width: min(440px, calc(100vw - 48px));
   max-height: min(72vh, 520px);
   overflow-y: auto;
