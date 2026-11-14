@@ -721,171 +721,197 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* DeepSeek Harness Style Architectural Topology & Slot Pipeline */}
-      <section className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 border-t border-white/10">
-        <div className="text-center">
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Pure TypeScript Architecture with Sub-15ms DAG Traversal
+      {/* Expanding capabilities section matching DeepSeek Harness Inspiration (Image 1) */}
+      <section className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 border-t border-white/10">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-medium tracking-tight text-white leading-tight">
+            Expanding capabilities.<br />
+            Work on your terms.
           </h2>
-          <p className="mt-3 text-sm text-slate-400 max-w-2xl mx-auto">
-            ScopeBomb is designed around modular slot-based execution with zero-dependency native APIs.
+          <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-xl mx-auto font-normal">
+            Everything an agent touches becomes part of your non-human identity mesh. Inspect, simulate, and contain cross-issuer exposure with composable defense plugins.
           </p>
         </div>
 
-        {/* Execution Flow Diagram */}
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-4">
-          <div className="rounded-xl border border-white/10 bg-slate-950/70 p-5">
-            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-              <span>LAYER 01</span>
-              <span className="text-teal-400 font-semibold">PRE-CONSENT</span>
+        {/* 2x2 Large Feature Cards with Visual Vignettes (Image 1) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Card 1: Everything is a plugin */}
+          <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
+            <div>
+              <h3 className="text-xl font-semibold text-white">Everything is a plugin</h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+                Install plugins, or create them through chat in “Creator mode”, to extend tools, skills, and the interface.
+              </p>
             </div>
-            <h3 className="mt-3 text-sm font-bold text-white">Client Ingestion</h3>
-            <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
-              Chrome MV3 guard pauses OAuth consent dialogs with zero PKCE hash corruption; CLI parses local repositories.
-            </p>
+
+            {/* Vignette: Creator Mode Interactive Pill & Chat Input Box */}
+            <div className="mt-8 pt-6 border-t border-white/5 space-y-3">
+              <div className="inline-flex items-center gap-1.5 text-xs text-slate-300">
+                <span className="h-2.5 w-2.5 rounded-sm bg-blue-500/80 inline-block" />
+                <span className="font-medium">Creator mode</span>
+                <span className="text-slate-500 text-[10px]">▾</span>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#1b1f2b] p-3 sm:p-4 flex items-center justify-between gap-3 shadow-inner">
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-300 truncate">
+                  <span className="text-slate-500 font-light text-base">+</span>
+                  <span className="truncate">Write a Pomodoro timer plugin for me.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={onDetonateSimulation}
+                  aria-label="Send prompt in creator mode"
+                  className="h-8 w-8 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                >
+                  <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-slate-950/70 p-5">
-            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-              <span>LAYER 02</span>
-              <span className="text-blue-400 font-semibold">PURE TS</span>
+          {/* Card 2: Complete a range of tasks (Files + Overlaid Code Review Diff) */}
+          <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
+            <div>
+              <h3 className="text-xl font-semibold text-white">Complete a range of tasks</h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+                Organize documents, analyze spreadsheets, and write code. Preview the results directly and refine them through conversation.
+              </p>
             </div>
-            <h3 className="mt-3 text-sm font-bold text-white">Core DAG Engine</h3>
-            <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
-              Deterministic 30-node catalog modeling cross-issuer blast radius across 4 trust boundaries in under 15ms.
-            </p>
+
+            {/* Vignette: Stacked Files with Overlaid Code Diff Review */}
+            <div className="mt-8 pt-6 border-t border-white/5 relative min-h-[160px] flex items-center">
+              {/* Stacked Files */}
+              <div className="w-1/2 space-y-2 pr-2">
+                <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#181b24] border border-white/5 text-xs">
+                  <span className="h-6 w-6 rounded bg-emerald-500/20 text-emerald-400 font-semibold flex items-center justify-center text-[10px]">
+                    XLS
+                  </span>
+                  <div className="truncate">
+                    <div className="text-white text-xs truncate">Data.xlsx</div>
+                    <div className="text-[10px] text-slate-400 truncate">Excel spreadsheet</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#181b24] border border-white/5 text-xs">
+                  <span className="h-6 w-6 rounded bg-blue-500/20 text-blue-400 font-semibold flex items-center justify-center text-[10px]">
+                    HTML
+                  </span>
+                  <div className="truncate">
+                    <div className="text-white text-xs truncate">index.html</div>
+                    <div className="text-[10px] text-slate-400 truncate">HTML page</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#181b24] border border-white/5 text-xs">
+                  <span className="h-6 w-6 rounded bg-indigo-500/20 text-indigo-400 font-semibold flex items-center justify-center text-[10px]">
+                    TS
+                  </span>
+                  <div className="truncate">
+                    <div className="text-white text-xs truncate">label.ts</div>
+                    <div className="text-[10px] text-slate-400 truncate">TypeScript code</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Overlaid Floating Code Review Diff Box */}
+              <div className="w-1/2 pl-1">
+                <div className="rounded-xl border border-white/15 bg-[#0e1017] p-3 font-mono text-[11px] text-slate-300 shadow-2xl shadow-black/80">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-1.5 mb-1.5">
+                    <span className="text-slate-400 text-[10px]">Review · turn 1</span>
+                    <div className="flex items-center gap-1.5 text-[9px]">
+                      <span className="rounded bg-blue-500/20 px-1 text-blue-300">TS</span>
+                      <span className="text-slate-400">src/label.ts</span>
+                      <span className="text-emerald-400">+2</span>
+                      <span className="text-rose-400">-1</span>
+                    </div>
+                  </div>
+                  <div className="text-[9px] text-slate-500">@@ -8,3 +8,4 @@</div>
+                  <div className="text-[10px] text-slate-400">8  8  function label(name: string) &#123;</div>
+                  <div className="text-[10px] bg-rose-950/40 text-rose-300 px-1 rounded">- 9     return name;</div>
+                  <div className="text-[10px] bg-emerald-950/40 text-emerald-300 px-1 rounded">+ 9     const text = name.trim();</div>
+                  <div className="text-[10px] bg-emerald-950/40 text-emerald-300 px-1 rounded">+ 10    return text || &apos;Untitled&apos;;</div>
+                  <div className="text-[10px] text-slate-400">11 11 &#125;</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-slate-950/70 p-5">
-            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-              <span>LAYER 03</span>
-              <span className="text-amber-400 font-semibold">4-AGENT MESH</span>
+          {/* Card 3: Adapt to your workflow */}
+          <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
+            <div>
+              <h3 className="text-xl font-semibold text-white">Adapt to your workflow</h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+                Autonomous 4-agent consensus triage across IAM scopes, MITRE attack patterns, and cryptographic invalidation.
+              </p>
             </div>
-            <h3 className="mt-3 text-sm font-bold text-white">Autonomous SOC Swarm</h3>
-            <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
-              Parallel Gemini 3.x Flash agents deliberate on IAM permissions, MITRE tactics, and RFC 7009 compliance.
-            </p>
+
+            {/* Vignette: 4-Agent Deliberation Status */}
+            <div className="mt-8 pt-6 border-t border-white/5 space-y-2.5">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#181b24] border border-white/5 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 motion-safe:animate-pulse motion-reduce:animate-none" />
+                  <span className="font-medium text-white">Multi-Agent Consensus</span>
+                </div>
+                <span className="rounded bg-emerald-500/20 text-emerald-300 px-2 py-0.5 font-mono text-[10px]">
+                  REVOKE_AND_ISOLATE
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-400">
+                <div className="p-2 rounded bg-black/30 border border-white/5">
+                  <span className="text-teal-400 font-medium">IAM Auditor</span>: drive.readonly flagged
+                </div>
+                <div className="p-2 rounded bg-black/30 border border-white/5">
+                  <span className="text-amber-400 font-medium">Threat Modeler</span>: MITRE T1566 mapped
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-slate-950/70 p-5">
-            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-              <span>LAYER 04</span>
-              <span className="text-emerald-400 font-semibold">SHA-256</span>
+          {/* Card 4: Developer tools */}
+          <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/40">
+            <div>
+              <h3 className="text-xl font-semibold text-white">Developer tools</h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+                Automate scans in CI/CD, run local zero-dependency audits via CLI, and block over-scoped pull requests before merge.
+              </p>
             </div>
-            <h3 className="mt-3 text-sm font-bold text-white">Multi-Cloud Gate</h3>
-            <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
-              Dispatches cascading revocations to GitHub, Google, and AWS with tamper-proof cryptographic audit receipts.
-            </p>
-          </div>
-        </div>
-      </section>
 
-      {/* 6 Core Capability Pillars Grid (Harness/DeepSeek clean cards) */}
-      <section className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 border-t border-white/10">
-        <div className="text-center">
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Engineered for Modern Non-Human Identities (NHI)
-          </h2>
-          <p className="mt-3 text-sm text-slate-400 max-w-2xl mx-auto">
-            Traditional IAM tools only inspect human login sessions. ScopeBomb defends the automated agent pipeline across every tier.
-          </p>
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Pillar 1 */}
-          <div className="glow-card-blue rounded-xl p-6 transition">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+            {/* Vignette: Clean Terminal Prompt */}
+            <div className="mt-8 pt-6 border-t border-white/5">
+              <div className="rounded-xl border border-white/10 bg-black/50 p-3 font-mono text-xs text-slate-300 space-y-1">
+                <div className="text-slate-400 flex items-center gap-2">
+                  <span className="text-blue-400">$</span>
+                  <span>npx @scopebomb/cli scan . --fail-on-risk 80</span>
+                </div>
+                <div className="text-emerald-400 text-[11px] pt-1">
+                  ✓ 0 secrets leaked, 30 AST nodes verified, PASSED
+                </div>
+              </div>
             </div>
-            <h3 className="mt-4 text-base font-bold text-white">Cross-Issuer Domino Graph</h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300">
-              Traverses across personal Google identities, local developer environments, GitHub organizations, and AWS IAM roles with sub-15ms topological blast radius computation.
-            </p>
-          </div>
-
-          {/* Pillar 2 */}
-          <div className="glow-card-cyan rounded-xl p-6 transition">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
-              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h3 className="mt-4 text-base font-bold text-white">4-Agent Autonomous Swarm</h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300">
-              Parallel Gemini 3.x Flash agents simultaneously audit permissions, model MITRE attack vectors, check RFC 7009 compliance, and synthesize remediation orders.
-            </p>
-          </div>
-
-          {/* Pillar 3 */}
-          <div className="glow-card-blue rounded-xl p-6 transition">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <h3 className="mt-4 text-base font-bold text-white">RFC 7009 True Containment</h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300">
-              Direct API integrations for GitHub grant revocation and AWS STS credential invalidation with cryptographic SHA-256 audit receipts that satisfy SOC2 criteria.
-            </p>
-          </div>
-
-          {/* Pillar 4 */}
-          <div className="glow-card-cyan rounded-xl p-6 transition">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="mt-4 text-base font-bold text-white">Chrome MV3 Pre-Consent Guard</h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300">
-              Intercepts OAuth consent screens in the browser before the user clicks “Allow”. Zero PKCE corruption, 100% pre-token visibility.
-            </p>
-          </div>
-
-          {/* Pillar 5 */}
-          <div className="glow-card-blue rounded-xl p-6 transition">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
-              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-            </div>
-            <h3 className="mt-4 text-base font-bold text-white">CI/CD Enterprise Gate & CLI</h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300">
-              Lightweight zero-dependency CLI (<code>npx @scopebomb/cli scan .</code>) and official GitHub Action to automatically fail pull requests on high risk scores.
-            </p>
-          </div>
-
-          {/* Pillar 6 */}
-          <div className="glow-card-cyan rounded-xl p-6 transition">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="mt-4 text-base font-bold text-white">Zero-Knowledge Local Parsing</h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300">
-              All URL inspection, AST tokens, and config audits occur client-side in pure TypeScript without secret leakage to third-party endpoints.
-            </p>
           </div>
         </div>
       </section>
 
       {/* Comparison Table: Status Quo vs ScopeBomb */}
       <section className="relative mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8 border-t border-white/10">
-        <div className="text-center">
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Why Standard OAuth Disconnect Fails
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            Why standard OAuth disconnect fails
           </h2>
+          <p className="mt-2 text-xs sm:text-sm text-slate-400">
+            Compare traditional human OAuth revoke against ScopeBomb non-human identity mesh defense.
+          </p>
         </div>
 
-        <div className="mt-8 overflow-hidden rounded-xl border border-white/10 bg-slate-950/70 shadow-xl backdrop-blur-md">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#12141c] shadow-xl">
           <table className="w-full text-left text-xs sm:text-sm">
-            <thead className="border-b border-white/10 bg-slate-900/80 text-slate-400 text-xs font-medium">
+            <thead className="border-b border-white/10 bg-[#181b24] text-slate-400 text-xs font-medium">
               <tr>
                 <th className="px-4 py-3 sm:px-6">Security Dimension</th>
-                <th className="px-4 py-3 text-slate-400 sm:px-6">Status Quo ("Disconnect" Button)</th>
+                <th className="px-4 py-3 text-slate-400 sm:px-6">Status Quo (“Disconnect” Button)</th>
                 <th className="px-4 py-3 text-blue-400 sm:px-6">ScopeBomb Defense Mesh</th>
               </tr>
             </thead>
@@ -920,32 +946,108 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* Bottom Launch Banner */}
-      <section className="relative mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-900/40 via-slate-900/70 to-teal-900/40 p-8 sm:p-12 text-center shadow-2xl backdrop-blur-xl">
-          <h2 className="text-2xl font-bold tracking-tight text-white sm:text-4xl">
-            Stop guessing your non-human blast radius.
+      {/* DeepSeek Harness Signature Ecosystem Section (Image 2) */}
+      <section className="relative mx-auto max-w-5xl px-4 pt-20 pb-16 sm:px-6 lg:px-8 border-t border-white/10 text-center">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-medium tracking-tight text-white leading-tight">
+            Join the ScopeBomb defense ecosystem
           </h2>
-          <p className="mt-4 text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-            Test any OAuth URL, inspect your repositories, or detonate the live attack simulation in the security cockpit right now.
+          <p className="mt-4 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal max-w-2xl mx-auto">
+            ScopeBomb Harness is in preview, with evolving core defense plugins and APIs. We invite users and developers worldwide to explore deterministic non-human identity security together through open-source, reusable, and composable infrastructure.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+
+          {/* 4-Button 2x2 Grid Matching Image 2 */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 max-w-lg mx-auto">
+            <a
+              href="https://github.com/Xombi17/INNOVEX"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-xs sm:text-sm font-medium text-slate-900 hover:bg-slate-100 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            >
+              <svg aria-hidden="true" className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+              <span>View on GitHub</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={onOpenTools}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            >
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span>Developer docs</span>
+            </button>
+
             <button
               type="button"
               onClick={onLaunchCockpit}
-              className="rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-blue-500/30 transition hover:brightness-110 active:scale-95"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
-              Launch Security Cockpit
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              <span>Community presets</span>
+            </button>
+
+            <a
+              href="https://datatracker.ietf.org/doc/html/rfc7009"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-xs sm:text-sm font-medium text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            >
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>RFC 7009 paper</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Minimalist Footer matching Image 2 */}
+        <footer className="mt-24 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-normal">
+          <div className="flex items-center gap-4 text-slate-400">
+            <a
+              href="https://github.com/Xombi17/INNOVEX"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              X (Twitter)
+            </a>
+          </div>
+
+          <div>
+            © 2026 ScopeBomb (MIT License)
+          </div>
+
+          <div className="flex items-center gap-4 text-slate-400">
+            <button
+              type="button"
+              onClick={onOpenTools}
+              className="hover:text-white transition-colors"
+            >
+              Privacy Policy
             </button>
             <button
               type="button"
               onClick={onOpenTools}
-              className="rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-base font-semibold text-white transition hover:bg-white/10 active:scale-95"
+              className="hover:text-white transition-colors"
             >
-              View CLI & CI/CD Docs
+              Terms of Use
             </button>
           </div>
-        </div>
+        </footer>
       </section>
     </div>
   );
