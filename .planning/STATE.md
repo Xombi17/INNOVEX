@@ -12,9 +12,9 @@ active_development: 'Milestone v1.2 Released: Enterprise Security Platform & Hac
 active_development_branch: main
 active_development_review: null
 last_activity: 2026-11-14
-release_code_commit: 29e613b
+release_code_commit: dea39e9
 production_url: https://scopebomb.vercel.app
-production_deployment: https://scopebomb-487855uqb-varadaj47-gmailcoms-projects.vercel.app
+production_deployment: https://scopebomb-jpvkjb7hr-varadaj47-gmailcoms-projects.vercel.app
 progress:
   total_phases: 6
   completed_phases: 6
