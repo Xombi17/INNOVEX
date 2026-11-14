@@ -307,7 +307,7 @@ export function ScopeBombArena({
             <span className="text-white/20">|</span>
             <span className="text-slate-400">DAG TOPOLOGY: <span className="text-blue-300 font-semibold">30 AST NODES</span></span>
             <span className="hidden md:inline text-white/20">|</span>
-            <span className="hidden md:inline text-slate-400">EXECUTION: <span className="text-emerald-300">p95 &lt;15ms</span></span>
+            <span className="hidden md:inline text-slate-400">LATENCY: <span className="text-emerald-300">&lt;15ms</span></span>
             <span className="hidden lg:inline text-white/20">|</span>
             <span className="hidden lg:inline text-slate-400">INTERCEPTOR: <span className="text-cyan-300">CHROME MV3 READY</span></span>
           </div>
@@ -436,7 +436,7 @@ export function ScopeBombArena({
               className="control"
               onClick={() => setHelpOpen(true)}
             >
-              About
+              About this tool
             </button>
             {activeTab === "arena" && entry === "sample" && walkthrough === "off" && (
               <button
