@@ -12,10 +12,10 @@
   --raised: #111726;
   --active: #172036;
   --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.16);
   --rule: rgba(255, 255, 255, 0.05);
   --control: rgba(255, 255, 255, 0.12);
-  --control-strong: rgba(255, 255, 255, 0.2);
+  --control-strong: rgba(255, 255, 255, 0.22);
   --text: #f8fafc;
   --muted: #94a3b8;
   --accent: #3b82f6;
@@ -31,16 +31,16 @@
   --chart-3: #fbbf24;
   --pill-positive-bg: rgba(16, 185, 129, 0.12);
   --pill-positive-ink: #6ee7b7;
-  --pill-negative-bg: rgba(244, 63, 94, 0.12);
+  --pill-negative-bg: rgba(244, 63, 94, 0.14);
   --pill-negative-ink: #fda4af;
-  --pill-warning-bg: rgba(245, 158, 11, 0.12);
+  --pill-warning-bg: rgba(245, 158, 11, 0.14);
   --pill-warning-ink: #fde68a;
   --pill-neutral-bg: rgba(255, 255, 255, 0.06);
   --pill-neutral-ink: #cbd5e1;
-  --radius-card: 10px;
-  --radius-control: 6px;
-  --radius-sheet: 14px;
-  --control-height: 40px;
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-sheet: 16px;
+  --control-height: 44px;
   --gap-control: 8px;
   --motion-quick: 140ms;
   --motion-press: 150ms;
@@ -138,11 +138,30 @@ a {
 
 .workbench__surface {
   width: 100%;
-  max-width: 1160px;
+  max-width: 1320px;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+/* DeepSeek Harness style Telemetry HUD Strip */
+.telemetry-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 6px 20px;
+  background: rgba(4, 6, 10, 0.95);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (min-width: 640px) {
+  .telemetry-hud { padding-inline: 28px; }
 }
 
 .workbench__header {
@@ -153,9 +172,9 @@ a {
   gap: 16px;
   border-bottom: 1px solid var(--border);
   padding: 12px 20px;
-  background: rgba(8, 9, 13, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(8, 11, 18, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .analysis-context {
@@ -240,17 +259,31 @@ a {
 }
 
 .control-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #03211b;
+  background: var(--brand-cyan);
+  border-color: var(--brand-cyan);
+  color: #041d18;
   font-weight: 600;
 }
 
 .control-primary:hover:not(:disabled) {
-  background: #1bf3d3;
-  border-color: #1bf3d3;
-  box-shadow: 0 0 20px rgba(0, 210, 180, 0.35);
-  color: #03211b;
+  background: #2dd4bf;
+  border-color: #2dd4bf;
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.35);
+  color: #041d18;
+}
+
+.control-accent {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.control-accent:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #60a5fa;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.35);
+  color: #ffffff;
 }
 
 .control-active,
