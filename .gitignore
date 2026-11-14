@@ -36,4 +36,10 @@ graphify-out/
 .vercel
 .env*
 .agents/
+
+# Video production, motion graphics, and media renders
 videos/
+renders/
+brag-output/
+production/
+scripts/
