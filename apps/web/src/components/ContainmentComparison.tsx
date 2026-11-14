@@ -29,6 +29,14 @@ interface Props {
   showFullTableByDefault?: boolean;
 }
 
+function ProbeSvg({ className = "h-3.5 w-3.5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+    </svg>
+  );
+}
+
 export function ContainmentComparison({
   report,
   simulationMode,
@@ -105,15 +113,19 @@ export function ContainmentComparison({
         key={step.priority}
         data-guide-target={step.priority === steps[0]?.priority ? "actions" : undefined}
         tabIndex={step.priority === steps[0]?.priority ? -1 : undefined}
-        className="space-y-3 border-t border-[#1e2636] py-4"
+        className="rounded-xl border border-white/5 bg-[#181b24] p-4 sm:p-5 mb-3.5 space-y-3.5 shadow-sm"
       >
-        <h3 className="font-semibold text-white">{target}</h3>
-        <p className="text-slate-300">{details.guidance}</p>
-        <p className="muted text-[13px] text-slate-400">Who can do this: {details.actor}.</p>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold text-white">{target}</h3>
+          <span className="font-mono text-[11px] text-slate-400">Step {step.priority + 1}</span>
+        </div>
+        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">{details.guidance}</p>
+        <p className="text-xs text-slate-400">Who can do this: <span className="text-slate-300 font-medium">{details.actor}</span>.</p>
+        
+        <div className="flex flex-wrap items-center gap-2 pt-1">
           {details.consoleUrl && (
             <a
-              className="control"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/10 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
               href={details.consoleUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -127,9 +139,9 @@ export function ContainmentComparison({
             type="button"
             disabled={probing[step.priority]}
             onClick={() => runProbe(step, details)}
-            className="control control-primary inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 px-3.5 py-1.5 text-xs font-semibold text-teal-300 hover:bg-teal-500/20 disabled:opacity-60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
           >
-            <span>⚡</span>
+            <ProbeSvg />
             {probing[step.priority]
               ? "Probing Issuer…"
               : "Execute Active Verification Probe"}
@@ -137,32 +149,34 @@ export function ContainmentComparison({
         </div>
 
         {probeResults[step.priority] && (
-          <div className="rounded-lg border border-emerald-500/40 bg-[#090d14] p-3 text-xs font-mono shadow-md">
+          <div className="rounded-xl border border-emerald-500/40 bg-[#0e1017] p-3.5 text-xs font-mono shadow-md">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-900/40 pb-2 mb-2 text-emerald-400">
-              <span className="font-bold flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-semibold flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 motion-safe:animate-pulse motion-reduce:animate-none" />
                 PROBE VERIFIED · HTTP {probeResults[step.priority].executedStatus}
               </span>
               <span className="text-[10px] text-slate-400 font-mono">
                 {probeResults[step.priority].receiptId}
               </span>
             </div>
-            <p className="text-slate-300 text-[11px] mb-2">
+            <p className="text-slate-300 text-[11px] mb-2 font-sans">
               {probeResults[step.priority].auditLog}
             </p>
-            <div className="rounded bg-black/60 p-2 text-slate-400 text-[10px] whitespace-pre-wrap font-mono border border-white/5">
+            <div className="rounded-lg bg-black/60 p-2.5 text-slate-300 text-[10px] whitespace-pre-wrap font-mono border border-white/5">
               {probeResults[step.priority].probeOutput}
             </div>
           </div>
         )}
-        <p className="muted text-[13px] text-slate-400">
+        
+        <p className="text-[12px] text-slate-400">
           If this is a conditional consequence, confirm the credential or
           artifact exists before taking action.
         </p>
-        <label className="flex min-h-11 cursor-pointer items-center gap-3">
+        
+        <label className="flex min-h-10 cursor-pointer items-center gap-2.5 rounded-lg border border-white/5 bg-[#0e1017] px-3 py-2 hover:border-white/15 transition-colors">
           <input
             type="checkbox"
-            className="h-5 w-5 rounded border-[#2b3548] bg-[#0c1018] text-teal-400 focus:ring-teal-400"
+            className="h-4 w-4 rounded border-white/20 bg-[#12141c] text-blue-500 focus:ring-blue-400"
             checked={status?.done ?? false}
             onChange={(event) =>
               change(step.priority, {
@@ -171,35 +185,37 @@ export function ContainmentComparison({
               })
             }
           />
-          <span className="text-slate-200">
+          <span className="text-xs sm:text-sm text-slate-200 font-medium">
             {status?.done
               ? "Marked done by you"
               : "Mark this review action done"}
           </span>
         </label>
-        <details>
-          <summary className="cursor-pointer text-teal-400 hover:text-teal-300">
+        
+        <details className="rounded-xl border border-white/5 bg-[#0e1017] p-3.5">
+          <summary className="cursor-pointer text-xs sm:text-sm font-medium text-teal-300 hover:text-teal-200 transition-colors">
             Technical instructions and verification
           </summary>
-          <div className="mt-3 space-y-3">
-            <p className="muted text-[13px] text-slate-400">
+          <div className="mt-3.5 space-y-3">
+            <p className="text-xs text-slate-400">
               Templates require the correct account, credential and privileges.
               ScopeBomb never runs these commands.
             </p>
-            <pre className="whitespace-pre-wrap break-all rounded-md border border-[#1e2636] bg-[#090c13] p-3 text-[13px] font-mono text-teal-300">
+            <pre className="whitespace-pre-wrap break-all rounded-lg border border-white/10 bg-[#12141c] p-3 text-xs font-mono text-teal-300">
               {details.copyableCommand}
             </pre>
             <button
-              className="control"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
               type="button"
               onClick={() => void copy(details.copyableCommand)}
             >
               Copy instructions
             </button>
-            <p className="font-medium text-white">How to check</p>
-            <p className="muted text-slate-300">{details.verificationProbe}</p>
-            <p className="muted text-[13px] text-slate-400">{details.expectedStatus}</p>
-            <p className="muted text-[13px] text-slate-400">{details.rfcNote}</p>
+            <p className="font-semibold text-xs text-white pt-1">How to check</p>
+            <p className="text-xs text-slate-300">{details.verificationProbe}</p>
+            <p className="text-xs text-slate-400">{details.expectedStatus}</p>
+            <p className="text-xs text-slate-400">{details.rfcNote}</p>
+            
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -215,17 +231,17 @@ export function ContainmentComparison({
                 change(step.priority, { recorded: true });
               }}
               noValidate
-              className="space-y-2"
+              className="space-y-2.5 pt-2"
             >
               <label
                 htmlFor={`evidence-${step.priority}`}
-                className="block font-medium text-white"
+                className="block text-xs font-medium text-white"
               >
                 Verification note (kept only in this tab)
               </label>
               <textarea
                 id={`evidence-${step.priority}`}
-                className="field"
+                className="w-full rounded-xl border border-white/10 bg-[#12141c] p-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-400 font-sans"
                 rows={2}
                 maxLength={1000}
                 placeholder="Example: old token rejected by its previously authorized endpoint; checked at…"
@@ -241,19 +257,22 @@ export function ContainmentComparison({
               />
               <p
                 id={`note-help-${step.priority}`}
-                className="muted text-[13px] text-slate-400"
+                className="text-[11px] text-slate-400"
               >
                 Record the outcome, not tokens or passwords. This is your
                 evidence; ScopeBomb does not validate it.
               </p>
-              <button className="control" type="submit">
+              <button
+                className="rounded-full bg-white text-slate-950 font-medium px-4 py-1.5 text-xs hover:bg-slate-200 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                type="submit"
+              >
                 Record verification evidence
               </button>
               {errors[step.priority] && (
                 <p
                   role="alert"
                   id={`note-error-${step.priority}`}
-                  className="text-rose-400"
+                  className="text-xs text-rose-400"
                 >
                   {errors[step.priority]}
                 </p>
@@ -261,7 +280,8 @@ export function ContainmentComparison({
             </form>
           </div>
         </details>
-        <p role="status" className="text-[13px] font-medium text-teal-300">
+        
+        <p role="status" className="text-xs font-medium text-teal-300">
           {status?.recorded
             ? "Verification evidence recorded by you; not independently verified"
             : status?.done
@@ -272,64 +292,74 @@ export function ContainmentComparison({
     );
   };
   return (
-    <section aria-label="Recommended cleanup checklist" className="space-y-5">
-      <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-4">
-        <h2 className="font-semibold text-amber-300">
-          Remediation not verified
-        </h2>
-        <p className="mt-2 text-slate-200">
+    <section aria-label="Recommended cleanup checklist" className="space-y-6">
+      {/* Notice Card matching DeepSeek Harness */}
+      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 sm:p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="h-2 w-2 rounded-full bg-amber-400" />
+          <h2 className="text-sm font-semibold text-amber-300">
+            Remediation not verified
+          </h2>
+        </div>
+        <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
           These are recommended reviews for the modeled exposure. Checking a box
           records your progress only. ScopeBomb has not changed or tested an
           account.
         </p>
-        <p className="muted mt-2 text-[13px] text-slate-400">
+        <p className="mt-2 text-xs text-slate-400">
           Progress and evidence notes are kept in memory for this analysis and
           clear on a new analysis, reset or page refresh.
         </p>
       </div>
+
       {steps.length ? (
         <>
-          <p className="muted text-slate-300">
+          <p className="text-xs sm:text-sm text-slate-300 font-normal">
             Start with confirmed exposure at known issuers. Then investigate
             conditional downstream credentials.{" "}
-            <span className="font-mono text-teal-400">{Object.values(progress).filter((item) => item.done).length} of{" "}
+            <span className="font-mono text-teal-400 font-medium">{Object.values(progress).filter((item) => item.done).length} of{" "}
             {steps.length}</span> review actions marked done by you.
           </p>
-          {groups.map((issuer) => (
-            <details
-              key={issuer}
-              className="border-t border-[#1e2636]"
-            >
-              <summary className="cursor-pointer py-4 font-semibold text-white hover:text-teal-300 transition-colors">
-                {issuer} —{" "}
-                {steps.filter((step) => step.issuer === issuer).length} review
-                actions
-              </summary>
-              <ul>
-                {steps.filter((step) => step.issuer === issuer).map(renderStep)}
-              </ul>
-            </details>
-          ))}
+
+          <div className="space-y-4">
+            {groups.map((issuer) => (
+              <details
+                key={issuer}
+                className="rounded-2xl border border-white/10 bg-[#12141c] p-5 sm:p-6 shadow-xl shadow-black/30"
+              >
+                <summary className="cursor-pointer font-semibold text-white hover:text-blue-300 transition-colors text-sm sm:text-base">
+                  {issuer} —{" "}
+                  {steps.filter((step) => step.issuer === issuer).length} review
+                  actions
+                </summary>
+                <ul className="mt-4 space-y-3">
+                  {steps.filter((step) => step.issuer === issuer).map(renderStep)}
+                </ul>
+              </details>
+            ))}
+          </div>
         </>
       ) : (
-        <p className="muted text-slate-400">
+        <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 text-center text-xs text-slate-400">
           No credential cleanup steps were generated. Review scan coverage and
           unsupported data before deciding whether further inspection is needed.
-        </p>
+        </div>
       )}
-      <details className="border-t border-[#1e2636] pt-2">
-        <summary className="cursor-pointer text-teal-400 hover:text-teal-300">
+
+      {/* Preview Expected Outcome Card */}
+      <details className="rounded-2xl border border-white/10 bg-[#12141c] p-5 sm:p-6 shadow-xl shadow-black/30">
+        <summary className="cursor-pointer text-xs sm:text-sm font-semibold text-teal-300 hover:text-teal-200 transition-colors">
           Preview the modeled outcome
         </summary>
-        <div className="mt-3 space-y-3">
-          <p className="muted text-slate-400">
+        <div className="mt-4 space-y-3.5">
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
             This preview assumes every applicable action, issuer discovery and
             authentication-rejection check succeeds. It is not a measured
             security status.
           </p>
           <button
             type="button"
-            className="control"
+            className="rounded-full border border-white/15 bg-white/5 hover:bg-white/10 text-white px-4 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             onClick={() =>
               onChangeSimulationMode(
                 simulationMode === "full_multi_issuer"
@@ -342,16 +372,19 @@ export function ContainmentComparison({
               ? "Return to one-provider model"
               : "Preview expected outcome"}
           </button>
-          <p className="text-slate-300">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
             {simulationMode === "full_multi_issuer"
               ? "Projected coverage of modeled resources: 100%, conditional on successful cleanup and verification. Actual remediation remains unverified."
               : `${report.naive_containment.persisting_node_ids.length} modeled nodes may need additional review after one-provider cleanup. This is not a count of confirmed attacks.`}
           </p>
         </div>
       </details>
-      <p role="status" className="muted text-[13px] text-teal-300">
-        {copyStatus}
-      </p>
+
+      {copyStatus && (
+        <p role="status" className="text-xs text-teal-300 font-mono">
+          {copyStatus}
+        </p>
+      )}
     </section>
   );
 }

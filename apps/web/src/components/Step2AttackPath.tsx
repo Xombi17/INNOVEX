@@ -38,25 +38,28 @@ export function Step2AttackPath({
   return (
     <div className="space-y-6">
       <div>
-        <h1 tabIndex={-1} className="text-2xl font-semibold text-white">
+        <h1 tabIndex={-1} className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
           Understand possible exposure
         </h1>
-        <p className="muted mt-2 max-w-[75ch] text-slate-300">
+        <p className="mt-1.5 max-w-[75ch] text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
           {hasExposure
             ? "Follow one conditional chain from the supplied input. Each link depends on real permissions, resource contents and credential validity."
             : "No downstream exposure is modeled for this input. The catalog is limited, so this does not prove your accounts or project are safe."}
         </p>
       </div>
+
       {guidance}
-      <div className="rounded-lg border border-white/5 bg-[#121622] p-4">
-        <strong className="text-white">Possible consequence, not an observed attack</strong>
-        <p className="muted mt-2 text-slate-400">
+
+      <div className="rounded-2xl border border-white/10 bg-[#12141c] p-5 shadow-xl shadow-black/30">
+        <strong className="text-sm font-semibold text-white">Possible consequence, not an observed attack</strong>
+        <p className="mt-1.5 text-xs text-slate-400 leading-relaxed font-normal">
           For example, if an app can read a file containing another service’s
           valid API key, that copied key may need separate revocation.
           Disconnecting the original app does not revoke a credential issued by
           another service.
         </p>
       </div>
+
       {hasExposure && (
         <ol className="exposure-chain" aria-label="One possible exposure chain" data-guide-target="exposure" tabIndex={-1}>
           {nodes.map((node, index) => (
@@ -65,16 +68,17 @@ export function Step2AttackPath({
               className="exposure-link"
             >
               <span className="exposure-number" aria-hidden="true">{index + 1}</span>
-              <div>
-                <div className="font-medium text-white">{humanizeNodeLabel(node)}</div>
-                <p className="muted mt-1 text-[13px] text-slate-400">{node.notes}</p>
+              <div className="rounded-xl border border-white/5 bg-[#181b24] p-4 shadow-sm">
+                <div className="text-sm font-semibold text-white">{humanizeNodeLabel(node)}</div>
+                <p className="mt-1 text-xs text-slate-400 leading-relaxed font-normal">{node.notes}</p>
               </div>
             </li>
           ))}
         </ol>
       )}
-      {/* Un-boxed Hero Domino Blast Radius Graph */}
-      <div className="rounded-xl border border-white/10 bg-[#0a0d15] shadow-2xl overflow-hidden">
+
+      {/* Hero Domino Blast Radius Graph */}
+      <div className="rounded-2xl border border-white/10 bg-[#0e1017] shadow-2xl shadow-black/50 overflow-hidden">
         <DominoGraph
           report={report}
           simulationMode={simulationMode}
@@ -82,14 +86,14 @@ export function Step2AttackPath({
         />
       </div>
 
-      <details onToggle={(event) => setExpanded(event.currentTarget.open)}>
-        <summary className="cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors">
+      <details className="rounded-2xl border border-white/10 bg-[#12141c] p-5 shadow-xl shadow-black/30" onToggle={(event) => setExpanded(event.currentTarget.open)}>
+        <summary className="cursor-pointer text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-colors">
           View RFC 7009 protocol specifications and model assumptions
         </summary>
-        <div className="mt-3 space-y-2 text-xs text-slate-400">
+        <div className="mt-3.5 space-y-2 text-xs text-slate-400 leading-relaxed font-normal">
           <p>
-            Model contains {report.graph.nodes.length} nodes across {report.summary.trust_boundary_crossings.length} trust boundaries.
-            Severity rating {report.summary.max_risk_score}/100 is rule-based.
+            Model contains <span className="font-mono text-teal-300">{report.graph.nodes.length}</span> nodes across <span className="font-mono text-teal-300">{report.summary.trust_boundary_crossings.length}</span> trust boundaries.
+            Severity rating <span className="font-mono text-rose-300">{report.summary.max_risk_score}/100</span> is rule-based.
           </p>
           {report.naive_containment.rfc7009_http_status_returned > 0 && (
             <p>
@@ -103,13 +107,17 @@ export function Step2AttackPath({
       {/* Autonomous Defensive Agent Swarm */}
       <AgentSwarmCenter report={report} />
 
-      <div className="flex flex-wrap justify-between gap-3 pt-2">
-        <button type="button" className="control" onClick={onBack}>
+      <div className="flex flex-wrap justify-between gap-3 pt-4">
+        <button
+          type="button"
+          className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs sm:text-sm font-medium text-slate-200 hover:bg-white/10 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+          onClick={onBack}
+        >
           Back to input
         </button>
         <button
           type="button"
-          className="control control-primary"
+          className="rounded-full bg-white text-slate-950 font-semibold px-5 py-2 text-xs sm:text-sm hover:bg-slate-200 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           onClick={onContinue}
         >
           Review recommended actions

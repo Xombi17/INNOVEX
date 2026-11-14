@@ -28,37 +28,43 @@ export function Step3FixBlocker({
   return (
     <div className="space-y-6">
       <div>
-        <h1 tabIndex={-1} className="text-2xl font-semibold text-white">
+        <h1 tabIndex={-1} className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
           Review recommended actions
         </h1>
-        <p className="muted mt-2 text-slate-300">
+        <p className="mt-1.5 text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
           Use provider settings to investigate and clean up confirmed exposure.
           Open technical details when you need them.
         </p>
       </div>
+
       {guidance}
+
       <ContainmentComparison
         report={report}
         simulationMode={simulationMode}
         onChangeSimulationMode={onChangeSimulationMode}
       />
-      <details className="border-t border-[#1e2636] pt-3">
-        <summary className="cursor-pointer font-semibold text-white hover:text-teal-300 transition-colors">
+
+      <details className="rounded-2xl border border-white/10 bg-[#12141c] p-5 sm:p-6 shadow-xl shadow-black/30">
+        <summary className="cursor-pointer font-semibold text-white hover:text-blue-300 transition-colors text-sm sm:text-base">
           Prevent future overbroad app access
         </summary>
-        <div className="mt-4 space-y-5">
-          <p className="muted text-slate-400">
+        <div className="mt-5 space-y-5">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
             The website demonstration does not enable browser protection. The
             extension must be installed separately in desktop Chrome, and
             supports specific Google, GitHub and Microsoft authorization pages.
           </p>
-          <button
-            className="control"
-            type="button"
-            onClick={() => setSandboxOpen(true)}
-          >
-            Try consent demonstration
-          </button>
+          <div>
+            <button
+              className="rounded-full border border-teal-500/30 bg-teal-500/10 px-4 py-2 text-xs font-semibold text-teal-300 hover:bg-teal-500/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+              type="button"
+              onClick={() => setSandboxOpen(true)}
+            >
+              Try consent demonstration
+            </button>
+          </div>
+
           {report.parsed_oauth && (
             <PreConsentPreview
               report={report}
@@ -66,22 +72,25 @@ export function Step3FixBlocker({
               onInspectUrl={onInspectUrl}
             />
           )}
+
           <section
             aria-label="Install browser extension"
-            className="space-y-3 border-t border-[#1e2636] pt-4"
+            className="space-y-3.5 border-t border-white/10 pt-5"
           >
-            <h2 className="font-semibold text-white">Install the Chrome extension</h2>
-            <a
-              className="control"
-              href="/downloads/scopebomb-mv3-extension.zip"
-              download
-            >
-              Download extension (.zip)
-            </a>
-            <ol className="list-decimal space-y-2 pl-5 text-slate-300">
+            <h2 className="text-sm font-semibold text-white">Install the Chrome extension</h2>
+            <div>
+              <a
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                href="/downloads/scopebomb-mv3-extension.zip"
+                download
+              >
+                Download extension (.zip)
+              </a>
+            </div>
+            <ol className="list-decimal space-y-2 pl-5 text-xs sm:text-sm text-slate-300 leading-relaxed">
               <li>Download and extract the archive.</li>
               <li>
-                On desktop Chrome, open <code className="rounded bg-[#141924] px-1.5 py-0.5 text-teal-300">chrome://extensions</code> and
+                On desktop Chrome, open <code className="rounded-lg bg-[#0e1017] px-2 py-0.5 text-teal-300 font-mono text-xs border border-white/5">chrome://extensions</code> and
                 enable Developer mode.
               </li>
               <li>
@@ -89,7 +98,7 @@ export function Step3FixBlocker({
                 ScopeBomb appears enabled.
               </li>
             </ol>
-            <p className="muted text-[13px] text-slate-400">
+            <p className="text-xs text-slate-400 leading-relaxed">
               Then use the extension popup to inspect a supported authorization
               URL. Downloading the archive or using this sandbox does not
               install protection. This website cannot confirm extension
@@ -98,9 +107,17 @@ export function Step3FixBlocker({
           </section>
         </div>
       </details>
-      <button type="button" className="control" onClick={onBack}>
-        Back to possible exposure
-      </button>
+
+      <div className="pt-2">
+        <button
+          type="button"
+          className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs sm:text-sm font-medium text-slate-200 hover:bg-white/10 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+          onClick={onBack}
+        >
+          Back to possible exposure
+        </button>
+      </div>
+
       <ConsentTrapSandbox
         open={sandboxOpen}
         onClose={() => setSandboxOpen(false)}

@@ -314,7 +314,7 @@ export function ScopeBombArena({
               role="tab"
               aria-selected={activeTab === "overview"}
               onClick={() => setTab("overview")}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "overview"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors ${activeTab === "overview"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
                 }`}
@@ -329,7 +329,7 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("arena");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "arena"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors ${activeTab === "arena"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
                 }`}
@@ -344,7 +344,7 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("swarm");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "swarm"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors ${activeTab === "swarm"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
                 }`}
@@ -359,7 +359,7 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("remediation");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "remediation"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors ${activeTab === "remediation"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
                 }`}
@@ -371,7 +371,7 @@ export function ScopeBombArena({
               role="tab"
               aria-selected={activeTab === "tools"}
               onClick={() => setTab("tools")}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "tools"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors ${activeTab === "tools"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
                 }`}
@@ -388,13 +388,13 @@ export function ScopeBombArena({
                 setTab("arena");
                 go(2);
               }}
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-white/10 transition active:scale-95"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-white/10 transition-colors"
             >
-              <span> Detonate</span>
+              <span>Detonate</span>
             </button>
             <button
               type="button"
-              className="control rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/10 transition-colors"
+              className="control rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/10 hover:text-white transition-colors"
               onClick={() => setHelpOpen(true)}
             >
               About this tool
@@ -469,19 +469,19 @@ export function ScopeBombArena({
           )}
 
           {activeTab === "swarm" && (
-            <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+            <div className="mx-auto max-w-5xl px-4 py-10 text-slate-100 sm:px-6">
               <div className="mb-6 flex flex-col gap-2">
-                <div className="inline-flex items-center gap-2 self-start rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-0.5 text-xs font-medium text-blue-400">
-                  <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+                <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400 motion-safe:animate-pulse motion-reduce:animate-none" />
                   <span>Gemini 3.x Flash Defense Swarm</span>
-                  <span className="font-mono text-[10px] text-blue-300">Live SOC Mesh</span>
+                  <span className="text-slate-500 font-mono text-[11px]">Live SOC Mesh</span>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                    <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                       Autonomous Defensive Agent Swarm SOC
                     </h1>
-                    <p className="mt-1 text-xs text-slate-400 max-w-2xl">
+                    <p className="mt-1 text-xs sm:text-sm text-slate-400 max-w-2xl font-normal leading-relaxed">
                       Four autonomous agents deliberate in parallel across IAM scope risks, MITRE tactics, RFC 7009 cascade validity, and incident synthesis.
                     </p>
                   </div>
@@ -492,7 +492,7 @@ export function ScopeBombArena({
                       setTab("arena");
                       go(2);
                     }}
-                    className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition active:scale-95"
+                    className="rounded-full border border-rose-500/30 bg-rose-500/10 px-4 py-1.5 text-xs font-medium text-rose-300 hover:bg-rose-500/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                   >
                     Detonate Blast Attack
                   </button>
@@ -503,19 +503,19 @@ export function ScopeBombArena({
           )}
 
           {activeTab === "remediation" && (
-            <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+            <div className="mx-auto max-w-5xl px-4 py-10 text-slate-100 sm:px-6">
               <div className="mb-6 flex flex-col gap-2">
-                <div className="inline-flex items-center gap-2 self-start rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-0.5 text-xs font-medium text-teal-400">
-                  <span className="h-2 w-2 rounded-full bg-teal-400" />
-                  <span>RFC 7009 Multi-Cloud Containment Engine</span>
-                  <span className="font-mono text-[10px] text-teal-300">Tamper-Proof Receipts</span>
+                <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
+                  <span>RFC 7009 Containment Engine</span>
+                  <span className="text-slate-500 font-mono text-[11px]">Cryptographic Receipts</span>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                    <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-white">
                       Downstream Token Destruction & Active Verification Probes
                     </h1>
-                    <p className="mt-1 text-xs text-slate-400 max-w-2xl">
+                    <p className="mt-1 text-xs sm:text-sm text-slate-400 max-w-2xl font-normal leading-relaxed">
                       Revoking initial OAuth returns HTTP 200 OK without cascading. Execute true downstream invalidation across AWS and GitHub, and run live verification probes.
                     </p>
                   </div>
@@ -525,9 +525,9 @@ export function ScopeBombArena({
                       if (!analysis) sample();
                       setTab("arena");
                     }}
-                    className="rounded-lg border border-blue-500/40 bg-blue-500/10 px-3.5 py-1.5 text-xs font-semibold text-blue-300 hover:bg-blue-500/20 transition"
+                    className="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                   >
-                    View Threat Cockpit →
+                    View Threat Cockpit
                   </button>
                 </div>
               </div>
@@ -549,12 +549,13 @@ export function ScopeBombArena({
                 <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
                   {/* Hero */}
                   <div className="max-w-2xl">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1 font-mono text-[11px] font-semibold text-rose-300 mb-3">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 py-1 text-xs text-rose-300 font-medium mb-3">
                       <span className="relative flex h-2 w-2">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+                        <span className="absolute inline-flex h-full w-full motion-safe:animate-ping motion-reduce:animate-none rounded-full bg-rose-400 opacity-75" />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
                       </span>
-                      RFC 7009 Security Blindspot · Zero Downstream Containment
+                      <span>RFC 7009 Security Blindspot</span>
+                      <span className="text-rose-400/80 font-mono text-[11px]">Zero Downstream Containment</span>
                     </div>
                     <h1
                       tabIndex={-1}
@@ -562,7 +563,7 @@ export function ScopeBombArena({
                     >
                       One rogue AI permission can compromise your entire cloud stack.
                     </h1>
-                    <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-[15px]">
+                    <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-[15px] font-normal">
                       When you click <span className="font-semibold text-white">“Allow”</span> on an AI bot or paste an API token, permissions cascade across trust boundaries into repositories and production infrastructure. Standard “Disconnect” buttons only revoke the front door—leaving stolen cloud keys 100% active.
                     </p>
                   </div>
@@ -570,18 +571,18 @@ export function ScopeBombArena({
                   {/* The Domino Pipeline (Open Architectural Bus) */}
                   <div className="my-6 border-y border-white/[0.08] py-5">
                     <div className="flex items-center justify-between">
-                      <div className="text-[11px] font-mono font-medium uppercase tracking-wider text-slate-400">
-                        The OAuth Domino Effect · Cascading Non-Human Identity Exposure
+                      <div className="text-xs font-medium text-slate-300">
+                        The OAuth Domino Effect: Cascading Non-Human Identity Exposure
                       </div>
-                      <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[10px] text-rose-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
+                      <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[11px] text-rose-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-rose-400 motion-safe:animate-pulse motion-reduce:animate-none" />
                         Cascading Risk
                       </span>
                     </div>
 
-                    <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-4 items-center">
-                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-teal-500/10 text-teal-400">
+                    <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-4 items-center">
+                      <div className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-[#181b24] p-3 shadow-sm">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400">
                           <AgentChipSvg />
                         </div>
                         <div className="min-w-0">
@@ -590,8 +591,8 @@ export function ScopeBombArena({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-amber-500/10 text-amber-400">
+                      <div className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-[#181b24] p-3 shadow-sm">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
                           <FolderSearchSvg />
                         </div>
                         <div className="min-w-0">
@@ -600,8 +601,8 @@ export function ScopeBombArena({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-rose-500/10 text-rose-400">
+                      <div className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-[#181b24] p-3 shadow-sm">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400">
                           <KeySvg />
                         </div>
                         <div className="min-w-0">
@@ -610,8 +611,8 @@ export function ScopeBombArena({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-red-500/10 text-red-400">
+                      <div className="flex items-center gap-2.5 rounded-xl border border-white/5 bg-[#181b24] p-3 shadow-sm">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
                           <CloudTakeoverSvg />
                         </div>
                         <div className="min-w-0">
@@ -623,17 +624,19 @@ export function ScopeBombArena({
                   </div>
 
                   {/* Start Options */}
-                  <div className="grid gap-3.5 sm:grid-cols-2">
-                    <div className="rounded-xl border border-rose-500/30 bg-rose-500/[0.02] p-4 sm:p-5 transition hover:border-rose-500/60 shadow-lg shadow-rose-500/5">
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-semibold text-white sm:text-base">Detonate Attack Simulation</h2>
-                        <span className="rounded bg-rose-500/20 border border-rose-500/40 px-2 py-0.5 font-mono text-[10px] text-rose-300 font-semibold">Live Exploit Demo</span>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 shadow-xl shadow-black/40 flex flex-col justify-between hover:border-white/20 transition-colors">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-sm sm:text-base font-semibold text-white">Detonate Attack Simulation</h2>
+                          <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 font-mono text-[10px] text-rose-300 font-semibold">Live Exploit Demo</span>
+                        </div>
+                        <p className="my-3 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+                          Watch a rogue AI agent escalate from an innocent Google Drive grant into an AWS production takeover in under 5 seconds. See why clicking “Disconnect” fails to contain the attacker.
+                        </p>
                       </div>
-                      <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
-                        Watch a rogue AI agent escalate from an innocent Google Drive grant into an AWS production takeover in under 5 seconds. See why clicking “Disconnect” fails to contain the attacker.
-                      </p>
                       <button
-                        className="control control-primary w-full py-2.5 text-center text-xs font-semibold sm:text-sm bg-gradient-to-r from-teal-500 to-emerald-500 text-black shadow-lg shadow-teal-500/20"
+                        className="control control-primary w-full py-2.5 text-center text-xs font-semibold sm:text-sm rounded-full bg-white text-slate-950 hover:bg-slate-200 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                         type="button"
                         onClick={() => {
                           sample();
@@ -644,16 +647,18 @@ export function ScopeBombArena({
                       </button>
                     </div>
 
-                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5 transition hover:border-white/[0.18]">
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-semibold text-white sm:text-base">Review your input</h2>
-                        <span className="rounded bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 font-mono text-[10px] text-slate-400">Live Audit</span>
+                    <div className="rounded-2xl border border-white/10 bg-[#12141c] p-6 shadow-xl shadow-black/40 flex flex-col justify-between hover:border-white/20 transition-colors">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-sm sm:text-base font-semibold text-white">Review your input</h2>
+                          <span className="rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 font-mono text-[10px] text-slate-400">Live Audit</span>
+                        </div>
+                        <p className="my-3 text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+                          Paste your own OAuth consent URL, drop an .mcp.json or .env config, or scan any public GitHub repository. Parsed 100% locally with zero secret leakage.
+                        </p>
                       </div>
-                      <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
-                        Paste your own OAuth consent URL, drop an .mcp.json or .env config, or scan any public GitHub repository. Parsed 100% locally with zero secret leakage.
-                      </p>
                       <button
-                        className="control w-full py-2.5 text-center text-xs font-semibold sm:text-sm"
+                        className="control w-full py-2.5 text-center text-xs font-medium sm:text-sm rounded-full border border-white/15 bg-white/5 hover:bg-white/10 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                         type="button"
                         onClick={startInput}
                       >
@@ -662,7 +667,7 @@ export function ScopeBombArena({
                     </div>
                   </div>
 
-                  <p className="muted mt-4 text-[12px] text-slate-500">
+                  <p className="mt-4 text-xs text-slate-500 leading-relaxed font-normal">
                     No sign-in required. ScopeBomb models possible exposure; it does
                     not scan your accounts, prove compromise, or revoke access.
                     Local configuration parsing stays in your browser.

@@ -25,7 +25,7 @@ export function LandingPage({
   const [showThoughts, setShowThoughts] = useState(true);
 
   const copyCliCommand = () => {
-    navigator.clipboard.writeText("npx @scopebomb/cli scan . --fail-on-risk 80");
+    navigator.clipboard.writeText("npx scopebomb scan . --fail-on-risk 80");
     setCopiedCli(true);
     setTimeout(() => setCopiedCli(false), 2000);
   };
@@ -93,7 +93,7 @@ export function LandingPage({
           <div className="mt-5 flex items-center justify-center">
             <div className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-[#0e1626]/70 px-4 py-1.5 font-mono text-xs text-[#8ca4c3] backdrop-blur-md">
               <span className="text-[#567a9e]">$</span>
-              <span>npx @scopebomb/cli scan . --fail-on-risk 80</span>
+              <span>npx scopebomb scan . --fail-on-risk 80</span>
               <button
                 type="button"
                 onClick={copyCliCommand}
@@ -884,7 +884,7 @@ export function LandingPage({
               <div className="rounded-xl border border-white/10 bg-black/50 p-3 font-mono text-xs text-slate-300 space-y-1">
                 <div className="text-slate-400 flex items-center gap-2">
                   <span className="text-blue-400">$</span>
-                  <span>npx @scopebomb/cli scan . --fail-on-risk 80</span>
+                  <span>npx scopebomb scan . --fail-on-risk 80</span>
                 </div>
                 <div className="text-emerald-400 text-[11px] pt-1">
                   ✓ 0 raw secrets reflected, 30 AST nodes verified, PASSED

@@ -147,7 +147,6 @@ export function AgentSwarmCenter({ report }: AgentSwarmCenterProps) {
   };
 
   useEffect(() => {
-    // Auto-initiate Swarm consultation upon report change
     setMessages([]);
     setDisplayedMessages([]);
     setError(null);
@@ -181,67 +180,66 @@ ${messages
       : activeMessages.filter((m) => m.agent === activeTab);
 
   return (
-    <div className="mt-6 rounded-xl border border-white/10 bg-[#0e121b] p-5 shadow-xl sm:p-6">
+    <div className="mt-6 rounded-2xl border border-white/10 bg-[#12141c] p-6 sm:p-7 shadow-xl shadow-black/40">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1f2838] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-teal-300">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-500" />
-            </span>
-            Autonomous Defensive Swarm · {providerBadge === "gemini-3.x" ? "Gemini 3.x Flash Mesh" : "Deterministic Fallback"}
+          <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-0.5 text-xs text-teal-300 font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-teal-400 motion-safe:animate-pulse motion-reduce:animate-none" />
+            <span>Autonomous Defensive Swarm</span>
+            <span className="text-teal-400/80 font-mono text-[11px]">{providerBadge === "gemini-3.x" ? "Gemini 3.x Flash Mesh" : "Deterministic Fallback"}</span>
           </div>
-          <h2 className="mt-2 text-lg font-bold tracking-tight text-white">
+          <h2 className="mt-2 text-lg sm:text-xl font-semibold tracking-tight text-white">
             ScopeBomb Agent Operations Center (SOC)
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed mt-1">
             4 specialized AI agents collaborate across perimeter discovery, graph blast mapping, adversary simulation, and surgical containment.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {messages.length > 0 && (
             <button
               type="button"
               onClick={copyIncidentBrief}
-              className="control gap-1.5 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/10 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
-              {copiedBrief ? "✔ Brief Copied" : "📋 Copy Incident Brief"}
+              <span>{copiedBrief ? "✓ Brief copied" : "Copy incident brief"}</span>
             </button>
           )}
           <button
             type="button"
             disabled={loading}
             onClick={() => runSwarmAnalysis()}
-            className="control control-primary shrink-0 gap-1.5 px-4 py-2 text-xs font-semibold disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 px-4 py-1.5 text-xs font-semibold text-white transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
             <LightningSvg />
-            {loading ? "Swarm Conferring…" : "Re-Convene Swarm"}
+            <span>{loading ? "Swarm conferring…" : "Re-convene swarm"}</span>
           </button>
         </div>
       </div>
 
-      {/* 4 Agent Personas Pill Bar */}
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {/* 4 Agent Personas Cards */}
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {(Object.keys(AGENT_PERSONAS) as AgentRole[]).map((role) => {
           const p = AGENT_PERSONAS[role];
           const hasMessage = messages.some((m) => m.agent === role);
           const isSelected = activeTab === role;
           const isStreaming = streamingAgent === role;
           return (
-            <div
+            <button
+              type="button"
               key={role}
               onClick={() => messages.length > 0 && setActiveTab(isSelected ? "all" : role)}
-              className={`cursor-pointer rounded-lg border p-3 transition-all duration-150 ${
+              className={`rounded-xl border p-3.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
                 isStreaming
-                  ? "border-teal-400 bg-teal-500/10 ring-2 ring-teal-400/50 shadow-lg shadow-teal-500/20"
+                  ? "border-blue-400 bg-blue-500/10 ring-2 ring-blue-400/40 shadow-lg shadow-blue-500/15"
                   : isSelected
-                    ? "border-teal-500/60 bg-[#16202f] shadow-md shadow-teal-500/10"
-                    : "border-[#1e2636] bg-[#121622] hover:border-slate-700 hover:bg-[#151a28]"
+                    ? "border-blue-500/50 bg-[#181b24] shadow-md"
+                    : "border-white/5 bg-[#181b24] hover:border-white/15 hover:bg-[#1e2330]"
               }`}
             >
-              <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <div className="flex items-center gap-2 text-xs font-semibold text-white">
                 <div
                   className="flex h-5 w-5 items-center justify-center rounded-md"
                   style={{ backgroundColor: `${p.color}25`, color: p.color }}
@@ -254,47 +252,47 @@ ${messages
                 {p.badge}
               </div>
               {isStreaming ? (
-                <div className="mt-1.5 inline-flex items-center gap-1 rounded bg-teal-500/15 border border-teal-500/30 px-1.5 py-0.5 text-[10px] font-mono font-medium text-teal-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-ping" />
+                <div className="mt-2 inline-flex items-center gap-1 rounded bg-blue-500/15 border border-blue-500/30 px-1.5 py-0.5 text-[10px] font-mono font-medium text-blue-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400 motion-safe:animate-ping motion-reduce:animate-none" />
                   Formulating…
                 </div>
               ) : hasMessage ? (
-                <div className="mt-1.5 inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-mono font-medium text-emerald-300">
+                <div className="mt-2 inline-flex items-center gap-1 rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-mono font-medium text-emerald-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   Deliberated
                 </div>
               ) : null}
-            </div>
+            </button>
           );
         })}
       </div>
 
       {/* Messages Feed */}
       {messages.length > 0 ? (
-        <div className="mt-5 space-y-3">
-          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-            <span>Swarm Deliberation Log ({filteredMessages.length} updates)</span>
+        <div className="mt-6 space-y-3">
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>Swarm deliberation log ({filteredMessages.length} updates)</span>
             {activeTab !== "all" && (
               <button
                 type="button"
                 onClick={() => setActiveTab("all")}
-                className="text-teal-400 hover:underline"
+                className="text-blue-400 hover:underline"
               >
                 Show all 4 agents
               </button>
             )}
           </div>
 
-          <div className="space-y-3 rounded-lg border border-[#1e2636] bg-[#090c13] p-4">
+          <div className="space-y-3 rounded-xl border border-white/10 bg-[#0e1017] p-4">
             {filteredMessages.map((m) => {
               const persona = AGENT_PERSONAS[m.agent];
               return (
                 <div
                   key={m.agent}
-                  className="rounded-lg border border-[#1e2738] bg-[#121724] p-3.5 shadow-sm transition hover:border-[#2b374e]"
+                  className="rounded-xl border border-white/5 bg-[#181b24] p-4 shadow-sm"
                 >
-                  <div className="flex items-center justify-between gap-2 border-b border-[#1b2333] pb-2 text-xs">
-                    <div className="flex items-center gap-2 font-bold" style={{ color: persona.color }}>
+                  <div className="flex items-center justify-between gap-2 border-b border-white/5 pb-2.5 text-xs">
+                    <div className="flex items-center gap-2 font-semibold" style={{ color: persona.color }}>
                       <div
                         className="flex h-5 w-5 items-center justify-center rounded"
                         style={{ backgroundColor: `${persona.color}25` }}
@@ -302,11 +300,11 @@ ${messages
                         <RoleIcon role={m.agent} className="h-3.5 w-3.5" />
                       </div>
                       <span>{persona.name}</span>
-                      <span className="font-normal text-slate-400">· {persona.badge}</span>
+                      <span className="font-normal text-slate-400">({persona.badge})</span>
                     </div>
                     <span className="font-mono text-[10px] text-slate-500">RFC 7009 / OWASP Verified</span>
                   </div>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-200">
+                  <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-slate-200 font-normal">
                     {m.content}
                   </p>
                 </div>
@@ -316,32 +314,32 @@ ${messages
         </div>
       ) : (
         /* Standby Agent Constellation */
-        <div className="mt-5 rounded-lg border border-dashed border-[#232c3d] bg-[#0a0d14] p-6 text-center">
+        <div className="mt-6 rounded-xl border border-white/10 bg-[#0e1017] p-8 text-center">
           <div className="mx-auto flex max-w-[280px] items-center justify-between gap-3 text-slate-400">
             {(Object.keys(AGENT_PERSONAS) as AgentRole[]).map((role) => (
               <div
                 key={role}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-[#121724] text-slate-300 transition hover:border-teal-400/50 hover:text-teal-300"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-[#181b24] text-slate-300 transition-colors"
               >
                 <RoleIcon role={role} className="h-5 w-5" />
               </div>
             ))}
           </div>
-          <h3 className="mt-3 text-sm font-semibold text-white">
+          <h3 className="mt-4 text-sm font-semibold text-white">
             Defensive Agent Swarm Standby
           </h3>
-          <p className="mx-auto mt-1 max-w-[54ch] text-xs text-slate-400 leading-relaxed">
-            Click <strong className="text-teal-400">“Convene Defensive Swarm”</strong> above or choose a prompt below to have Sentinel, Threat Modeler, Red Team, and Containment Commander analyze this target simultaneously.
+          <p className="mx-auto mt-1.5 max-w-[54ch] text-xs text-slate-400 leading-relaxed font-normal">
+            Click <strong className="text-white font-medium">“Re-convene swarm”</strong> above or choose a prompt below to have Sentinel, Threat Modeler, Red Team, and Containment Commander analyze this target simultaneously.
           </p>
         </div>
       )}
 
-      {/* Ask the Swarm Interactive Box */}
-      <div className="mt-5 border-t border-[#1f2838] pt-4">
-        <label htmlFor="swarm-prompt" className="text-xs font-semibold text-white">
-          Ask the Swarm a Custom Question:
+      {/* Ask the Swarm Interactive Box matching DeepSeek chat prompt */}
+      <div className="mt-6 border-t border-white/10 pt-5">
+        <label htmlFor="swarm-prompt" className="text-xs font-medium text-slate-300">
+          Ask the swarm a custom question:
         </label>
-        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-2.5 flex flex-col gap-2 sm:flex-row">
           <input
             id="swarm-prompt"
             type="text"
@@ -354,21 +352,21 @@ ${messages
               }
             }}
             placeholder="e.g. Can an attacker leverage this to compromise production databases?"
-            className="field h-9 w-full rounded-md border border-[#2b3548] bg-[#0b0e16] px-3 text-xs text-white placeholder:text-slate-500 focus:border-teal-400"
+            className="flex-1 rounded-xl border border-white/10 bg-[#0e1017] px-3.5 py-2 text-xs sm:text-sm text-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           />
           <button
             type="button"
             disabled={loading || !customQuestion.trim()}
             onClick={() => runSwarmAnalysis(customQuestion)}
-            className="control control-primary shrink-0 px-4 text-xs font-semibold disabled:opacity-50"
+            className="shrink-0 rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 px-5 py-2 text-xs font-semibold text-white transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
             Ask Swarm
           </button>
         </div>
 
         {/* Quick Prompt Pills */}
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
-          <span className="self-center text-[11px] font-mono text-slate-400">Quick prompts:</span>
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-[11px] text-slate-400">Quick prompts:</span>
           {QUICK_PROMPTS.map((prompt) => (
             <button
               key={prompt}
@@ -377,7 +375,7 @@ ${messages
                 setCustomQuestion(prompt);
                 runSwarmAnalysis(prompt);
               }}
-              className="rounded-full border border-[#252f42] bg-[#111622] px-2.5 py-0.5 text-[11px] text-slate-300 transition hover:border-teal-500/50 hover:bg-[#161c2b] hover:text-white"
+              className="rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:text-white px-3 py-1 text-xs text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
               {prompt}
             </button>
@@ -386,7 +384,7 @@ ${messages
       </div>
 
       {error && (
-        <div className="mt-3 rounded-md border border-rose-500/30 bg-rose-950/30 p-2.5 text-xs text-rose-300">
+        <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-950/20 p-3 text-xs text-rose-300">
           Swarm communication notice: {error}
         </div>
       )}
