@@ -301,28 +301,25 @@ export function ScopeBombArena({
             >
               <ScopeBombLogo />
               <span>ScopeBomb</span>
+              <span className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px] tracking-wider uppercase text-white/80 border border-white/10">
+                HARNESS
+              </span>
             </button>
-            <span className="hidden sm:inline-block h-3.5 w-px bg-white/10" />
-            <span className="hidden lg:inline-flex items-center gap-1.5 font-mono text-[11px] text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
-              Non-Human Identity Firewall
-            </span>
           </div>
 
-          {/* DeepSeek & Harness Style Multi-Tab Navigation Bar */}
-          <div role="tablist" aria-label="Sections" className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto text-xs font-medium">
+          {/* DeepSeek & Harness Style Minimal Top Navigation */}
+          <div role="tablist" aria-label="Sections" className="flex items-center gap-1 overflow-x-auto text-xs font-medium">
             <button
               type="button"
               role="tab"
               aria-selected={activeTab === "overview"}
               onClick={() => setTab("overview")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
                 activeTab === "overview"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
+                  ? "bg-white/15 text-white font-medium"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
               <span>Overview</span>
             </button>
             <button
@@ -333,15 +330,13 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("arena");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
                 activeTab === "arena"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
+                  ? "bg-white/15 text-white font-medium"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
-              <svg className="h-3.5 w-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
               <span>Threat Cockpit</span>
-              <span className="rounded bg-rose-500/20 px-1 py-0.2 text-[9px] font-mono text-rose-300 font-semibold">Live</span>
             </button>
             <button
               type="button"
@@ -351,15 +346,13 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("swarm");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
                 activeTab === "swarm"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
+                  ? "bg-white/15 text-white font-medium"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
-              <svg className="h-3.5 w-3.5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><path d="M8 15h8"/></svg>
               <span>4-Agent SOC</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
             </button>
             <button
               type="button"
@@ -369,13 +362,12 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("remediation");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
                 activeTab === "remediation"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
+                  ? "bg-white/15 text-white font-medium"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
-              <svg className="h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               <span>Containment</span>
             </button>
             <button
@@ -383,13 +375,12 @@ export function ScopeBombArena({
               role="tab"
               aria-selected={activeTab === "tools"}
               onClick={() => setTab("tools")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
                 activeTab === "tools"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
+                  ? "bg-white/15 text-white font-medium"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
-              <svg className="h-3.5 w-3.5 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
               <span>CLI & Extension</span>
             </button>
           </div>
@@ -402,13 +393,13 @@ export function ScopeBombArena({
                 setTab("arena");
                 go(2);
               }}
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition active:scale-95 shadow-sm shadow-rose-500/10"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-white/10 transition active:scale-95"
             >
               <span>💥 Detonate</span>
             </button>
             <button
               type="button"
-              className="control"
+              className="control rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/10 transition-colors"
               onClick={() => setHelpOpen(true)}
             >
               About this tool

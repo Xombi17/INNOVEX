@@ -22,6 +22,7 @@ export function LandingPage({
   const [activeTabPreview, setActiveTabPreview] = useState<"domino" | "swarm" | "rfc7009" | "presets">("domino");
   const [simulatedHop, setSimulatedHop] = useState<number | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [showThoughts, setShowThoughts] = useState(true);
 
   const copyCliCommand = () => {
     navigator.clipboard.writeText("npx @scopebomb/cli scan . --fail-on-risk 80");
@@ -48,144 +49,251 @@ export function LandingPage({
 
   return (
     <div className="relative w-full overflow-hidden text-slate-100 pb-20">
-      {/* DeepSeek Harness signature radiant ambient bloom & grid */}
-      <div className="pointer-events-none absolute inset-0 bg-deepseek-grid opacity-30" />
-      <div className="pointer-events-none absolute -top-32 left-1/2 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-600/20 via-teal-500/10 to-transparent blur-[140px]" />
-      <div className="pointer-events-none absolute top-[500px] -right-40 h-[500px] w-[700px] rounded-full bg-teal-500/10 blur-[130px]" />
-      <div className="pointer-events-none absolute top-[900px] -left-40 h-[500px] w-[700px] rounded-full bg-indigo-600/10 blur-[130px]" />
+      {/* DeepSeek Harness signature radiant ambient bloom - pure oceanic twilight */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-[750px] w-[1300px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(28,64,118,0.65)_0%,rgba(14,32,60,0.3)_45%,transparent_75%)] blur-[90px]" />
 
-      {/* Hero Section */}
+      {/* Hero Section matching DeepSeek Harness */}
       <section className="relative mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24 lg:px-8">
         <div className="flex flex-col items-center text-center">
-          {/* DeepSeek Harness Style Release Badge */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-blue-500/40 bg-gradient-to-r from-blue-600/15 via-teal-500/10 to-blue-600/15 px-4 py-1.5 text-xs font-medium text-blue-300 backdrop-blur-xl shadow-lg shadow-blue-500/10">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
-            </span>
-            <span className="font-semibold text-white tracking-wide">ScopeBomb Harness</span>
-            <span className="text-white/20">|</span>
-            <span className="text-slate-300">Non-Human Identity (NHI) Defense Engine</span>
-            <span className="rounded bg-blue-500/25 px-2 py-0.5 font-mono text-[10px] text-blue-200 border border-blue-400/30">RFC 7009</span>
+          {/* DeepSeek Signature Minimal Eyebrow */}
+          <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.25em] uppercase text-[#7fa3cc]/90 mb-5">
+            <span className="text-[9px]">✦</span>
+            <span>PREVIEW</span>
           </div>
 
-          {/* High-Impact Headline */}
-          <h1 className="mt-8 max-w-4xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl sm:leading-[1.12] lg:text-7xl">
-            Your AI Bot Crosses{" "}
-            <span className="bg-gradient-to-r from-blue-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
-              4 Trust Boundaries
-            </span>
-            .<br />
-            Revoke Only Cleans 1.
+          {/* DeepSeek Signature Crisp White Headline */}
+          <h1 className="max-w-4xl text-4xl sm:text-5xl lg:text-[62px] font-medium tracking-tight text-white sm:leading-[1.14] text-center">
+            ScopeBomb Harness<br />
+            <span className="text-white/95">Ready to defend. Right now.</span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-            When OAuth returns <code className="rounded bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 font-mono text-sm text-emerald-400">HTTP 200 OK</code>, developers assume their cloud is secure. Under RFC 7009, self-contained JWTs and local MCP tokens keep running across GitHub and AWS. ScopeBomb detonates and maps the full cross-issuer blast radius.
+          {/* DeepSeek Signature Balanced Subtitle */}
+          <p className="mt-5 max-w-2xl text-base sm:text-lg text-[#9ab3d0] leading-relaxed text-center mx-auto font-normal">
+            Everyday tasks, coding, or your own harness—it starts here.<br className="hidden sm:inline" />
+            ScopeBomb Harness is now in public preview worldwide and open source, with composable defense that extends what agents can secure.
           </p>
 
-          {/* High-Contrast Tactical CTA Buttons */}
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+          {/* DeepSeek Signature White Pill Primary CTA & Frosted Secondary CTA */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
             <button
               type="button"
+              aria-label="Start guided tour"
               onClick={onLaunchCockpit}
-              className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-teal-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-blue-500/30 transition hover:shadow-blue-500/50 hover:brightness-110 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm sm:text-base font-medium text-[#09111e] hover:bg-[#edf3fa] shadow-lg shadow-black/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Start guided tour</span>
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+              <span className="text-base">→</span>
             </button>
 
             <button
               type="button"
               onClick={onCheckConfiguration ?? onLaunchCockpit}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-base font-semibold text-white backdrop-blur-xl transition hover:bg-white/10 hover:border-white/30 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 py-3 text-sm sm:text-base font-medium text-white hover:bg-white/15 transition-all"
             >
               <span>Check my configuration</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onDetonateSimulation}
-              className="inline-flex items-center gap-2 rounded-xl border border-rose-500/50 bg-rose-500/15 px-6 py-3.5 text-base font-bold text-rose-300 backdrop-blur-xl shadow-lg shadow-rose-500/10 transition hover:bg-rose-500/25 hover:border-rose-400 active:scale-[0.98]"
-            >
-              <span>💥 Detonate Live Attack</span>
             </button>
           </div>
 
           {/* 1-Click Copyable CLI Terminal Pill */}
-          <div className="mt-7 flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/80 px-4 py-2 font-mono text-xs text-slate-300 backdrop-blur-xl shadow-inner">
-            <span className="text-teal-400 font-bold">$</span>
-            <span className="truncate">npx @scopebomb/cli scan . --fail-on-risk 80</span>
-            <button
-              type="button"
-              onClick={copyCliCommand}
-              aria-label="Copy CLI command"
-              className="ml-2 rounded-md border border-white/15 bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-slate-200 transition hover:bg-white/20 active:scale-95"
-            >
-              {copiedCli ? "✓ Copied" : "Copy"}
-            </button>
+          <div className="mt-5 flex items-center justify-center">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-[#0e1626]/70 px-4 py-1.5 font-mono text-xs text-[#8ca4c3] backdrop-blur-md">
+              <span className="text-[#567a9e]">$</span>
+              <span>npx @scopebomb/cli scan . --fail-on-risk 80</span>
+              <button
+                type="button"
+                onClick={copyCliCommand}
+                aria-label="Copy CLI command"
+                className="ml-2 text-xs text-[#7fa3cc] hover:text-white transition-colors"
+              >
+                {copiedCli ? "✓ Copied" : "Copy"}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* DeepSeek Harness Style Interactive Cockpit Window */}
-        <div className="mt-14 harness-window overflow-hidden">
-          {/* Mac-Style Window Header */}
-          <div className="flex flex-wrap items-center justify-between border-b border-white/10 px-5 py-3.5 bg-slate-900/80">
-            <div className="flex items-center gap-2.5">
-              <span className="h-3 w-3 rounded-full bg-rose-500" />
-              <span className="h-3 w-3 rounded-full bg-amber-500" />
-              <span className="h-3 w-3 rounded-full bg-emerald-500" />
-              <span className="ml-2 font-mono text-xs text-slate-300 font-medium">scopebomb-harness / live-cockpit.ts</span>
-              <span className="hidden sm:inline-block rounded bg-blue-500/15 px-2 py-0.5 font-mono text-[10px] text-blue-300 border border-blue-500/30">
-                DAG: 30 NODES
-              </span>
+        {/* DeepSeek Harness Signature Interactive Desktop App Window */}
+        <div className="mt-14 harness-window overflow-hidden max-w-5xl mx-auto rounded-2xl border border-white/10 bg-[#13151b] shadow-2xl shadow-black/80">
+          <div className="flex flex-col md:flex-row min-h-[580px]">
+            {/* Left Desktop App Sidebar matching Image 2 */}
+            <div className="w-full md:w-60 bg-[#101217] border-b md:border-b-0 md:border-r border-white/10 p-4 flex flex-col justify-between shrink-0">
+              <div>
+                {/* macOS traffic light window controls */}
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
+                  <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
+                  <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
+                </div>
+
+                {/* App title matching Image 2 */}
+                <div className="flex items-center gap-2 px-1 mb-4">
+                  <span className="font-semibold text-white tracking-tight text-sm">scopebomb</span>
+                  <span className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-slate-300 border border-white/10">
+                    HARNESS
+                  </span>
+                </div>
+
+                {/* New Session Button matching Image 2 */}
+                <button
+                  type="button"
+                  onClick={onDetonateSimulation}
+                  className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-white/15 bg-white/5 py-1.5 px-3 text-xs font-medium text-white/90 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  <span className="text-sm font-light">+</span>
+                  <span>New Session</span>
+                </button>
+
+                {/* Sidebar Nav Items */}
+                <div className="mt-5 space-y-1">
+                  <button
+                    type="button"
+                    onClick={onLaunchCockpit}
+                    className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left"
+                  >
+                    <span className="text-slate-400">⚡</span>
+                    <span>Plugins</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onOpenRemediation}
+                    className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left"
+                  >
+                    <span className="text-slate-400">⚙</span>
+                    <span>Automation</span>
+                  </button>
+                </div>
+
+                {/* Workspace section matching Image 2 */}
+                <div className="mt-6">
+                  <div className="flex items-center justify-between text-[10px] font-medium tracking-wider text-slate-500 uppercase font-mono px-3 mb-2">
+                    <span>Workspace</span>
+                    <span className="text-slate-500">⚙</span>
+                  </div>
+                  <div className="space-y-0.5">
+                    <div className="px-3 py-1 text-xs text-slate-400 flex items-center gap-2">
+                      <span>📁</span>
+                      <span>Default workspace</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTabPreview("domino")}
+                      className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors text-left ${activeTabPreview === "domino" ? "bg-[#252834] text-white" : "text-slate-400 hover:text-white"}`}
+                    >
+                      <span className="truncate">Meet ScopeBomb Harness</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTabPreview("presets")}
+                      className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors text-left ${activeTabPreview === "presets" ? "bg-[#252834] text-white" : "text-slate-400 hover:text-white"}`}
+                    >
+                      <span className="truncate">4-Hop OAuth Breach</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom subtle status */}
+              <div className="pt-4 border-t border-white/10 text-[11px] text-slate-500 font-mono flex items-center justify-between px-1">
+                <span>v1.2.0</span>
+                <span className="text-emerald-400">READY</span>
+              </div>
             </div>
 
-            {/* Segmented View Tabs */}
-            <div role="tablist" aria-label="Workbench Preview Tabs" className="flex items-center gap-1 rounded-lg border border-white/10 bg-slate-950/80 p-1 text-xs">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTabPreview === "domino"}
-                onClick={() => setActiveTabPreview("domino")}
-                className={`rounded-md px-3 py-1.5 transition font-medium ${activeTabPreview === "domino" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-400 hover:text-white"}`}
-              >
-                Cascading Domino
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTabPreview === "swarm"}
-                onClick={() => setActiveTabPreview("swarm")}
-                className={`rounded-md px-3 py-1.5 transition font-medium ${activeTabPreview === "swarm" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-400 hover:text-white"}`}
-              >
-                4-Agent SOC
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTabPreview === "rfc7009"}
-                onClick={() => setActiveTabPreview("rfc7009")}
-                className={`rounded-md px-3 py-1.5 transition font-medium ${activeTabPreview === "rfc7009" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-400 hover:text-white"}`}
-              >
-                RFC 7009 Containment
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTabPreview === "presets"}
-                onClick={() => setActiveTabPreview("presets")}
-                className={`rounded-md px-3 py-1.5 transition font-medium ${activeTabPreview === "presets" ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-400 hover:text-white"}`}
-              >
-                Threat Presets
-              </button>
-            </div>
-          </div>
+            {/* Right Main Window Content matching Image 2 */}
+            <div className="flex-1 bg-[#14161f] p-5 sm:p-7 flex flex-col justify-between">
+              <div>
+                {/* Window Top Bar */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-5">
+                  <div className="text-xs font-medium text-slate-300">
+                    Meet ScopeBomb Harness
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="text-xs">⤢</span>
+                  </div>
+                </div>
 
-          <div className="p-6 sm:p-8">
-            {/* TAB 1: Domino Blast Graph */}
+                {/* User Question Bubble matching Image 2 */}
+                <div className="flex justify-end mb-4">
+                  <div className="rounded-2xl rounded-tr-sm bg-[#252833] border border-white/5 px-4 py-2 text-xs sm:text-sm text-white/90 max-w-md shadow-sm">
+                    Could you introduce yourself?
+                  </div>
+                </div>
+
+                {/* Assistant Response with Collapsible Thought matching Image 2 */}
+                <div className="space-y-3 mb-6">
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setShowThoughts(!showThoughts)}
+                      className="inline-flex items-center gap-1.5 text-xs text-[#7e99b8] hover:text-white transition-colors"
+                    >
+                      <span className="font-mono">Thought for a while</span>
+                      <span className="text-[10px]">{showThoughts ? "▾" : "›"}</span>
+                    </button>
+                    {showThoughts && (
+                      <div className="mt-2 rounded-lg bg-black/40 border border-white/10 p-3 font-mono text-xs text-slate-300 space-y-1">
+                        <div>• Initializing non-human identity defense graph (30 AST nodes)</div>
+                        <div>• Verified zero-dependency runtime in pure TypeScript</div>
+                        <div>• Prepared lateral breach chain simulation across 4 trust boundaries</div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal space-y-2">
+                    <p>
+                      I'm <strong className="text-white font-medium">ScopeBomb Harness</strong>, an open-source non-human identity defense harness built on Cordis's "everything is a plugin" architecture. Run me as a desktop app or launch the web UI from code.
+                    </p>
+                    <p className="text-slate-300">
+                      I can help with:
+                    </p>
+                    <ol className="list-decimal list-inside text-slate-300 space-y-1 pl-1 text-xs sm:text-sm">
+                      <li><strong className="text-white font-medium">Everyday work</strong> — Organize scopes, analyze data access, draft reports, and revoke tokens.</li>
+                      <li><strong className="text-white font-medium">Coding</strong> — Explore repos, fix overbroad permissions, build features, and run tests.</li>
+                      <li><strong className="text-white font-medium">Research</strong> — Find information, verify RFC 7009 compliance, and cite cryptographic receipts.</li>
+                    </ol>
+                  </div>
+                </div>
+
+                {/* Segmented View Tabs inside the window */}
+                <div role="tablist" aria-label="Workbench Preview Tabs" className="flex items-center gap-1 border-b border-white/10 pb-3 mb-5 text-xs font-medium">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTabPreview === "domino"}
+                    onClick={() => setActiveTabPreview("domino")}
+                    className={`rounded-lg px-3 py-1.5 transition ${activeTabPreview === "domino" ? "bg-white/15 text-white" : "text-slate-400 hover:text-white"}`}
+                  >
+                    Cascading Domino
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTabPreview === "swarm"}
+                    onClick={() => setActiveTabPreview("swarm")}
+                    className={`rounded-lg px-3 py-1.5 transition ${activeTabPreview === "swarm" ? "bg-white/15 text-white" : "text-slate-400 hover:text-white"}`}
+                  >
+                    4-Agent SOC
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTabPreview === "rfc7009"}
+                    onClick={() => setActiveTabPreview("rfc7009")}
+                    className={`rounded-lg px-3 py-1.5 transition ${activeTabPreview === "rfc7009" ? "bg-white/15 text-white" : "text-slate-400 hover:text-white"}`}
+                  >
+                    RFC 7009 Containment
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTabPreview === "presets"}
+                    onClick={() => setActiveTabPreview("presets")}
+                    className={`rounded-lg px-3 py-1.5 transition ${activeTabPreview === "presets" ? "bg-white/15 text-white" : "text-slate-400 hover:text-white"}`}
+                  >
+                    Threat Presets
+                  </button>
+                </div>
+
+                {/* TAB 1: Domino Blast Graph */}
             {activeTabPreview === "domino" && (
               <div className="space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-4">
@@ -495,6 +603,8 @@ export function LandingPage({
                 </div>
               </div>
             )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
