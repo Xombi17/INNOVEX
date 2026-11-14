@@ -159,24 +159,6 @@ a {
   flex: 1;
 }
 
-/* DeepSeek Harness style Telemetry HUD Strip */
-.telemetry-hud {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 6px 20px;
-  background: rgba(4, 6, 10, 0.95);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-@media (min-width: 640px) {
-  .telemetry-hud { padding-inline: 28px; }
-}
 
 .workbench__header {
   display: flex;

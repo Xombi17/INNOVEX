@@ -292,31 +292,6 @@ export function ScopeBombArena({
         Skip to content
       </a>
       <div className="workbench__surface">
-        {/* DeepSeek Harness style Telemetry HUD Strip */}
-        <div className="telemetry-hud" role="region" aria-label="System status telemetry">
-          <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-0.5 text-[11px]">
-            <div className="flex items-center gap-1.5 font-mono text-emerald-400">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              <span>ENGINE: ACTIVE</span>
-            </div>
-            <span className="text-white/20">|</span>
-            <span className="text-slate-400">SPEC: <span className="text-teal-300 font-semibold">RFC 7009 STRICT</span></span>
-            <span className="text-white/20">|</span>
-            <span className="text-slate-400">DAG TOPOLOGY: <span className="text-blue-300 font-semibold">30 AST NODES</span></span>
-            <span className="hidden md:inline text-white/20">|</span>
-            <span className="hidden md:inline text-slate-400">LATENCY: <span className="text-emerald-300">&lt;15ms</span></span>
-            <span className="hidden lg:inline text-white/20">|</span>
-            <span className="hidden lg:inline text-slate-400">INTERCEPTOR: <span className="text-cyan-300">CHROME MV3 READY</span></span>
-          </div>
-          <div className="hidden sm:flex items-center gap-3 font-mono text-[11px] text-slate-400">
-            <span>VERIFIED: <span className="text-emerald-400">39/39 PASS</span></span>
-            <span className="rounded bg-white/5 px-2 py-0.5 text-[10px] text-slate-300 border border-white/10">v1.2 ENTERPRISE</span>
-          </div>
-        </div>
-
         <header className="workbench__header">
           <div className="flex items-center gap-3">
             <button
