@@ -241,22 +241,20 @@ export function DominoGraph({
               <button
                 type="button"
                 onClick={() => onChangeSimulationMode("naive_single_revoke")}
-                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
-                  isNaive
+                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${isNaive
                     ? "border-teal-500 bg-teal-500 text-[#03211b] font-semibold shadow-sm shadow-teal-500/20"
                     : "border-[#2b3548] bg-[#141924] text-slate-300 hover:text-white hover:border-slate-600"
-                }`}
+                  }`}
               >
                 Naive single revoke
               </button>
               <button
                 type="button"
                 onClick={() => onChangeSimulationMode("full_multi_issuer")}
-                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${
-                  !isNaive
+                className={`h-8 rounded-[6px] border px-3 text-[13px] font-medium transition ${!isNaive
                     ? "border-emerald-500 bg-emerald-500 text-[#04250e] font-semibold shadow-sm shadow-emerald-500/20"
                     : "border-[#2b3548] bg-[#141924] text-slate-300 hover:text-white hover:border-slate-600"
-                }`}
+                  }`}
               >
                 Full multi-issuer plan
               </button>
@@ -329,7 +327,7 @@ export function DominoGraph({
       {detonationDone && (
         <div className="my-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rose-500/40 bg-rose-950/40 px-4 py-3 text-xs text-rose-200">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-rose-400">💥 DETONATION COMPLETE:</span>
+            <span className="font-bold text-rose-400"> DETONATION COMPLETE:</span>
             <span>Attacker leaped trust boundaries from initial OAuth grant into cloud infrastructure in 4 hops.</span>
           </div>
           <div className="flex items-center gap-3">
@@ -374,11 +372,10 @@ export function DominoGraph({
               return (
                 <div
                   key={stage}
-                  className={`relative flex min-w-0 flex-col rounded-lg p-2 transition-all duration-300 xl:border-l xl:border-[#1e2636] xl:pl-4 xl:first:border-l-0 xl:first:pl-0 ${
-                    detonationStage === stage
+                  className={`relative flex min-w-0 flex-col rounded-lg p-2 transition-all duration-300 xl:border-l xl:border-[#1e2636] xl:pl-4 xl:first:border-l-0 xl:first:pl-0 ${detonationStage === stage
                       ? "ring-2 ring-rose-500 bg-rose-500/[0.08] shadow-lg shadow-rose-500/20"
                       : ""
-                  }`}
+                    }`}
                 >
                   {/* Stage Column Header */}
                   <div className="mb-2.5 flex items-baseline justify-between gap-2 border-b border-[#1e2636] pb-2">
@@ -439,17 +436,15 @@ export function DominoGraph({
                             key={node.id}
                             type="button"
                             onClick={() => setSelectedNodeId(node.id)}
-                            className={`w-full py-2.5 px-2 text-left transition hover:bg-[#141a28] rounded-md ${
-                              isSelected ? "bg-[#162030] border-l-2 border-teal-400" : ""
-                            } ${dimmed ? "opacity-30" : "opacity-100"}`}
+                            className={`w-full py-2.5 px-2 text-left transition hover:bg-[#141a28] rounded-md ${isSelected ? "bg-[#162030] border-l-2 border-teal-400" : ""
+                              } ${dimmed ? "opacity-30" : "opacity-100"}`}
                           >
                             <div className="flex items-start justify-between gap-2">
                               <span
-                                className={`text-[14px] leading-[1.4] ${
-                                  isSelected
+                                className={`text-[14px] leading-[1.4] ${isSelected
                                     ? "font-semibold text-teal-300"
                                     : "font-medium text-slate-200"
-                                }`}
+                                  }`}
                               >
                                 {humanizeNodeLabel(node)}
                               </span>

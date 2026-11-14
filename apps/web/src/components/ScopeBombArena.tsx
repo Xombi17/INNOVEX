@@ -205,19 +205,8 @@ export function ScopeBombArena({
     const result =
       preset.preset_id === initialReport.preset_id
         ? {
-            report: initialReport,
-            context: analyzeInput(
-              {
-                mode: "incident_preset",
-                raw_payload: preset.sample_oauth_url,
-                preset_id: preset.preset_id,
-                simulation_mode: "naive_single_revoke",
-              },
-              preset.title,
-              "sample",
-            ).context,
-          }
-        : analyzeInput(
+          report: initialReport,
+          context: analyzeInput(
             {
               mode: "incident_preset",
               raw_payload: preset.sample_oauth_url,
@@ -226,7 +215,18 @@ export function ScopeBombArena({
             },
             preset.title,
             "sample",
-          );
+          ).context,
+        }
+        : analyzeInput(
+          {
+            mode: "incident_preset",
+            raw_payload: preset.sample_oauth_url,
+            preset_id: preset.preset_id,
+            simulation_mode: "naive_single_revoke",
+          },
+          preset.title,
+          "sample",
+        );
     receive(result, preset.sample_oauth_url);
     setWalkthrough("active");
   };
@@ -314,11 +314,10 @@ export function ScopeBombArena({
               role="tab"
               aria-selected={activeTab === "overview"}
               onClick={() => setTab("overview")}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
-                activeTab === "overview"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "overview"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <span>Overview</span>
             </button>
@@ -330,11 +329,10 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("arena");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
-                activeTab === "arena"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "arena"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <span>Threat Cockpit</span>
             </button>
@@ -346,11 +344,10 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("swarm");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
-                activeTab === "swarm"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "swarm"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <span>4-Agent SOC</span>
             </button>
@@ -362,11 +359,10 @@ export function ScopeBombArena({
                 if (!analysis) sample();
                 setTab("remediation");
               }}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
-                activeTab === "remediation"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "remediation"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <span>Containment</span>
             </button>
@@ -375,11 +371,10 @@ export function ScopeBombArena({
               role="tab"
               aria-selected={activeTab === "tools"}
               onClick={() => setTab("tools")}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${
-                activeTab === "tools"
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all ${activeTab === "tools"
                   ? "bg-white/15 text-white font-medium"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <span>CLI & Extension</span>
             </button>
@@ -395,7 +390,7 @@ export function ScopeBombArena({
               }}
               className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-white/10 transition active:scale-95"
             >
-              <span>💥 Detonate</span>
+              <span> Detonate</span>
             </button>
             <button
               type="button"
@@ -499,7 +494,7 @@ export function ScopeBombArena({
                     }}
                     className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition active:scale-95"
                   >
-                    💥 Detonate Blast Attack
+                    Detonate Blast Attack
                   </button>
                 </div>
               </div>
@@ -551,265 +546,265 @@ export function ScopeBombArena({
           {activeTab === "arena" && (
             <>
               {entry === "welcome" ? (
-            <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
-              {/* Hero */}
-              <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1 font-mono text-[11px] font-semibold text-rose-300 mb-3">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
-                  </span>
-                  RFC 7009 Security Blindspot · Zero Downstream Containment
-                </div>
-                <h1
-                  tabIndex={-1}
-                  className="text-2xl font-bold tracking-tight text-white sm:text-3xl sm:leading-tight"
-                >
-                  One rogue AI permission can compromise your entire cloud stack.
-                </h1>
-                <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-[15px]">
-                  When you click <span className="font-semibold text-white">“Allow”</span> on an AI bot or paste an API token, permissions cascade across trust boundaries into repositories and production infrastructure. Standard “Disconnect” buttons only revoke the front door—leaving stolen cloud keys 100% active.
-                </p>
-              </div>
-
-              {/* The Domino Pipeline (Open Architectural Bus) */}
-              <div className="my-6 border-y border-white/[0.08] py-5">
-                <div className="flex items-center justify-between">
-                  <div className="text-[11px] font-mono font-medium uppercase tracking-wider text-slate-400">
-                    The OAuth Domino Effect · Cascading Non-Human Identity Exposure
-                  </div>
-                  <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[10px] text-rose-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
-                    Cascading Risk
-                  </span>
-                </div>
-
-                <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-4 items-center">
-                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-teal-500/10 text-teal-400">
-                      <AgentChipSvg />
+                <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
+                  {/* Hero */}
+                  <div className="max-w-2xl">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1 font-mono text-[11px] font-semibold text-rose-300 mb-3">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
+                      </span>
+                      RFC 7009 Security Blindspot · Zero Downstream Containment
                     </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-white">1. Rogue AI Agent</div>
-                      <div className="truncate text-[11px] text-slate-400">Requests Drive scope</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-amber-500/10 text-amber-400">
-                      <FolderSearchSvg />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-white">2. Drive Search</div>
-                      <div className="truncate text-[11px] text-slate-400">Finds backup / .env key</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-rose-500/10 text-rose-400">
-                      <KeySvg />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-white">3. GitHub Token</div>
-                      <div className="truncate text-[11px] text-slate-400">Accesses private repos</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-red-500/10 text-red-400">
-                      <CloudTakeoverSvg />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-white">4. Cloud Takeover</div>
-                      <div className="truncate text-[11px] text-slate-400">Deploys malicious code</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Start Options */}
-              <div className="grid gap-3.5 sm:grid-cols-2">
-                <div className="rounded-xl border border-rose-500/30 bg-rose-500/[0.02] p-4 sm:p-5 transition hover:border-rose-500/60 shadow-lg shadow-rose-500/5">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-semibold text-white sm:text-base">Detonate Attack Simulation</h2>
-                    <span className="rounded bg-rose-500/20 border border-rose-500/40 px-2 py-0.5 font-mono text-[10px] text-rose-300 font-semibold">Live Exploit Demo</span>
-                  </div>
-                  <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
-                    Watch a rogue AI agent escalate from an innocent Google Drive grant into an AWS production takeover in under 5 seconds. See why clicking “Disconnect” fails to contain the attacker.
-                  </p>
-                  <button
-                    className="control control-primary w-full py-2.5 text-center text-xs font-semibold sm:text-sm bg-gradient-to-r from-teal-500 to-emerald-500 text-black shadow-lg shadow-teal-500/20"
-                    type="button"
-                    onClick={() => {
-                      sample();
-                      go(2);
-                    }}
-                  >
-                    💥 Detonate Attack Simulation
-                  </button>
-                </div>
-
-                <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5 transition hover:border-white/[0.18]">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-semibold text-white sm:text-base">Review your input</h2>
-                    <span className="rounded bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 font-mono text-[10px] text-slate-400">Live Audit</span>
-                  </div>
-                  <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
-                    Paste your own OAuth consent URL, drop an .mcp.json or .env config, or scan any public GitHub repository. Parsed 100% locally with zero secret leakage.
-                  </p>
-                  <button
-                    className="control w-full py-2.5 text-center text-xs font-semibold sm:text-sm"
-                    type="button"
-                    onClick={startInput}
-                  >
-                    Check my configuration
-                  </button>
-                </div>
-              </div>
-
-              <p className="muted mt-4 text-[12px] text-slate-500">
-                No sign-in required. ScopeBomb models possible exposure; it does
-                not scan your accounts, prove compromise, or revoke access.
-                Local configuration parsing stays in your browser.
-              </p>
-            </div>
-          ) : (
-            <div className="mx-auto max-w-4xl px-5 py-6 sm:px-8">
-              {analysis && (
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3 text-xs">
-                  <span className="break-all text-slate-300">
-                    <strong className="text-white">
-                      {analysis.context.kind === "sample"
-                        ? "Sample simulation"
-                        : "Your supplied input"}
-                    </strong>{" "}
-                    · {analysis.context.label}
-                  </span>
-                  <span className="font-mono text-slate-500">
-                    {analysis.context.kind === "sample"
-                      ? "Illustrative data; not your accounts"
-                      : "Remediation not verified"}
-                  </span>
-                </div>
-              )}
-
-              <div
-                role="status"
-                className={notice ? "mb-4 rounded-md border border-amber-900/40 bg-amber-950/20 px-4 py-2.5 text-xs text-amber-300" : "sr-only"}
-              >
-                {notice}
-              </div>
-
-              <section
-                data-step="1"
-                hidden={step !== 1}
-                className="space-y-6"
-              >
-                <div>
-                  <h1 tabIndex={-1} className="text-xl font-bold text-white sm:text-2xl">
-                    {entry === "sample"
-                      ? "Explore the sample input"
-                      : "Check your input"}
-                  </h1>
-                  <p className="muted mt-1 text-xs text-slate-400 sm:text-sm">
-                    {entry === "sample"
-                      ? "These scenarios illustrate possible exposure. They are not forensic reconstructions or findings about your accounts."
-                      : "Choose one input. We’ll separate evidence in it from possible consequences."}
-                  </p>
-                </div>
-
-                {step === 1 && guidance}
-
-                {entry === "input" ? (
-                  <ScanInput
-                    initialUrl={initialUrl}
-                    onAnalyze={receive}
-                    onInvalidate={invalidate}
-                    onBusy={setBusy}
-                  />
-                ) : (
-                  <>
-                    <details open={walkthrough !== "active"} className="border-t border-white/[0.08] pt-2">
-                      <summary className="cursor-pointer text-xs font-medium text-slate-300 hover:text-white">Choose a different scenario</summary>
-                      <div className="mt-2">
-                        <PresetStrip
-                          presets={presets}
-                          activePresetId={analysis?.report.preset_id ?? null}
-                          onSelectPreset={sample}
-                        />
-                      </div>
-                    </details>
-                    <button
-                      className="control mt-2"
-                      type="button"
-                      onClick={startInput}
+                    <h1
+                      tabIndex={-1}
+                      className="text-2xl font-bold tracking-tight text-white sm:text-3xl sm:leading-tight"
                     >
-                      Check my configuration instead
-                    </button>
-                  </>
-                )}
+                      One rogue AI permission can compromise your entire cloud stack.
+                    </h1>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-[15px]">
+                      When you click <span className="font-semibold text-white">“Allow”</span> on an AI bot or paste an API token, permissions cascade across trust boundaries into repositories and production infrastructure. Standard “Disconnect” buttons only revoke the front door—leaving stolen cloud keys 100% active.
+                    </p>
+                  </div>
 
-                {analysis && (
-                  <Step1ScanVerdict
-                    key={session}
-                    analysis={analysis}
-                    onContinue={() => go(2)}
-                  />
-                )}
-              </section>
+                  {/* The Domino Pipeline (Open Architectural Bus) */}
+                  <div className="my-6 border-y border-white/[0.08] py-5">
+                    <div className="flex items-center justify-between">
+                      <div className="text-[11px] font-mono font-medium uppercase tracking-wider text-slate-400">
+                        The OAuth Domino Effect · Cascading Non-Human Identity Exposure
+                      </div>
+                      <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-[10px] text-rose-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
+                        Cascading Risk
+                      </span>
+                    </div>
 
-              {analysis && (
-                <>
+                    <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-4 items-center">
+                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-teal-500/10 text-teal-400">
+                          <AgentChipSvg />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-white">1. Rogue AI Agent</div>
+                          <div className="truncate text-[11px] text-slate-400">Requests Drive scope</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-amber-500/10 text-amber-400">
+                          <FolderSearchSvg />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-white">2. Drive Search</div>
+                          <div className="truncate text-[11px] text-slate-400">Finds backup / .env key</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-rose-500/10 text-rose-400">
+                          <KeySvg />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-white">3. GitHub Token</div>
+                          <div className="truncate text-[11px] text-slate-400">Accesses private repos</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-red-500/10 text-red-400">
+                          <CloudTakeoverSvg />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-white">4. Cloud Takeover</div>
+                          <div className="truncate text-[11px] text-slate-400">Deploys malicious code</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Start Options */}
+                  <div className="grid gap-3.5 sm:grid-cols-2">
+                    <div className="rounded-xl border border-rose-500/30 bg-rose-500/[0.02] p-4 sm:p-5 transition hover:border-rose-500/60 shadow-lg shadow-rose-500/5">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-semibold text-white sm:text-base">Detonate Attack Simulation</h2>
+                        <span className="rounded bg-rose-500/20 border border-rose-500/40 px-2 py-0.5 font-mono text-[10px] text-rose-300 font-semibold">Live Exploit Demo</span>
+                      </div>
+                      <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
+                        Watch a rogue AI agent escalate from an innocent Google Drive grant into an AWS production takeover in under 5 seconds. See why clicking “Disconnect” fails to contain the attacker.
+                      </p>
+                      <button
+                        className="control control-primary w-full py-2.5 text-center text-xs font-semibold sm:text-sm bg-gradient-to-r from-teal-500 to-emerald-500 text-black shadow-lg shadow-teal-500/20"
+                        type="button"
+                        onClick={() => {
+                          sample();
+                          go(2);
+                        }}
+                      >
+                        Detonate Attack Simulation
+                      </button>
+                    </div>
+
+                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5 transition hover:border-white/[0.18]">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-semibold text-white sm:text-base">Review your input</h2>
+                        <span className="rounded bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 font-mono text-[10px] text-slate-400">Live Audit</span>
+                      </div>
+                      <p className="my-3 text-xs leading-relaxed text-slate-400 sm:text-[13px]">
+                        Paste your own OAuth consent URL, drop an .mcp.json or .env config, or scan any public GitHub repository. Parsed 100% locally with zero secret leakage.
+                      </p>
+                      <button
+                        className="control w-full py-2.5 text-center text-xs font-semibold sm:text-sm"
+                        type="button"
+                        onClick={startInput}
+                      >
+                        Check my configuration
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="muted mt-4 text-[12px] text-slate-500">
+                    No sign-in required. ScopeBomb models possible exposure; it does
+                    not scan your accounts, prove compromise, or revoke access.
+                    Local configuration parsing stays in your browser.
+                  </p>
+                </div>
+              ) : (
+                <div className="mx-auto max-w-4xl px-5 py-6 sm:px-8">
+                  {analysis && (
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3 text-xs">
+                      <span className="break-all text-slate-300">
+                        <strong className="text-white">
+                          {analysis.context.kind === "sample"
+                            ? "Sample simulation"
+                            : "Your supplied input"}
+                        </strong>{" "}
+                        · {analysis.context.label}
+                      </span>
+                      <span className="font-mono text-slate-500">
+                        {analysis.context.kind === "sample"
+                          ? "Illustrative data; not your accounts"
+                          : "Remediation not verified"}
+                      </span>
+                    </div>
+                  )}
+
+                  <div
+                    role="status"
+                    className={notice ? "mb-4 rounded-md border border-amber-900/40 bg-amber-950/20 px-4 py-2.5 text-xs text-amber-300" : "sr-only"}
+                  >
+                    {notice}
+                  </div>
+
                   <section
-                    hidden={step !== 2}
-                    data-step="2"
+                    data-step="1"
+                    hidden={step !== 1}
                     className="space-y-6"
                   >
-                    <Step2AttackPath
-                      key={session}
-                      guidance={step === 2 ? guidance : null}
-                      report={analysis.report}
-                      simulationMode={simulation}
-                      onChangeSimulationMode={setSimulation}
-                      onBack={() => go(1)}
-                      onContinue={() => go(3)}
-                    />
+                    <div>
+                      <h1 tabIndex={-1} className="text-xl font-bold text-white sm:text-2xl">
+                        {entry === "sample"
+                          ? "Explore the sample input"
+                          : "Check your input"}
+                      </h1>
+                      <p className="muted mt-1 text-xs text-slate-400 sm:text-sm">
+                        {entry === "sample"
+                          ? "These scenarios illustrate possible exposure. They are not forensic reconstructions or findings about your accounts."
+                          : "Choose one input. We’ll separate evidence in it from possible consequences."}
+                      </p>
+                    </div>
+
+                    {step === 1 && guidance}
+
+                    {entry === "input" ? (
+                      <ScanInput
+                        initialUrl={initialUrl}
+                        onAnalyze={receive}
+                        onInvalidate={invalidate}
+                        onBusy={setBusy}
+                      />
+                    ) : (
+                      <>
+                        <details open={walkthrough !== "active"} className="border-t border-white/[0.08] pt-2">
+                          <summary className="cursor-pointer text-xs font-medium text-slate-300 hover:text-white">Choose a different scenario</summary>
+                          <div className="mt-2">
+                            <PresetStrip
+                              presets={presets}
+                              activePresetId={analysis?.report.preset_id ?? null}
+                              onSelectPreset={sample}
+                            />
+                          </div>
+                        </details>
+                        <button
+                          className="control mt-2"
+                          type="button"
+                          onClick={startInput}
+                        >
+                          Check my configuration instead
+                        </button>
+                      </>
+                    )}
+
+                    {analysis && (
+                      <Step1ScanVerdict
+                        key={session}
+                        analysis={analysis}
+                        onContinue={() => go(2)}
+                      />
+                    )}
                   </section>
-                  <section
-                    hidden={step !== 3}
-                    data-step="3"
-                    className="space-y-6"
-                  >
-                    <Step3FixBlocker
-                      key={session}
-                      guidance={step === 3 ? guidance : null}
-                      report={analysis.report}
-                      simulationMode={simulation}
-                      activeOAuthUrl={url}
-                      onChangeSimulationMode={setSimulation}
-                      onInspectUrl={(next) => {
-                        receive(
-                          analyzeInput(
-                            {
-                              mode: "oauth_url",
-                              raw_payload: next,
-                              simulation_mode: "naive_single_revoke",
-                            },
-                            "Scope recommendation preview",
-                            analysis.context.kind === "sample"
-                              ? "sample"
-                              : "custom",
-                          ),
-                          next,
-                        );
-                      }}
-                      onBack={() => go(2)}
-                    />
-                  </section>
-                </>
+
+                  {analysis && (
+                    <>
+                      <section
+                        hidden={step !== 2}
+                        data-step="2"
+                        className="space-y-6"
+                      >
+                        <Step2AttackPath
+                          key={session}
+                          guidance={step === 2 ? guidance : null}
+                          report={analysis.report}
+                          simulationMode={simulation}
+                          onChangeSimulationMode={setSimulation}
+                          onBack={() => go(1)}
+                          onContinue={() => go(3)}
+                        />
+                      </section>
+                      <section
+                        hidden={step !== 3}
+                        data-step="3"
+                        className="space-y-6"
+                      >
+                        <Step3FixBlocker
+                          key={session}
+                          guidance={step === 3 ? guidance : null}
+                          report={analysis.report}
+                          simulationMode={simulation}
+                          activeOAuthUrl={url}
+                          onChangeSimulationMode={setSimulation}
+                          onInspectUrl={(next) => {
+                            receive(
+                              analyzeInput(
+                                {
+                                  mode: "oauth_url",
+                                  raw_payload: next,
+                                  simulation_mode: "naive_single_revoke",
+                                },
+                                "Scope recommendation preview",
+                                analysis.context.kind === "sample"
+                                  ? "sample"
+                                  : "custom",
+                              ),
+                              next,
+                            );
+                          }}
+                          onBack={() => go(2)}
+                        />
+                      </section>
+                    </>
+                  )}
+                </div>
               )}
-            </div>
-          )}
             </>
           )}
         </main>

@@ -31,7 +31,7 @@ A status code is NOT proof of containment.
 ScopeBomb models true multi-issuer containment, replacing naive single revokes with surgical provider playbooks.
 
 3/ How ScopeBomb Protects You
-💥 Domino Attack Graph: Real-time multi-hop escalation simulation across 5 trust boundaries.
+ Domino Attack Graph: Real-time multi-hop escalation simulation across 5 trust boundaries.
 🛡️ Pre-Consent Guard: Intercepts over-scoped OAuth URLs in Chrome *before* consent is granted—with strict PKCE protection.
 🔒 Zero-Trust Local Core: 100% deterministic TypeScript engine running in your browser. 0 KB ever leaves your machine.
 

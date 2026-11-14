@@ -55,11 +55,7 @@ export function LandingPage({
       {/* Hero Section matching DeepSeek Harness */}
       <section className="relative mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24 lg:px-8">
         <div className="flex flex-col items-center text-center">
-          {/* DeepSeek Signature Minimal Eyebrow */}
-          <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.25em] uppercase text-[#7fa3cc]/90 mb-5">
-            <span className="text-[9px]">✦</span>
-            <span>PREVIEW</span>
-          </div>
+
 
           {/* DeepSeek Signature Crisp White Headline */}
           <h1 className="max-w-4xl text-4xl sm:text-5xl lg:text-[62px] font-medium tracking-tight text-white sm:leading-[1.14] text-center">
@@ -69,7 +65,7 @@ export function LandingPage({
 
           {/* DeepSeek Signature Balanced Subtitle */}
           <p className="mt-5 max-w-2xl text-base sm:text-lg text-[#9ab3d0] leading-relaxed text-center mx-auto font-normal">
-            Everyday tasks, coding, or your own harness—it starts here.<br className="hidden sm:inline" />
+            Everyday tasks, coding, or your own harness: defense starts here.<br className="hidden sm:inline" />
             ScopeBomb Harness is now in public preview worldwide and open source, with composable defense that extends what agents can secure.
           </p>
 
@@ -79,16 +75,15 @@ export function LandingPage({
               type="button"
               aria-label="Start guided tour"
               onClick={onLaunchCockpit}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm sm:text-base font-medium text-[#09111e] hover:bg-[#edf3fa] shadow-lg shadow-black/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm sm:text-base font-medium text-[#09111e] hover:bg-[#edf3fa] shadow-lg shadow-black/25 transition-colors hover:bg-[#edf3fa]"
             >
               <span>Start guided tour</span>
-              <span className="text-base">→</span>
             </button>
 
             <button
               type="button"
               onClick={onCheckConfiguration ?? onLaunchCockpit}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 py-3 text-sm sm:text-base font-medium text-white hover:bg-white/15 transition-all"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 py-3 text-sm sm:text-base font-medium text-white hover:bg-white/15 transition-colors"
             >
               <span>Check my configuration</span>
             </button>
@@ -149,7 +144,7 @@ export function LandingPage({
                     onClick={onLaunchCockpit}
                     className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left"
                   >
-                    <span className="text-slate-400">⚡</span>
+                    
                     <span>Plugins</span>
                   </button>
                   <button
@@ -157,7 +152,7 @@ export function LandingPage({
                     onClick={onOpenRemediation}
                     className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors text-left"
                   >
-                    <span className="text-slate-400">⚙</span>
+                    
                     <span>Automation</span>
                   </button>
                 </div>
@@ -166,11 +161,11 @@ export function LandingPage({
                 <div className="mt-6">
                   <div className="flex items-center justify-between text-[10px] font-medium tracking-wider text-slate-500 uppercase font-mono px-3 mb-2">
                     <span>Workspace</span>
-                    <span className="text-slate-500">⚙</span>
+                    
                   </div>
                   <div className="space-y-0.5">
                     <div className="px-3 py-1 text-xs text-slate-400 flex items-center gap-2">
-                      <span>📁</span>
+                      
                       <span>Default workspace</span>
                     </div>
                     <button
@@ -294,315 +289,310 @@ export function LandingPage({
                 </div>
 
                 {/* TAB 1: Domino Blast Graph */}
-            {activeTabPreview === "domino" && (
-              <div className="space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-white">4-Hop Non-Human Identity Breach Chain</h3>
-                    <p className="text-xs text-slate-400">Simulating lateral movement from Google OAuth into production AWS STS admin</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="rounded-lg bg-rose-500/20 border border-rose-500/40 px-3 py-1 font-mono text-xs text-rose-300 font-bold">
-                      Blast Score: 94 / 100 (CRITICAL)
-                    </span>
-                    <button
-                      type="button"
-                      onClick={simulatedHop ? resetInCardSimulation : runInCardSimulation}
-                      className={`inline-flex items-center gap-2 rounded-lg px-4 py-1.5 text-xs font-bold transition shadow-md ${
-                        isSimulating
-                          ? "bg-amber-500/25 text-amber-300 border border-amber-500/50 animate-pulse"
-                          : simulatedHop === 4
-                          ? "bg-slate-800 text-slate-200 border border-white/20 hover:bg-slate-700"
-                          : "bg-gradient-to-r from-rose-600 to-red-600 text-white hover:brightness-110 active:scale-95"
-                      }`}
-                    >
-                      <span>{isSimulating ? "Cascading Explosion..." : simulatedHop === 4 ? "↺ Reset Simulation" : "💥 Detonate Chain Simulation"}</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 4 Connected Hops with Visual Movement */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
-                  {/* Hop 1 */}
-                  <div className={`rounded-xl border p-5 transition-all duration-300 ${
-                    simulatedHop && simulatedHop >= 1
-                      ? "border-teal-400 bg-teal-500/20 shadow-xl shadow-teal-500/15 ring-2 ring-teal-400/40"
-                      : "border-teal-500/30 bg-teal-950/20"
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-teal-400">Hop 1 · Personal Identity</span>
-                      {simulatedHop && simulatedHop >= 1 && (
-                        <span className="h-2.5 w-2.5 rounded-full bg-teal-400 animate-ping" />
-                      )}
+                {activeTabPreview === "domino" && (
+                  <div className="space-y-6">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div>
+                        <h3 className="text-lg font-bold text-white">4-Hop Non-Human Identity Breach Chain</h3>
+                        <p className="text-xs text-slate-400">Simulating lateral movement from Google OAuth into production AWS STS admin</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="rounded-lg bg-rose-500/20 border border-rose-500/40 px-3 py-1 font-mono text-xs text-rose-300 font-bold">
+                          Blast Score: 94 / 100 (CRITICAL)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={simulatedHop ? resetInCardSimulation : runInCardSimulation}
+                          className={`inline-flex items-center gap-2 rounded-lg px-4 py-1.5 text-xs font-bold transition shadow-md ${isSimulating
+                              ? "bg-amber-500/25 text-amber-300 border border-amber-500/50 animate-pulse"
+                              : simulatedHop === 4
+                                ? "bg-slate-800 text-slate-200 border border-white/20 hover:bg-slate-700"
+                                : "bg-gradient-to-r from-rose-600 to-red-600 text-white hover:brightness-110 active:scale-95"
+                            }`}
+                        >
+                          <span>{isSimulating ? "Cascading Explosion..." : simulatedHop === 4 ? "↺ Reset Simulation" : " Detonate Chain Simulation"}</span>
+                        </button>
+                      </div>
                     </div>
-                    <div className="mt-2 font-bold text-white text-base">OAuth Grant</div>
-                    <div className="mt-2 text-xs text-slate-300 leading-relaxed">User approves Google Drive scope for AI assistant.</div>
-                    <div className="mt-3 font-mono text-[11px] text-teal-300/90 font-medium">Issuer: accounts.google.com</div>
-                    <div className="mt-2.5 pt-2 border-t border-teal-500/20 text-[11px] font-mono font-semibold text-teal-400">
-                      {simulatedHop && simulatedHop >= 1 ? "● AUTHORIZED (drive.readonly)" : "Status: Dormant"}
+
+                    {/* 4 Connected Hops with Visual Movement */}
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 relative">
+                      {/* Hop 1 */}
+                      <div className={`rounded-xl border p-5 transition-colors duration-300 ${simulatedHop && simulatedHop >= 1
+                          ? "border-teal-400 bg-teal-500/20 shadow-xl shadow-teal-500/15 ring-2 ring-teal-400/40"
+                          : "border-teal-500/30 bg-teal-950/20"
+                        }`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-teal-400">Hop 1 · Personal Identity</span>
+                          {simulatedHop && simulatedHop >= 1 && (
+                            <span className="h-2.5 w-2.5 rounded-full bg-teal-400 animate-ping" />
+                          )}
+                        </div>
+                        <div className="mt-2 font-bold text-white text-base">OAuth Grant</div>
+                        <div className="mt-2 text-xs text-slate-300 leading-relaxed">User approves Google Drive scope for AI assistant.</div>
+                        <div className="mt-3 font-mono text-[11px] text-teal-300/90 font-medium">Issuer: accounts.google.com</div>
+                        <div className="mt-2.5 pt-2 border-t border-teal-500/20 text-[11px] font-mono font-semibold text-teal-400">
+                          {simulatedHop && simulatedHop >= 1 ? "● AUTHORIZED (drive.readonly)" : "Status: Dormant"}
+                        </div>
+                      </div>
+
+                      {/* Hop 2 */}
+                      <div className={`rounded-xl border p-5 transition-colors duration-300 ${simulatedHop && simulatedHop >= 2
+                          ? "border-amber-400 bg-amber-500/20 shadow-xl shadow-amber-500/15 ring-2 ring-amber-400/40"
+                          : "border-amber-500/30 bg-amber-950/20"
+                        }`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400">Hop 2 · Dev Local</span>
+                          {simulatedHop && simulatedHop >= 2 && (
+                            <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
+                          )}
+                        </div>
+                        <div className="mt-2 font-bold text-white text-base">Unchecked File Read</div>
+                        <div className="mt-2 text-xs text-slate-300 leading-relaxed">Bot accesses `.env.backup` containing developer keys.</div>
+                        <div className="mt-3 font-mono text-[11px] text-amber-300/90 font-medium">Path: /Developer/configs</div>
+                        <div className="mt-2.5 pt-2 border-t border-amber-500/20 text-[11px] font-mono font-semibold text-amber-400">
+                          {simulatedHop && simulatedHop >= 2 ? "● EXFILTRATED (PAT Found)" : "Status: Waiting"}
+                        </div>
+                      </div>
+
+                      {/* Hop 3 */}
+                      <div className={`rounded-xl border p-5 transition-colors duration-300 ${simulatedHop && simulatedHop >= 3
+                          ? "border-rose-400 bg-rose-500/20 shadow-xl shadow-rose-500/15 ring-2 ring-rose-400/40"
+                          : "border-rose-500/30 bg-rose-950/20"
+                        }`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-rose-400">Hop 3 · Vendor SaaS</span>
+                          {simulatedHop && simulatedHop >= 3 && (
+                            <span className="h-2.5 w-2.5 rounded-full bg-rose-400 animate-ping" />
+                          )}
+                        </div>
+                        <div className="mt-2 font-bold text-white text-base">GitHub Secret Pivot</div>
+                        <div className="mt-2 text-xs text-slate-300 leading-relaxed">Bot clones private enterprise repos via extracted PAT.</div>
+                        <div className="mt-3 font-mono text-[11px] text-rose-300/90 font-medium">Issuer: api.github.com</div>
+                        <div className="mt-2.5 pt-2 border-t border-rose-500/20 text-[11px] font-mono font-semibold text-rose-400">
+                          {simulatedHop && simulatedHop >= 3 ? "● REPOS CLONED (CI Leaked)" : "Status: Waiting"}
+                        </div>
+                      </div>
+
+                      {/* Hop 4 */}
+                      <div className={`rounded-xl border p-5 transition-colors duration-300 ${simulatedHop && simulatedHop >= 4
+                          ? "border-red-500 bg-red-600/30 shadow-2xl shadow-red-500/30 ring-2 ring-red-400"
+                          : "border-red-500/40 bg-red-950/20"
+                        }`}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-red-400">Hop 4 · Cloud Production</span>
+                          {simulatedHop && simulatedHop >= 4 && (
+                            <span className="h-2.5 w-2.5 rounded-full bg-red-500 animate-ping" />
+                          )}
+                        </div>
+                        <div className="mt-2 font-bold text-white text-base">AWS STS Takeover</div>
+                        <div className="mt-2 text-xs text-slate-300 leading-relaxed">CI/CD secrets leveraged to assume production admin IAM role.</div>
+                        <div className="mt-3 font-mono text-[11px] text-red-300/90 font-medium">Role: arn:aws:iam::prod:admin</div>
+                        <div className="mt-2.5 pt-2 border-t border-red-500/20 text-[11px] font-mono font-bold text-red-400">
+                          {simulatedHop && simulatedHop >= 4 ? "● PRODUCTION ROOT EXPLOIT" : "Status: Waiting"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/10 bg-slate-900/60 p-4 text-xs text-slate-300">
+                      <div className="flex items-center gap-3">
+                        <span className="h-3 w-3 rounded-full bg-rose-400 animate-ping" />
+                        <span className="font-medium">
+                          THE RFC 7009 FLAW: Clicking “Disconnect” on Google only revokes Hop 1. Hops 2, 3, and 4 remain completely active in production.
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={onLaunchCockpit}
+                        className="font-bold text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-colors"
+                      >
+                        Open in Full Blast Graph
+                      </button>
                     </div>
                   </div>
+                )}
 
-                  {/* Hop 2 */}
-                  <div className={`rounded-xl border p-5 transition-all duration-300 ${
-                    simulatedHop && simulatedHop >= 2
-                      ? "border-amber-400 bg-amber-500/20 shadow-xl shadow-amber-500/15 ring-2 ring-amber-400/40"
-                      : "border-amber-500/30 bg-amber-950/20"
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400">Hop 2 · Dev Local</span>
-                      {simulatedHop && simulatedHop >= 2 && (
-                        <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
-                      )}
+                {/* TAB 2: Swarm SOC */}
+                {activeTabPreview === "swarm" && (
+                  <div className="space-y-5">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-bold text-white">4-Agent Autonomous Deliberation SOC</h3>
+                        <p className="text-xs text-slate-400">Autonomous consensus triage streaming in parallel across 4 specialized roles</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={onOpenSwarm}
+                        className="rounded-lg bg-blue-600/25 border border-blue-500/40 px-3.5 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-600/35 transition"
+                      >
+                        Open Live Swarm SOC
+                      </button>
                     </div>
-                    <div className="mt-2 font-bold text-white text-base">Unchecked File Read</div>
-                    <div className="mt-2 text-xs text-slate-300 leading-relaxed">Bot accesses `.env.backup` containing developer keys.</div>
-                    <div className="mt-3 font-mono text-[11px] text-amber-300/90 font-medium">Path: /Developer/configs</div>
-                    <div className="mt-2.5 pt-2 border-t border-amber-500/20 text-[11px] font-mono font-semibold text-amber-400">
-                      {simulatedHop && simulatedHop >= 2 ? "● EXFILTRATED (PAT Found)" : "Status: Waiting"}
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
+                        <div className="flex items-center gap-2 text-xs font-bold text-teal-400">
+                          <span className="h-2 w-2 rounded-full bg-teal-400" />
+                          IAM & Scope Auditor
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                          Identified <code className="text-teal-300 font-mono">drive.readonly</code> escalation vector. Over-privileged scope allows read access to unconstrained file indices.
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
+                        <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
+                          <span className="h-2 w-2 rounded-full bg-amber-400" />
+                          Threat Modeler (STRIDE / MITRE)
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                          Mapped to MITRE ATT&CK T1566 & T1552. Lateral pivot from SaaS identity provider into CI/CD build pipelines.
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
+                        <div className="flex items-center gap-2 text-xs font-bold text-rose-400">
+                          <span className="h-2 w-2 rounded-full bg-rose-400" />
+                          RFC 7009 Compliance & Revocation Engine
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                          Standard Revoke endpoint reports 200 OK without downstream token invalidation. Cascade execution required across 3 issuers.
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
+                        <div className="flex items-center gap-2 text-xs font-bold text-indigo-400">
+                          <span className="h-2 w-2 rounded-full bg-indigo-400" />
+                          Incident Commander (Synthesizer)
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                          Consensus reached. Final blast rating: CRITICAL (94/100). Signed containment order dispatched to active remediation queue.
+                        </p>
+                      </div>
                     </div>
                   </div>
+                )}
 
-                  {/* Hop 3 */}
-                  <div className={`rounded-xl border p-5 transition-all duration-300 ${
-                    simulatedHop && simulatedHop >= 3
-                      ? "border-rose-400 bg-rose-500/20 shadow-xl shadow-rose-500/15 ring-2 ring-rose-400/40"
-                      : "border-rose-500/30 bg-rose-950/20"
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-rose-400">Hop 3 · Vendor SaaS</span>
-                      {simulatedHop && simulatedHop >= 3 && (
-                        <span className="h-2.5 w-2.5 rounded-full bg-rose-400 animate-ping" />
-                      )}
+                {/* TAB 3: RFC 7009 Containment */}
+                {activeTabPreview === "rfc7009" && (
+                  <div className="space-y-5">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-bold text-white">Multi-Cloud Invalidation & Cryptographic Audit Receipts</h3>
+                        <p className="text-xs text-slate-400">True downstream session destruction vs cosmetic OAuth disconnect</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={onOpenRemediation}
+                        className="rounded-lg bg-teal-500/25 border border-teal-500/40 px-3.5 py-1.5 text-xs font-bold text-teal-300 hover:bg-teal-500/35 transition"
+                      >
+                        Open Containment Center
+                      </button>
                     </div>
-                    <div className="mt-2 font-bold text-white text-base">GitHub Secret Pivot</div>
-                    <div className="mt-2 text-xs text-slate-300 leading-relaxed">Bot clones private enterprise repos via extracted PAT.</div>
-                    <div className="mt-3 font-mono text-[11px] text-rose-300/90 font-medium">Issuer: api.github.com</div>
-                    <div className="mt-2.5 pt-2 border-t border-rose-500/20 text-[11px] font-mono font-semibold text-rose-400">
-                      {simulatedHop && simulatedHop >= 3 ? "● REPOS CLONED (CI Leaked)" : "Status: Waiting"}
-                    </div>
-                  </div>
 
-                  {/* Hop 4 */}
-                  <div className={`rounded-xl border p-5 transition-all duration-300 ${
-                    simulatedHop && simulatedHop >= 4
-                      ? "border-red-500 bg-red-600/30 shadow-2xl shadow-red-500/30 ring-2 ring-red-400"
-                      : "border-red-500/40 bg-red-950/20"
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-red-400">Hop 4 · Cloud Production</span>
-                      {simulatedHop && simulatedHop >= 4 && (
-                        <span className="h-2.5 w-2.5 rounded-full bg-red-500 animate-ping" />
-                      )}
-                    </div>
-                    <div className="mt-2 font-bold text-white text-base">AWS STS Takeover</div>
-                    <div className="mt-2 text-xs text-slate-300 leading-relaxed">CI/CD secrets leveraged to assume production admin IAM role.</div>
-                    <div className="mt-3 font-mono text-[11px] text-red-300/90 font-medium">Role: arn:aws:iam::prod:admin</div>
-                    <div className="mt-2.5 pt-2 border-t border-red-500/20 text-[11px] font-mono font-bold text-red-400">
-                      {simulatedHop && simulatedHop >= 4 ? "● PRODUCTION ROOT EXPLOIT" : "Status: Waiting"}
+                    <div className="rounded-xl border border-white/10 bg-slate-900/90 p-5 font-mono text-xs">
+                      <div className="text-slate-400">// Sample Audit Receipt emitted by ScopeBomb Containment Engine</div>
+                      <div className="mt-2 text-emerald-400">{`{`}</div>
+                      <div className="ml-4 text-slate-300">{`"receipt_id": "SCOPEBOMB-REMED-20261113-AF89E",`}</div>
+                      <div className="ml-4 text-slate-300">{`"target_action": "revoke_oauth_app",`}</div>
+                      <div className="ml-4 text-slate-300">{`"provider": "github",`}</div>
+                      <div className="ml-4 text-slate-300">{`"endpoint_hit": "DELETE /applications/Iv1.8a2b3c/grant",`}</div>
+                      <div className="ml-4 text-slate-300">{`"rfc_7009_status": "TRUE_DOWNSTREAM_CONTAINMENT",`}</div>
+                      <div className="ml-4 text-slate-300">{`"invalidated_sessions": 3,`}</div>
+                      <div className="ml-4 text-slate-300">{`"sha256_proof": "a8f5b2...9e41d8"`}</div>
+                      <div className="text-emerald-400">{`}`}</div>
                     </div>
                   </div>
-                </div>
+                )}
 
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/10 bg-slate-900/60 p-4 text-xs text-slate-300">
-                  <div className="flex items-center gap-3">
-                    <span className="h-3 w-3 rounded-full bg-rose-400 animate-ping" />
-                    <span className="font-medium">
-                      THE RFC 7009 FLAW: Clicking “Disconnect” on Google only revokes Hop 1. Hops 2, 3, and 4 remain completely active in production.
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={onLaunchCockpit}
-                    className="font-bold text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-colors"
-                  >
-                    Open in Full Blast Graph →
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 2: Swarm SOC */}
-            {activeTabPreview === "swarm" && (
-              <div className="space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-bold text-white">4-Agent Autonomous Deliberation SOC</h3>
-                    <p className="text-xs text-slate-400">Autonomous consensus triage streaming in parallel across 4 specialized roles</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={onOpenSwarm}
-                    className="rounded-lg bg-blue-600/25 border border-blue-500/40 px-3.5 py-1.5 text-xs font-bold text-blue-300 hover:bg-blue-600/35 transition"
-                  >
-                    Open Live Swarm SOC →
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
-                    <div className="flex items-center gap-2 text-xs font-bold text-teal-400">
-                      <span className="h-2 w-2 rounded-full bg-teal-400" />
-                      IAM & Scope Auditor
+                {/* TAB 4: Threat Presets */}
+                {activeTabPreview === "presets" && (
+                  <div className="space-y-5">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-bold text-white">Curated Real-World Attack Scenarios (2024–2026)</h3>
+                        <p className="text-xs text-slate-400">Load authentic non-human identity incident vectors into the threat cockpit</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={onLaunchCockpit}
+                        className="rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-blue-500 transition"
+                      >
+                        Load in Cockpit
+                      </button>
                     </div>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300">
-                      Identified <code className="text-teal-300 font-mono">drive.readonly</code> escalation vector. Over-privileged scope allows read access to unconstrained file indices.
-                    </p>
-                  </div>
 
-                  <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
-                    <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
-                      <span className="h-2 w-2 rounded-full bg-amber-400" />
-                      Threat Modeler (STRIDE / MITRE)
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white text-sm">Rohan MCP OAuth Trap</span>
+                          <span className="rounded bg-rose-500/20 px-2 py-0.5 font-mono text-[10px] text-rose-300 font-bold">94 CRITICAL</span>
+                        </div>
+                        <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+                          Innocent Google Drive search access leads to .env backup exfiltration and lateral takeover of AWS IAM production admin.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={onLaunchCockpit}
+                          className="mt-3 text-xs font-bold text-rose-400 hover:text-rose-300"
+                        >
+                          Audit Scenario
+                        </button>
+                      </div>
+
+                      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white text-sm">Slack AI Prompt Exfiltration</span>
+                          <span className="rounded bg-amber-500/20 px-2 py-0.5 font-mono text-[10px] text-amber-300 font-bold">78 HIGH</span>
+                        </div>
+                        <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+                          Indirect prompt injection tricking an enterprise Slack bot into reading private channel messages and leaking secrets via webhook.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={onLaunchCockpit}
+                          className="mt-3 text-xs font-bold text-amber-400 hover:text-amber-300"
+                        >
+                          Audit Scenario
+                        </button>
+                      </div>
+
+                      <div className="rounded-xl border border-teal-500/30 bg-teal-500/5 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white text-sm">Over-Scoped Google Drive Bot</span>
+                          <span className="rounded bg-teal-500/20 px-2 py-0.5 font-mono text-[10px] text-teal-300 font-bold">82 HIGH</span>
+                        </div>
+                        <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+                          Requesting <code className="text-teal-300 font-mono">drive</code> full scope when only read-only metadata was needed, granting full write & deletion.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={onLaunchCockpit}
+                          className="mt-3 text-xs font-bold text-teal-400 hover:text-teal-300"
+                        >
+                          Audit Scenario
+                        </button>
+                      </div>
+
+                      <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white text-sm">CI/CD Pipeline GitHub Gate</span>
+                          <span className="rounded bg-blue-500/20 px-2 py-0.5 font-mono text-[10px] text-blue-300 font-bold">88 HIGH</span>
+                        </div>
+                        <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+                          Pull request secret scanning detecting orphaned PATs and blocking PR merge before production deployment.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={onOpenTools}
+                          className="mt-3 text-xs font-bold text-blue-400 hover:text-blue-300"
+                        >
+                          View GitHub Action
+                        </button>
+                      </div>
                     </div>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300">
-                      Mapped to MITRE ATT&CK T1566 & T1552. Lateral pivot from SaaS identity provider into CI/CD build pipelines.
-                    </p>
                   </div>
-
-                  <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
-                    <div className="flex items-center gap-2 text-xs font-bold text-rose-400">
-                      <span className="h-2 w-2 rounded-full bg-rose-400" />
-                      RFC 7009 Compliance & Revocation Engine
-                    </div>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300">
-                      Standard Revoke endpoint reports 200 OK without downstream token invalidation. Cascade execution required across 3 issuers.
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
-                    <div className="flex items-center gap-2 text-xs font-bold text-indigo-400">
-                      <span className="h-2 w-2 rounded-full bg-indigo-400" />
-                      Incident Commander (Synthesizer)
-                    </div>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300">
-                      Consensus reached. Final blast rating: CRITICAL (94/100). Signed containment order dispatched to active remediation queue.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: RFC 7009 Containment */}
-            {activeTabPreview === "rfc7009" && (
-              <div className="space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-bold text-white">Multi-Cloud Invalidation & Cryptographic Audit Receipts</h3>
-                    <p className="text-xs text-slate-400">True downstream session destruction vs cosmetic OAuth disconnect</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={onOpenRemediation}
-                    className="rounded-lg bg-teal-500/25 border border-teal-500/40 px-3.5 py-1.5 text-xs font-bold text-teal-300 hover:bg-teal-500/35 transition"
-                  >
-                    Open Containment Center →
-                  </button>
-                </div>
-
-                <div className="rounded-xl border border-white/10 bg-slate-900/90 p-5 font-mono text-xs">
-                  <div className="text-slate-400">// Sample Audit Receipt emitted by ScopeBomb Containment Engine</div>
-                  <div className="mt-2 text-emerald-400">{`{`}</div>
-                  <div className="ml-4 text-slate-300">{`"receipt_id": "SCOPEBOMB-REMED-20261113-AF89E",`}</div>
-                  <div className="ml-4 text-slate-300">{`"target_action": "revoke_oauth_app",`}</div>
-                  <div className="ml-4 text-slate-300">{`"provider": "github",`}</div>
-                  <div className="ml-4 text-slate-300">{`"endpoint_hit": "DELETE /applications/Iv1.8a2b3c/grant",`}</div>
-                  <div className="ml-4 text-slate-300">{`"rfc_7009_status": "TRUE_DOWNSTREAM_CONTAINMENT",`}</div>
-                  <div className="ml-4 text-slate-300">{`"invalidated_sessions": 3,`}</div>
-                  <div className="ml-4 text-slate-300">{`"sha256_proof": "a8f5b2...9e41d8"`}</div>
-                  <div className="text-emerald-400">{`}`}</div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 4: Threat Presets */}
-            {activeTabPreview === "presets" && (
-              <div className="space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-bold text-white">Curated Real-World Attack Scenarios (2024–2026)</h3>
-                    <p className="text-xs text-slate-400">Load authentic non-human identity incident vectors into the threat cockpit</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={onLaunchCockpit}
-                    className="rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-blue-500 transition"
-                  >
-                    Load in Cockpit →
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-white text-sm">Rohan MCP OAuth Trap</span>
-                      <span className="rounded bg-rose-500/20 px-2 py-0.5 font-mono text-[10px] text-rose-300 font-bold">94 CRITICAL</span>
-                    </div>
-                    <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                      Innocent Google Drive search access leads to .env backup exfiltration and lateral takeover of AWS IAM production admin.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={onLaunchCockpit}
-                      className="mt-3 text-xs font-bold text-rose-400 hover:text-rose-300"
-                    >
-                      Audit Scenario →
-                    </button>
-                  </div>
-
-                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-white text-sm">Slack AI Prompt Exfiltration</span>
-                      <span className="rounded bg-amber-500/20 px-2 py-0.5 font-mono text-[10px] text-amber-300 font-bold">78 HIGH</span>
-                    </div>
-                    <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                      Indirect prompt injection tricking an enterprise Slack bot into reading private channel messages and leaking secrets via webhook.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={onLaunchCockpit}
-                      className="mt-3 text-xs font-bold text-amber-400 hover:text-amber-300"
-                    >
-                      Audit Scenario →
-                    </button>
-                  </div>
-
-                  <div className="rounded-xl border border-teal-500/30 bg-teal-500/5 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-white text-sm">Over-Scoped Google Drive Bot</span>
-                      <span className="rounded bg-teal-500/20 px-2 py-0.5 font-mono text-[10px] text-teal-300 font-bold">82 HIGH</span>
-                    </div>
-                    <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                      Requesting <code className="text-teal-300 font-mono">drive</code> full scope when only read-only metadata was needed, granting full write & deletion.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={onLaunchCockpit}
-                      className="mt-3 text-xs font-bold text-teal-400 hover:text-teal-300"
-                    >
-                      Audit Scenario →
-                    </button>
-                  </div>
-
-                  <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-white text-sm">CI/CD Pipeline GitHub Gate</span>
-                      <span className="rounded bg-blue-500/20 px-2 py-0.5 font-mono text-[10px] text-blue-300 font-bold">88 HIGH</span>
-                    </div>
-                    <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                      Pull request secret scanning detecting orphaned PATs and blocking PR merge before production deployment.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={onOpenTools}
-                      className="mt-3 text-xs font-bold text-blue-400 hover:text-blue-300"
-                    >
-                      View GitHub Action →
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+                )}
               </div>
             </div>
           </div>
@@ -685,7 +675,7 @@ export function LandingPage({
           {/* Pillar 1 */}
           <div className="glow-card-blue rounded-xl p-6 transition">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -698,7 +688,7 @@ export function LandingPage({
           {/* Pillar 2 */}
           <div className="glow-card-cyan rounded-xl p-6 transition">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
@@ -711,7 +701,7 @@ export function LandingPage({
           {/* Pillar 3 */}
           <div className="glow-card-blue rounded-xl p-6 transition">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
@@ -724,7 +714,7 @@ export function LandingPage({
           {/* Pillar 4 */}
           <div className="glow-card-cyan rounded-xl p-6 transition">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </div>
@@ -737,7 +727,7 @@ export function LandingPage({
           {/* Pillar 5 */}
           <div className="glow-card-blue rounded-xl p-6 transition">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
               </svg>
             </div>
@@ -750,7 +740,7 @@ export function LandingPage({
           {/* Pillar 6 */}
           <div className="glow-card-cyan rounded-xl p-6 transition">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
@@ -783,28 +773,28 @@ export function LandingPage({
             <tbody className="divide-y divide-white/5 text-slate-300">
               <tr>
                 <td className="px-4 py-3.5 font-medium text-white sm:px-6">Cross-Issuer Awareness</td>
-                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">❌ Blind to downstream tokens</td>
-                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">✓ Full 4-boundary topological graph</td>
+                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">Blind to downstream tokens</td>
+                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">Full 4-boundary topological graph</td>
               </tr>
               <tr>
                 <td className="px-4 py-3.5 font-medium text-white sm:px-6">RFC 7009 Invalidation</td>
-                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">❌ Returns 200 OK without cascading</td>
-                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">✓ Cascading grant & session destruction</td>
+                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">Returns 200 OK without cascading</td>
+                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">Cascading grant & session destruction</td>
               </tr>
               <tr>
                 <td className="px-4 py-3.5 font-medium text-white sm:px-6">Pre-Consent Interception</td>
-                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">❌ Post-breach discovery only</td>
-                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">✓ Chrome MV3 pre-consent warning</td>
+                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">Post-breach discovery only</td>
+                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">Chrome MV3 pre-consent warning</td>
               </tr>
               <tr>
                 <td className="px-4 py-3.5 font-medium text-white sm:px-6">Incident Triage</td>
-                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">❌ Manual SecOps investigation</td>
-                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">✓ 4-Agent consensus with MITRE mapping</td>
+                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">Manual SecOps investigation</td>
+                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">4-Agent consensus with MITRE mapping</td>
               </tr>
               <tr>
                 <td className="px-4 py-3.5 font-medium text-white sm:px-6">CI/CD Enforcement</td>
-                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">❌ Not present</td>
-                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">✓ Automated GitHub Action fail-on-risk</td>
+                <td className="px-4 py-3.5 text-rose-400/90 sm:px-6">Not present</td>
+                <td className="px-4 py-3.5 text-emerald-400 font-medium sm:px-6">Automated GitHub Action fail-on-risk</td>
               </tr>
             </tbody>
           </table>

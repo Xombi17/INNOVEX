@@ -123,7 +123,7 @@ a {
   background: rgba(13, 19, 32, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 .glow-card-blue:hover {
   border-color: rgba(59, 130, 246, 0.45);
@@ -135,7 +135,7 @@ a {
   background: rgba(13, 19, 32, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 .glow-card-cyan:hover {
   border-color: rgba(0, 210, 180, 0.45);
@@ -362,7 +362,8 @@ a {
 /* Prevent background scrollbar from offsetting modal centering */
 html:has(dialog[open]),
 body:has(dialog[open]) {
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: clip;
 }
 
 /* Centered accessible dialog */
