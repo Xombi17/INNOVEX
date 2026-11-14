@@ -343,8 +343,8 @@ export function ScopeBombArena({
               onClick={() => setTab("overview")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
                 activeTab === "overview"
-                  ? "bg-blue-600/20 text-blue-300 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
               }`}
             >
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
@@ -360,13 +360,13 @@ export function ScopeBombArena({
               }}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
                 activeTab === "arena"
-                  ? "bg-blue-600/20 text-blue-300 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
               }`}
             >
               <svg className="h-3.5 w-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
               <span>Threat Cockpit</span>
-              <span className="rounded bg-rose-500/20 px-1 py-0.2 text-[9px] font-mono text-rose-300">Live</span>
+              <span className="rounded bg-rose-500/20 px-1 py-0.2 text-[9px] font-mono text-rose-300 font-semibold">Live</span>
             </button>
             <button
               type="button"
@@ -378,8 +378,8 @@ export function ScopeBombArena({
               }}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
                 activeTab === "swarm"
-                  ? "bg-blue-600/20 text-blue-300 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
               }`}
             >
               <svg className="h-3.5 w-3.5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><path d="M8 15h8"/></svg>
@@ -396,8 +396,8 @@ export function ScopeBombArena({
               }}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
                 activeTab === "remediation"
-                  ? "bg-blue-600/20 text-blue-300 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
               }`}
             >
               <svg className="h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -410,8 +410,8 @@ export function ScopeBombArena({
               onClick={() => setTab("tools")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all ${
                 activeTab === "tools"
-                  ? "bg-blue-600/20 text-blue-300 border border-blue-500/40 shadow-sm shadow-blue-500/10 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-400/50 font-bold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent"
               }`}
             >
               <svg className="h-3.5 w-3.5 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
